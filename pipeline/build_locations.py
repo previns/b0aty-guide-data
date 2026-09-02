@@ -1,0 +1,171 @@
+"""Generate curated/locations.generated.yaml from RuneLite's own enums.
+
+RuneLite already ships authoritative, maintained coordinate tables for
+teleports, fairy rings, minigames, dungeons and transport points. Deriving our
+location table from those is strictly better than hand-typing coordinates: the
+numbers are correct by construction and they track the game.
+
+Source: https://github.com/runelite/runelite (BSD 2-Clause). Attribution lives
+in NOTICE.md.
+
+This writes a *generated* file. Human edits belong in curated/banks.yaml and
+curated/overrides.yaml, which this script never touches.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+import urllib.request
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+
+RAW = "https://raw.githubusercontent.com/runelite/runelite/master/runelite-client/src/main/java/net/runelite/client/plugins/worldmap"
+
+# enum file -> the kind of location it describes
+SOURCES = {
+    "TeleportLocationData": "teleport",
+    "FairyRingLocation": "fairy-ring",
+    "MinigameLocation": "minigame",
+    "TransportationPointLocation": "transport",
+    "DungeonLocation": "dungeon",
+    "RunecraftingAltarLocation": "altar",
+    "AgilityCourseLocation": "agility",
+}
+
+# CONSTANT("Display name", ... new WorldPoint(x, y, plane) ...
+#
+# The name is the LAST string before the coordinate, not the first. A jewellery
+# teleport writes the item first and the place second --
+#
+#   CAMULET_TEMPLE(TeleportType.OTHER, "Camulet", "Enakhra's Temple",
+#       new WorldPoint(3190, 2923, 0), ...)
+#
+# -- so taking the first indexed every one of those under the item you teleport
+# with rather than the place you arrive at: "Games Necklace" instead of
+# "Burthorpe Games Room", "Ring of Dueling" instead of "Ferox Enclave".
+RE_ENTRY = re.compile(
+    r"^\s*(?P<constant>[A-Z][A-Z0-9_]*)\s*\(\s*"
+    r"(?P<head>[^)]*?)"
+    r"new WorldPoint\(\s*(?P<x>\d+)\s*,\s*(?P<y>\d+)\s*,\s*(?P<plane>\d+)\s*\)",
+    re.M | re.S,
+)
+RE_QUOTED = re.compile(r"\"([^\"]+)\"")
+
+
+def normalise(name: str) -> str:
+    """Match key. Lowercase, punctuation collapsed, articles dropped."""
+    name = name.lower()
+    name = re.sub(r"\(.*?\)", " ", name)
+    name = re.sub(r"[^a-z0-9]+", " ", name)
+    name = re.sub(r"\b(the|a|an)\b", " ", name)
+    return re.sub(r"\s+", " ", name).strip()
+
+
+def fetch(name: str, cache_dir: Path, offline: bool) -> str:
+    cached = cache_dir / f"{name}.java"
+    if offline or cached.exists():
+        if not cached.exists():
+            raise SystemExit(f"--offline but {cached} is missing")
+        return cached.read_text(encoding="utf-8")
+    req = urllib.request.Request(
+        f"{RAW}/{name}.java", headers={"User-Agent": "b0aty-guide-data/0.1"}
+    )
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        text = resp.read().decode("utf-8")
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cached.write_text(text, encoding="utf-8")
+    return text
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--out", type=Path, default=REPO / "curated" / "locations.generated.yaml")
+    ap.add_argument("--cache", type=Path, default=REPO / "build" / "runelite")
+    ap.add_argument("--offline", action="store_true", help="use the cache, don't fetch")
+    args = ap.parse_args()
+
+    rows: list[dict] = []
+    per_source: dict[str, int] = {}
+
+    for source, kind in SOURCES.items():
+        java = fetch(source, args.cache, args.offline)
+        found = 0
+        for m in RE_ENTRY.finditer(java):
+            quoted = RE_QUOTED.findall(m.group("head"))
+            if not quoted:
+                continue
+            # The last string before the coordinate is the destination.
+            name = quoted[-1]
+            rows.append(
+                {
+                    "name": name,
+                    "key": normalise(name),
+                    "kind": kind,
+                    "constant": m.group("constant"),
+                    "x": int(m.group("x")),
+                    "y": int(m.group("y")),
+                    "plane": int(m.group("plane")),
+                    "source": f"runelite/{source}",
+                }
+            )
+            found += 1
+        per_source[source] = found
+
+    # Fairy rings carry their code as the display name; make the code explicit.
+    for row in rows:
+        if row["kind"] == "fairy-ring":
+            row["code"] = row["name"].upper()
+
+    # An ambiguous key is unresolved, not first-match. Record the conflict so
+    # merge_curated can refuse to guess.
+    by_key: dict[str, list[dict]] = {}
+    for row in rows:
+        by_key.setdefault(row["key"], []).append(row)
+
+    ambiguous = {
+        key: sorted({r["name"] for r in group})
+        for key, group in by_key.items()
+        if len({(r["x"], r["y"], r["plane"]) for r in group}) > 1
+    }
+
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "# GENERATED by pipeline/build_locations.py -- do not hand-edit.",
+        "# Coordinates derived from RuneLite's world map enums (BSD 2-Clause).",
+        "# Human corrections belong in overrides.yaml; extra banks in banks.yaml.",
+        "locations:",
+    ]
+    for row in sorted(rows, key=lambda r: (r["kind"], r["name"])):
+        lines.append(f"  - name: {json.dumps(row['name'])}")
+        lines.append(f"    key: {json.dumps(row['key'])}")
+        lines.append(f"    kind: {row['kind']}")
+        if "code" in row:
+            lines.append(f"    code: {row['code']}")
+        lines.append(f"    point: [{row['x']}, {row['y']}, {row['plane']}]")
+        lines.append(f"    source: {row['source']}")
+    lines.append("")
+    lines.append("# Keys that resolve to more than one place. merge_curated.py")
+    lines.append("# treats these as unresolved rather than picking a winner.")
+    lines.append("ambiguous:")
+    for key, names in sorted(ambiguous.items()):
+        lines.append(f"  {json.dumps(key)}: {json.dumps(names)}")
+    args.out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    print(f"{'source':<32} rows")
+    for source, count in per_source.items():
+        print(f"  {source:<30} {count:4d}")
+    print(f"\ntotal locations   {len(rows)}")
+    print(f"distinct keys     {len(by_key)}")
+    print(f"ambiguous keys    {len(ambiguous)}")
+    if ambiguous:
+        for key, names in list(sorted(ambiguous.items()))[:8]:
+            print(f"  {key!r}: {names}")
+    print(f"\nwrote {args.out}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

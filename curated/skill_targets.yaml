@@ -1,0 +1,68 @@
+# Guide step -> the skill level that completes it.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# Keyed by step id, so rewording a step drops its row rather than re-pointing
+# it at whatever inherited the id. Ids are quoted because a step id can be all
+# digits -- "4655341384" -- and YAML reads an unquoted one as a number, which
+# then matches no step at all. Validate with:
+#
+#   python pipeline/merge_curated.py --check-skills
+#
+# The signal is exact -- getRealSkillLevel is a number the game keeps -- so
+# these are as solid as the diary bits. What needs a person is deciding which
+# steps have a real target at all, because the guide names levels for several
+# different reasons and only one of them means "this step is done".
+#
+# The rule: the step is finished exactly when the level is reached. If it is
+# finished for some other reason, or the level is a boost, or the number is
+# not a level, leave it out.
+
+targets:
+  # --- gathering and processing ---
+  "bc857e835d": {skill: MINING, level: 50}          # Powermine to 50 Mining
+  "3958bb4dbc": {skill: FISHING, level: 46}         # Fish Salmon & Trout until 46
+  "c4bb68d9d4": {skill: FISHING, level: 65}         # Tempoross until 65
+  "c384f2bb8e": {skill: COOKING, level: 53}         # Cook Raw Salmon until 53
+  "baa871c9e4": {skill: WOODCUTTING, level: 45}     # Cut Oak Logs until 45
+  "f28b238266": {skill: WOODCUTTING, level: 45}     # Get 45 Woodcutting on Oaks
+  "4a953b88e3": {skill: WOODCUTTING, level: 50}     # Teak Trees until 50
+  "5e88ade2b8": {skill: FLETCHING, level: 45}       # Fletch the logs to 45
+  "a43c5df4a8": {skill: CRAFTING, level: 40}        # Blow Vials until 40
+  "00e95411a9": {skill: CRAFTING, level: 50}        # Molten glass until 50
+
+  # --- farming, which the route paces around ---
+  "9862f47776": {skill: FARMING, level: 34}         # main method until 34
+  "e0a0f16b71": {skill: FARMING, level: 34}         # you may get 34
+  "c067a29e32": {skill: FARMING, level: 34}         # you should get 34
+  "b20d3b5845": {skill: FARMING, level: 34}         # if not yet 34, continue
+  "d230a48cbb": {skill: FARMING, level: 62}         # Tithe Farm until 62
+
+  # --- the rest ---
+  "07cb234767": {skill: THIEVING, level: 50}        # Blackjack to 50
+  "3ee93ec9af": {skill: MAGIC, level: 51}           # alchemy room until 51
+  "a2312d14da": {skill: CONSTRUCTION, level: 26}    # Mahogany Homes until 26
+  "ff57ee4722": {skill: CONSTRUCTION, level: 83}    # Mahogany Homes until 83
+  "4655341384": {skill: HERBLORE, level: 30}        # "get it before you continue"
+  "608fb6667b": {skill: HERBLORE, level: 76}        # remaining herbs to 76+
+  "fa3409660f": {skill: ATTACK, level: 60}          # Sulpha Naguas until 60
+  # Two targets in one step; it ends on the second, so that is the one that
+  # completes it: "until 65 Strength then switch to Attack until 65".
+  "df30ed5bf4": {skill: ATTACK, level: 65}
+
+# Deliberately NOT mapped, with the reason:
+#
+#   ec2f66cc3b  "Boost with a Red Evil Dave stew to 83 Magic"
+#       A boosted level. getRealSkillLevel reports the real one and would
+#       never reach 83, so this would sit unticked forever.
+#
+#   3e98de1f7a  "Don't cast on Defensive. If you can get 78 Magic..."
+#       The instruction is the casting style. The level is an aside about what
+#       becomes possible, not what finishes the step.
+#
+#   d054590fc1  "until 70 prayer is banked"
+#       Banked experience, not a level. The number looks like one and is not.
+#
+#   a326915c8a  "If it's woefully bad, only get 18 Slayer"
+#       Conditional on how a previous drop went. A player who skips it would
+#       still be ticked once they passed 18 some other way.

@@ -1,0 +1,529 @@
+# Guide step -> the achievement-diary bit the game sets when it is done.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# Keyed by step id, so rewording a step on the wiki drops its row rather than
+# silently re-pointing it at the wrong task. merge_curated warns about a key
+# that no longer matches a step.
+#
+# The signal is exact: the game sets a bit in a VarPlayer and the client reads
+# it. What needs a person is which task a step means. The guide says "Check
+# playtime on Hans"; Quest Helper's panel says "Learn Age from Hans". Only
+# prose connects those, and string similarity is actively misleading here --
+# it ranked "Travel to Entrana" against "Fill Water Bucket" (0.49) above the
+# correct "To the Holy Land!", and put "Sarah's Farming Shop" top for the
+# Falador wall shortcut.
+#
+# Every row below was decided by reading the tier's FULL task list, not the
+# ranking.
+#
+# Where Quest Helper's titles are jokes -- Falador's medium tier is all
+# puns -- read the wiki's task table instead. Quest Helper's bit order matches
+# the wiki's task order exactly, which decodes them: "Yoink!" is the telegrab,
+# not the pickpocket, and "Initialising..." is praying in full Initiate. Two
+# rows were wrong for exactly that reason before this was noticed. Review with:
+#
+#   python pipeline/build_diary_candidates.py
+#   python pipeline/merge_curated.py --check-diary
+#
+# A wrong row here is the worst failure the plugin has: it marks work done
+# that the player never did, and they find out much later, having skipped it.
+# When unsure, leave the step out -- a manual checkbox is a fine outcome.
+
+tasks:
+
+  # --- Lumbridge Easy Diary ---
+  # Pickpocket a man/woman [Lumbridge Easy Diary]
+  5ff94e818a: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 6}  # Pickpocket Man or Woman
+  # Check playtime on Hans [Lumbridge Easy Diary]
+  d3c4ea0a99: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 5}  # Learn Age from Hans
+  # Train Draynor Agility to 5 Agility [Lumbridge Easy Diary]
+  0f6d8ccd8b: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 1}  # Draynor Rooftops
+  # Teleport to Rune Essence Mine [Lumbridge Easy Diary]
+  4b327ee13c: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 3}  # Rune Essence Mine
+  # Kill a Zombie in Draynor Sewers. Take bones. [Lumbridge Easy Diary]
+  fb47f086a6: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 8}  # Kill Zombie in Draynor Sewers
+  # Make Bread Dough & cook on the range [Lumbridge Easy Diary]
+  4ecef32ce3: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 10}  # Cooking Bread
+  # Cut and burn Oak logs [Lumbridge Easy Diary]
+  06f7d3a759: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 7}  # Chop and Burn Oak Logs
+  # Head West and enter HAM Hideout [Lumbridge Easy Diary]
+  12eccb71e7: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 12}  # Enter the HAM Hideout
+  # Quickly bop a Cave Bug [Lumbridge Easy Diary]
+  b296ffd680: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 2}  # Kill Cave Bug
+  # Mine an Iron Ore [Lumbridge Easy Diary]
+  3bdad11884: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 11}  # Mine Iron in Al-Kharid
+  # Fish Anchovies South of Al Kharid Bank [Lumbridge Easy Diary]
+  52ffccaeb3: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 9}  # Fish Anchovies in Al-Kharid
+  # Craft a Water Rune [Lumbridge Easy Diary]
+  4743ed813e: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 4}  # Craft Water Runes
+
+  # --- Varrock Easy Diary ---
+  # Head South & Trade Thessalia [Varrock Easy Diary]
+  1f8dfba57c: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 1}  # Browse Thessalia's Store
+  # Cut the Dying tree [Varrock Easy Diary]
+  8cb2f6d1a2: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 7}  # Chop Down Dying Tree
+  # Jump over the Fence south of Varrock [Varrock Easy Diary]
+  8c4d0c26d9: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 6}  # Jump the Fence
+  # Mine an Iron Ore [Varrock Easy Diary]
+  7cf050db2d: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 3}  # Mine Iron South East
+  # Steal a tea [Varrock Easy Diary]
+  0db2c5c8ef: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 14}  # Steal from the Tea Stall
+  # Teleport on Aubury [Enter the Abyss][Varrock Easy Diary]
+  8111fb4e9a: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 2}  # Teleport to Essence Mine
+  # Fish a Trout [Varrock Easy Diary] Drop this
+  473f58ccc1: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 13}  # Fish a Trout
+  # Make a Bowl [Varrock Easy Diary] Drop this
+  c1b8a7c9fb: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 10}  # Spin a Bowl in Barbarian Village
+  # Runecraft an Earth Rune (altar is south of Lumber Yard) [Varrock Easy Diary]
+  81ec2d4112: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 12}  # Craft an Earth Rune
+
+  # --- Falador Easy Diary ---
+  # Take Falador Crumbling wall Shortcut [Falador Easy Diary]
+  e960febc98: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 1}  # Climb West Wall
+  # Get a haircut North [Falador Easy Diary]
+  dde4a40c17: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 3}  # Get A Haircut
+  # Fill Bucket on Pump [Falador Easy Diary]
+  2cc047791a: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 4}  # Fill Water Bucket
+  # Kill a duck in Falador Park [Falador Easy Diary]
+  725dc319ea: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 5}  # Kill The Duck
+  # Travel to Entrana [Falador Easy Diary]
+  8509fa1310: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 7}  # To the Holy Land!
+  # Trade Sarah and buy Secateurs [Falador Easy Diary]
+  fe43dccc58: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 2}  # Sarah's Farming Shop
+  # Make Blurite Limbs [Falador Easy Diary] (drop these)
+  9dfeeea6de: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 10}  # Blurite Limbs
+  # Find out Family Crest by talking to Sir Renitee [Falador Easy Diary]
+  720fdc669d: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 0}  # Family Crest
+  # Talk to the Security Guard upstairs for a Security book [Falador Easy Diary]
+  5a531ffc59: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 9}  # Get A Security Book
+  # Repair a Motherload Mine wheel [Falador Easy Diary]
+  1b27ff830a: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 8}  # Motherlode Repairs
+  # Make a Mind Tiara [Falador Easy Diary]
+  51857dfe4b: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 6}  # Mind Tiara
+
+  # --- Falador Medium Diary ---
+  # Mine a Gold Ore in the Crafting Guild [Falador Medium Diary]
+  150f554dcc: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 21}  # Au! I'm minin' here!
+  # Climb down Ratpits entrance [Falador Medium Diary]
+  2c08bd661a: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 16}  # Ahh rats..
+  # Take the shortcut back and forth[Falador Medium Diary]
+  491e60d8ff: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 22}  # To Middle Earth
+  # Teleport to Falador [Falador Medium Diary]
+  50faf7d1b3: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 25}  # Beam me up Scotty!
+  # Pickpocket a guard [Falador Medium Diary]
+  76705a5640: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 18}  # Cor blimey mate!
+  # Cut some Willow Logs & Burn in Taverley [Falador Medium Diary]
+  921d31e891: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 23}  # Snoop Loggy-log
+  # Kill a Mogre [Falador Medium Diary]
+  afdb50f2a3: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 15}  # Mogres have layers
+  # Distil the Swamp Tar in the Chemist then light the Bullseye Lantern [Falador Medium Diary]
+  d1de4493c0: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 11}  # Bullseye!
+
+  # --- Kandarin Easy Diary ---
+  # Talk to Sherlock [Kandarin Easy Diary]
+  00fee899ca: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 10}  # Talk to Sherlock
+  # Plant Jute Seeds in patch [Kandarin Easy Diary] (Supplies in Leprechaun)
+  3a4be77e12: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 5}  # Plant Jute
+  # Play the Organ after the first completion [Kandarin Easy Diary]
+  48f4750367: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 4}  # Play the Church Organ
+  # Pick 5 Flax [Kandarin Easy Diary][Mournings End Pt 2]
+  4924d37c61: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 3}  # Collect 5 Flax
+  # Fish for a Mackeral south [Kandarin Easy Diary]
+  574ea668e1: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 1}  # Catch a Mackerel
+  # Buy a stew during the quest also from the Bartender [Kandarin Easy Diary]
+  a105dbea91: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 9}  # Buy Stew
+  # Cross Log to Coal Mine [Kandarin Easy Diary]
+  b3e6115789: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 11}  # Log Shortcut
+  # Trade Candle maker & buy candle [Kandarin Easy Diary]
+  eb3a65abbe: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 2}  # Buy a Candle
+
+  # --- Kourend Easy Diary ---
+  # Re-enter POH [Kourend Easy Diary]
+  1bbb961c21: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 9}  # Hosidius House
+  # Fish a Trout South after killing the Trapped Soul [Kourend Easy Diary] and return to Mount Karuulm
+  300a094fee: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 12}  # Fish A Trout
+  # Mine an iron Ore [Kourend Easy Diary]
+  39c08f0b81: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 1}  # Mine Iron Ore
+  # Dig a Salt Petre South-East [Kourend Easy Diary]
+  4d85c6e14f: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 8}  # Dig Up Some Saltpetre
+  # Pray at the Altar in the castle (Top floor go upstairs) [Kourend Easy Diary]
+  65e617129d: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 7}  # Pray At Kourend Castle
+  # Steal from the Fruit stall [Kourend Easy Diary]
+  74b22a7500: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 4}  # Steal Some Fruit
+  # Head south and talk to Veos and take boat to Lands End [Kourend Easy Diary]
+  77f1b0c817: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 6}  # Boat To Land's End
+  # Hand a book in Library [Kourend Easy Diary]
+  8571ac8b12: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 3}  # Hand In A Book
+  # Head North East and make a Strength Potion in the Pub (Vial > Tarromin > Limpwurt) [Kourend Easy Diary]
+  b9185f046a: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 11}  # Make A Strength Potion
+  # Trade Warrens General Store [Kourend Easy Diary]
+  bb8545e789: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 5}  # Browse The Warrens Store
+  # Do a lap of the Shayzien Agility Course [Kourend Easy Diary]
+  bdf5929a72: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 10}  # Run the Agility Course
+  # Kill a Sand crab as you pass [Kourend Easy Diary]
+  bee670c9f2: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 2}  # Kill Sand Crab
+
+  # --- Lumbridge Medium Diary ---
+  # Use Earth Runes on Fire Altar [Lumbridge Medium Diary]
+  4759f6fded: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 24}  # Craft Lava Runes
+  # Craft a coif in the Lumbridge Cow Pen [Lumbridge Medium Diary]
+  5862eddad2: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 19}  # Craft a coif in the cow pen
+  # Cut 2x Willow Log [Lumbridge Medium Diary]
+  73172a0847: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 20}  # Chop Willow
+  # Catch a Salmon [Lumbridge Medium Diary]
+  8cba128121: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 18}  # Catch Salmon
+  # Upgrade to Ava's Accumulator [Lumbridge Medium Diary]
+  9076cdd8e8: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 15}  # Ava's Accumulator
+  # Catch Essence/Eclectic Impling [Lumbridge Medium Diary]
+  924842bb8f: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 23}  # Catch Essence or Eclectic Imp
+  # Teleport to Lumbridge [Lumbridge Medium Diary]
+  9c034727f3: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 17}  # Teleport to Lumbridge
+  # Ardy Cloak->DIS [Lumbridge Medium Diary]
+  ae0118a469: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 16}  # Travel to Wizards' Tower by Fairy Ring
+  # Pickpocket Martin the Master Farmer [Lumbridge Medium Diary]
+  b01e780cc1: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 21}  # Pickpocket Master Gardener
+  # Complete 1x Lap of Al Kharid Agility Course [Lumbridge Medium Diary]
+  d162025d82: {varplayer: LUMB_DRAY_ACHIEVEMENT_DIARY, bit: 13}  # Al Kharid Rooftop Course
+
+  # --- Varrock Medium Diary ---
+  # Complete the 4th floor & use all 4 emotes [Varrock Medium Diary]
+  0938ed8360: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 20}  # Use 4 Stronghold Emotes
+  # Re-enter the dungeon [Varrock Medium Diary]
+  6de1ded86a: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 21}  # Enter The Tolna Dungeon
+  # Complete Varrock Agility Course [Varrock Medium Diary]
+  8bd544a8f6: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 28}  # Rooftop Course Lap
+  # Get a task from Vannaka [Varrock Medium Diary]
+  8d24cff641: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 24}  # Slayer Task From Vannaka
+  # Pick a White tree fruit. [Varrock Medium Diary]
+  b6c5eada6c: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 26}  # Pick a White Fruit
+  # Turn 20 Mahogany logs into Planks at Sawmill [Varrock Medium Diary]
+  c32805e760: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 25}  # Make 20 Mahogany Planks
+  # Teleport to Varrock [Varrock Medium Diary]
+  c372081a12: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 23}  # Teleport to Varrock
+  # [Optional] Wait for a farming growth cycle and pick a fruit from the White Tree or do it at a later step. [Varrock Medium Diary]
+  d24f965ed8: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 26}  # Pick a White Fruit
+  # Take Spirit Tree to Gnome Stronghold (2) [Varrock Medium Diary]
+  d27664ccda: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 19}  # Use The Spirit Tree
+  # Have the apothecary make you a strength potion [Varrock Medium Diary]
+  d7a56df1f8: {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 15}  # Apothecary Strength Potion
+
+  # --- Desert Easy Diary ---
+  # Leave and trade this in at the Agility Pyramid [Desert Easy Diary]
+  1bfc8c8c4f: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 8}  # Sell Artefact
+  # Withdraw a knife and cut a cactus one trip banking at Nardah [Desert Easy Diary]
+  2f695f8dd9: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 10}  # Cut Desert Cacti
+  # Mine 5 clay while yoinking the bird feather [Desert Easy Diary]
+  7aaf46d5c8: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 2}  # Five clay
+  # Catch a Golden warbler [Desert Easy Diary]
+  a0f9847d52: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 1}  # Golden Warbler
+  # Enter Kalphite Lair [Desert Easy Diary]
+  c2af7676be: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 3}  # Kalphite Hive
+  # Kill a Vulture [Desert Easy Diary]
+  c7342b8567: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 5}  # Kill a Vulture
+  # Open the Sarcophagus [Desert Easy Diary]
+  dd5fbf1c0a: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 9}  # First Sarcophagus
+  # Talk to Zahur to clean a Grimy Herb [Desert Easy Diary]
+  ea7b3db486: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 6}  # Nardah Herb Cleaner
+
+  # --- Kourend Medium Diary ---
+  # Mine a Volcanic sulphur (facemask) [Kourend Medium Diary]
+  0686bc0252: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 15}  # Mine volcanic sulphur
+  # Enter Farming Guild [Kourend Medium Diary]
+  25bbe0873f: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 21}  # Enter The Farming Guild
+  # Head North & cut a Mahogany Log [Kourend Medium Diary]
+  27e27c05e3: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 24}  # Chop Mahogany Tree
+  # Use the Boulder (dense essence mine) leap shortcut in the dense essence mine (north-east by the bright crystals). [Kourend Medium Diary]
+  49b8fa182b: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 22}  # Leap the boulder
+  # Go east and repair a crane [Kourend Medium Diary]
+  5801b92128: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 17}  # Repair Crane
+  # Take Edgeville Fairy ring to CIR [Kourend Medium Diary]
+  5ece3c1e89: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 25}  # Fairy Ring To Mount Karuulm
+  # Solo Wintertodt until you get 12+ Magic Logs (loot after every game) [Kourend Medium Diary]
+  630a372377: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 20}  # Subdue the Wintertodt
+  # Kill a Lizardman (NOT A SHAMAN) [Kourend Medium Diary]
+  6ee846bc83: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 13}  # Kill A Lizardman
+  # Switch to Arceuss Spellbook & back [Kourend Medium Diary]
+  a0c0bf2ab4: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 16}  # Arceuus Spellbook
+  # Collect an Intelligence and hand in to Captain Ginea [Kourend Medium Diary]
+  a0c4d543e1: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 18}  # Deliver intelligence
+  # Catch a Bluegill [Kourend Medium Diary]
+  af57bcea8d: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 19}  # Catch A Bluegill
+  # Catch roughly 50 Chinchompas [Kourend Medium Diary][Seren Fight]
+  ef5c6ea10c: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 23}  # Catch A Chinchompa
+  # Teleport to all 5 cities on the Kharedst’s Memoirs [Kourend Medium Diary]
+  fd561650ca: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 14}  # Travel With Kharedst's Memoirs
+
+  # --- Morytania Easy Diary ---
+  # Cook the thin snail on the Port Phasmatys range (Drop the snail) [Morytania Easy Diary]
+  065ffbb4d1: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 2}  # Cook Thin Snail
+  # Use Scarecrow on Flower patch [Morytania Easy Diary]
+  149644e68e: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 8}  # Place Scarecrow
+  # Kill a Myre Blamish Snail. Make a Snelm & take Thin Snail meat [Morytania Easy Diary]
+  2221e400d8: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 1}  # Craft Snelm
+  # Kill a banshee [Morytania Easy Diary]
+  85176c2b4f: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 4}  # Kill Banshee
+  # Pray at Nature Altar once completed [Morytania Easy Diary]
+  8ab22c0a86: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 11}  # Restore Prayer
+  # Get a slayer task from Mazchna [Morytania Easy Diary]
+  940f9b9c64: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 3}  # Mazchna Slayer Task
+  # Kill any citizen with Wolfbane wielded [Morytania Easy Diary]
+  949e07959b: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 10}  # Kill Werewolf in Human Form
+  # Kill a Ghoul [Morytania Easy Diary]
+  e3aea00a17: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 7}  # Kill Ghoul
+
+  # --- Western Province Medium Diary ---
+  # Catch a Spined Larupia [Western Province Medium Diary]
+  0344af9953: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 14}  # Spined Larupia
+  # Take the Shortcut North-East to Otto’s Grotto [Western Province Medium Diary]
+  268c70eb87: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 12}  # Agility Shortcut To Otto
+  # Turn the Crystal Seed into a Saw [Western Province Medium Diary]
+  315a1ec907: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 23}  # Crystal Saw
+  # Take Spirit Tree to Gnome Stronghold (2) [Western Province Medium Diary]
+  3dab9ac3e1: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 13}  # Spirit Tree To Gnome Stronghold
+  # Complete an easy delivery for the Gnome Restaurant [Western Province Medium Diary]
+  4c1284f08d: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 22}  # Gnome Restaurant Delivery
+  # Glider -> Feldip Hills -> Back to Al Kharid [Western Province Medium Diary]
+  56b312927c: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 18}  # Glider To Feldip Hills
+  # Return to Eagles Peak & use Rope on Jungle to Jungle Area [Western Province Medium Diary]
+  73751b6bd2: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 20}  # Eagle To Feldip Hills
+  # Mine a Gold Ore Beneath the Grand Tree [Western Province Medium Diary]
+  7b91f0752d: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 24}  # Gold Under The Grand Tree
+  # Fish a bass to the west of the Island [Western Province Medium Diary]
+  993d8a5d5e: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 15}  # Bass On Ape Atoll
+  # Cut a teak tree & burn the log [Western Province Medium Diary]
+  b85c439583: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 16}  # Teaks On Ape Atoll
+  # Make a Chocolate Bomb [Western Province Medium Diary]
+  fd7a46d221: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 21}  # Chocolate Bomb
+
+  # --- Desert Medium Diary ---
+  # Make Combat Potion & drop it [Desert Medium Diary]
+  211e83a031: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 19}  # Combat Potion
+  # Kill a Desert Lizard [Desert Medium Diary]
+  31d87ce864: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 13}  # Desert Lizard
+  # Enter Player Owned House [Desert Medium Diary]
+  6084eacc37: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 22}  # Pollnivneach House
+  # Return to Eagles Peak & use Rope on Eagle to Desert Area [Desert Medium Diary]
+  7a2ef99680: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 17}  # Eagle Travel to Desert
+  # IF 47 Hunter: Catch Orange Salamander while passing[Desert Medium Diary]
+  a7cb4f4611: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 14}  # Orange Salamander
+  # Cut the teak tree while here (This must be livestreamed) [Desert Medium Diary]
+  aba75e98ab: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 23}  # Chop Teak at Uzer
+  # Pray at Altar for Diary [Desert Medium Diary]
+  c9b6d8190c: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 18}  # Pray at Elidinis Statuette
+  # Teleport with Camulet [Desert Medium Diary]
+  f5eeae3e48: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 20}  # Camulet to Enakhra's Temple
+
+  # --- Fremennik Medium Diary ---
+  # Steal from Fish Stall [Fremennik Medium Diary]
+  360ca3c34d: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 14}  # Steal Fish
+  # Kill a Brine Rat [Fremennik Medium Diary]
+  37440ca6db: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 11}  # Brine Rat Slayer
+  # Travel through Waterbirth Dungeon until you reach the Lighthouse [Fremennik Medium Diary]
+  51646d925f: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 19}  # Waterbirth to Lighthouse
+  # Mine a coal [Fremennik Medium Diary]
+  ac689ffdce: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 13}  # Mine Coal
+  # Return to Eagles Peak & use Rope on Eagle to Snowy Hunter Area [Fremennik Medium Diary]
+  c9661f2dc8: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 12}  # Travel by Eagle
+  # Build Menagerie and put Pet rock in. Change to regular mode and pick pet rock up [Fremennik Medium Diary]
+  db5646fa1f: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 18}  # Pet Rock
+  # Mine 15 Gold Ores before fighting the boss [Fremennik Medium Diary]
+  ed00659424: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 20}  # Mine Gold
+  # Catch a Snowy Knight [Fremennik Medium Diary]
+  f2a571d171: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 17}  # Catch Snowy Knight
+
+  # --- Kourend Hard Diary ---
+  # Smelt an Adamant Bar [Kourend Hard Diary]
+  036f952058: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 27}  # Smelt some adamantite
+  # Kill a Zombie in the Shayzien Crypts [Kourend Hard Diary]
+  2e83d09181: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 30}  # Kill a zombie in the crypt
+  # Head West and kill 1 Lizardman Shaman (Wear the Shayzien armour. You can just stand still by a wall if you want you only need 1 kill) [Kourend Hard Diary]
+  4306189ad3: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 28}  # Kill a lizardman shaman
+  # Teleport to Xerics Heart on Xerics Talisman [Kourend Hard Diary]
+  512a87e63c: {varplayer: KOUREND_ACHIEVEMENT_DIARY2, bit: 0}  # Teleport to Xeric's Heart
+  # Cast Monster Examine on a Troll [Kourend Hard Diary]
+  6dd2709dd6: {varplayer: KOUREND_ACHIEVEMENT_DIARY2, bit: 3}  # Cast Monster Examine
+  # Mine a Lovakite Ore [Kourend Hard Diary]
+  765720f4db: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 29}  # Mine some lovakite
+  # Deliver an Artefact to Captain Khaled [Kourend Hard Diary]
+  8554bc43ba: {varplayer: KOUREND_ACHIEVEMENT_DIARY2, bit: 1}  # Deliver an artifact
+  # Enter the Woodcut Guild [Kourend Hard Diary]
+  b2db10b71f: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 26}  # Enter the woodcutting guild
+  # Plant a Logavano Seed at the Tithe Farm [Kourend Hard Diary]
+  de62946520: {varplayer: KOUREND_ACHIEVEMENT_DIARY, bit: 31}  # Plant some logavano seeds
+  # Buy Brimstone boots and kill 1 Wyrm [Kourend Hard Diary]
+  f269b4ecf0: {varplayer: KOUREND_ACHIEVEMENT_DIARY2, bit: 2}  # Slay a wyrm
+
+  # --- Western Province Easy Diary ---
+  # Catch a Copper Longtail [Western Province Easy Diary]
+  1445e7e99f: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 1}  # Copper Longtail
+  # Teleport to Essence mine via Brimstail [Western Province Easy Diary]
+  37922454af: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 9}  # Brimstail Essence Teleport
+  # Collect a Swamp Toad [Western Province Easy Diary]
+  5599edfda1: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 8}  # Collect Swamp Toad
+  # Mine an Iron Ore North-East [Western Province Easy Diary]
+  7347862ca1: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 3}  # Mine Iron
+  # Cut Oak Tree & fletch Oak Shortbow. String it [Western Province Easy Diary]
+  8574dd89ed: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 10}  # Fletch Oak Shortbow in Gnome Stronghold
+  # Score a goal during Gnome Ball [Western Province Easy Diary]
+  df92624609: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 5}  # Gnome Ball Goal
+  # Complete Gnome Agility Course [Western Province Easy Diary]
+  f0e1191175: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 4}  # Gnome Agility Course
+  # Kill a terrorbird in the enclosure to the west [Western Province Easy Diary]
+  f3b192d578: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 11}  # Kill Terrorbird
+
+  # --- Ardougne Easy Diary ---
+  # Sell Silk to the Silk merchant for 60 coins (3,2) [Ardougne Easy Diary]
+  1ae6eb43b4: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 2}  # Sell Silk
+  # Check Probita for Pets [Ardougne Easy Diary]
+  32f66a521a: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 12}  # Pet Insurance
+  # Trade Aleck [Ardougne Easy Diary] and buy Butterfly Net, 10x Buttefly Jar, 3x Bird Snare, 1x Teasing Stick, 8x Box Traps
+  878eff54ac: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 11}  # Aleck's Hunter Emporium
+  # Have Sword Merchant Identify Sword [Ardougne Easy Diary] (If this fails you hit 1/100 go get another lad hop to)
+  b7acbb8e0b: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 7}  # Identify Sword
+  # Teleport to Essence Mine via right click Wizard Cromperty [Ardougne Easy Diary]
+  bb2456537a: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 0}  # Essence Mine
+  # Go out on the Fishing Trawler (W370) [Ardougne Easy Diary]
+  bb46987476: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 5}  # Fishing Trawler
+  # Pray at Altar [Ardougne Easy Diary]
+  ced9b7d639: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 4}  # Restore Prayer
+
+  # --- Ardougne Medium Diary ---
+  # Go back to fishing platform and fish a Shrimp/Anchovy [Ardougne Medium Diary]
+  6363852a0c: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 19}  # Fishing Platform
+  # Take 2x Cave nightshade during the quest [Ardougne Medium Diary]
+  89556ab302: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 21}  # Cave Nightshade
+  # Pickpocket a Master Farmer [Ardougne Medium Diary]
+  a9690e28cb: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 20}  # Pickpocket Master Farmer
+  # Upgrade the Iban Staff [Ardougne Medium Diary]
+  c90091af23: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 24}  # Iban Upgrade
+  # Teleport to Ardougne [Ardougne Medium Diary]
+  d115a7e7a9: {varplayer: ARDOUNGE_ACHIEVEMENT_DIARY, bit: 16}  # Teleport to Ardougne
+
+  # --- Fremennik Easy Diary ---
+  # Catch a Cerulean Twitch [Fremennik Easy Diary]
+  1cd93640e9: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 1}  # Catch a Cerulean Twitch
+  # Fill a bucket of Water at the Well [Fremennik Easy Diary]
+  25410eb45a: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 8}  # Fill bucket
+  # Make a tiara at the furnace west[Fremennik Easy Diary](Keep this Tiara)
+  278e6bc3b3: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 4}  # Craft Tiara
+  # Kill 5 Rock Crabs [Fremennik Easy Diary]
+  56053ed444: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 3}  # Kill 5 Rock Crabs
+  # Buy 10 Limestone bricks from the Stonemason Shop [Fremennik Easy Diary][Song of the Elves]
+  8d869697b8: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 5}  # Browse Stonemason's store
+  # Chop and burn some oak logs [Fremennik Easy Diary]
+  9c5a95a22f: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 10}  # Chop and burn
+  # Pick up 5 Snape Grass (Keep 1)[Fremennik Easy Diary]
+  a4ab43308b: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 6}  # Collect snape grass
+  # Steal a cake [Fremennik Easy Diary] (Drop this)
+  a67f413130: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 7}  # Steal from baker's stall
+
+  # --- Morytania Medium Diary ---
+  # Use the Garlic on the Restore Potion, then the crushed Silver to make a Guthix Balanace [Morytania Medium Diary]
+  0dc49c38ce: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 22}  # Guthix Balance
+  # Complete a game of Trouble Brewing [Morytania Medium Diary] (can skip this if no alt/friend/active world and do later)
+  1bec1dba76: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 17}  # Trouble Brewing
+  # Ectophial teleport [Morytania Medium Diary]
+  25929d82a3: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 21}  # Ectophial
+  # Complete a lap of Canifis Agility Course [Morytania Medium Diary]
+  2a040358e1: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 13}  # Canifis Rooftop Course
+  # Make cannonballs on the Furnance [Morytania Medium Diary]
+  2c57fd81ef: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 19}  # Cannonballs
+  # Cut a Hollow Tree [Morytania Medium Diary]
+  70ed1f0a64: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 14}  # Hollow Tree
+  # Kill a Terrordog [Morytania Medium Diary]
+  8e3e7412f7: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 16}  # Terror Dog
+  # Catch a Swamp Lizard [Morytania Medium Diary]
+  cd640b4e82: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 12}  # Swamp Lizard
+
+  # --- Desert Hard Diary ---
+  # Switch to Regular spells then back to Ancients [Desert Hard Diary]
+  3c52368ea0: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 30}  # Activate Ancient Magicks
+  # Mine a Granite [Kings Ransom][Desert Hard Diary]
+  47469d28b4: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 25}  # Mine Granite
+  # Smith a Mithril Platebody [Desert Hard Diary]
+  6a9f0e1dd0: {varplayer: DESERT_ACHIEVEMENT_DIARY2, bit: 1}  # Mithril Platebody
+  # Light a fire on the Mayor’s Balcony [Desert Hard Diary]
+  7d711a7cca: {varplayer: DESERT_ACHIEVEMENT_DIARY2, bit: 0}  # Burn Yew on Nardah Mayor's Balcony
+  # Kill a Dust Devil wearing the Slayer Helmet [Desert Hard Diary]
+  9ae9b685ca: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 29}  # Dust Devil
+  # Complete a lap of Pollnivneach Agility Course [Desert Hard Diary]
+  d857b0dc8c: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 28}  # Pollnivneach Rooftops
+  # Once off, wait for your character to drink a waterskin then cast Humidify [Desert Hard Diary]
+  dacc23d589: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 26}  # Refill Waterskins
+  # Return to the maze & kill the ranger Locus Rider nearby [Desert Hard Diary]
+  ec624b7e93: {varplayer: DESERT_ACHIEVEMENT_DIARY, bit: 31}  # Kill Locust Rider with Keris
+
+  # --- Kandarin Medium Diary ---
+  # Picklock the chest in Hemenster (in the building between the houses with the range and anvil icons, west of the Ranging Guild) [Kandarin Medium Diary]
+  25910e3b3e: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 23}  # Steal from Hemenster Chest
+  # Ardougne Cape Teleport->ALS [Kandarin Medium Diary]
+  43c14f7e58: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 24}  # Fairy Ring to McGrubor's Woods
+  # Enter Ranging Guild [Kandarin Medium Diary]
+  78c978705d: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 14}  # Enter the Ranging Guild
+  # Do 1 lap of Barbarian Agility [Kandarin Medium Diary]
+  c7530d2ea2: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 12}  # Barbarian Agility Course Lap
+
+  # --- Morytania Hard Diary ---
+  # Squeeze through the Ornate Railing by the trapdoor and go up and back down the agility shortcut. [Morytania Hard Diary]
+  535c33024a: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY2, bit: 1}  # Shortcut Over the Salve
+  # Enter the Nature Grotto & pray piety on the Altar [Morytania Hard Diary]
+  5d6683a425: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 30}  # Nature Grotto Piety
+  # Kill Cave Horrors until Black Mask drop. Train on Defensive until 680,000 Defence Experience. Once you get it head through the dungeon & cut & burn mahogany logs [Morytania Hard Diary]
+  92d1975ebc: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 28}  # Kill Cave Horror
+  # Head to the Slayer Tower and climb both of the Spike climbs [Morytania Hard Diary]
+  a44ebfd9da: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 24}  # Advanced Spike Chain
+  # Teleport to POH -> Kharyrll Portal [Morytania Hard Diary]
+  d5f893346c: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 23}  # Kharyrll Portal
+  # Complete a Hard Temple Trek [Morytania Hard Diary]
+  de295e9660: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 27}  # Hard Temple Trekk
+  # Mine a Mithril Deposit [Morytania Hard Diary]
+  eb23df1b8b: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY2, bit: 2}  # Haunted Mithril Ore
+
+  # --- Western Province Hard Diary ---
+  # Check Health on Palm Tree [Western Province Hard Diary]
+  1399c10797: {varplayer: WESTERN_ACHIEVEMENT_DIARY2, bit: 0}  # Lletya Palm tree
+  # Kill an elf with a crystal bow using your Bow of Faerdhinen [Western Province Hard Diary]
+  8c20db3ae7: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 25}  # Kill Elf With Crystal Bow
+  # Cut a Mahogany tree & burn the log [Western Province Hard Diary]
+  8e7ae639f4: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 30}  # Mahogany On Ape Atoll
+  # Complete Ape Atoll Agility Lap [Western Province Hard Diary]
+  b1e0ac8ded: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 29}  # Ape Atoll Agility Course
+  # Head East & Mine an Adamantite Ore [Western Province Hard Diary]
+  d6a3ac9f0c: {varplayer: WESTERN_ACHIEVEMENT_DIARY, bit: 31}  # Mine Adamantite in Tirannwn
+  # Teleport to Ape Atoll [Western Province Hard Diary] < Do this even if the lap is complete
+  df582594a9: {varplayer: WESTERN_ACHIEVEMENT_DIARY2, bit: 4}  # Teleport To Ape Atoll
+
+  # --- Falador Hard Diary ---
+  # Crack a wall safe [Falador Hard Diary]
+  e12858a75c: {varplayer: FALADOR_ACHIEVEMENT_DIARY2, bit: 1}  # The cat burglar
+
+  # --- Falador Medium Diary ---
+  # Telegrab a Wine of Zamorak [Falador Medium Diary]
+  41941109b7: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 12}  # Yoink!
+  # Head South to the Falador Loom & craft a basket & Strip of Cloth [Falador Medium Diary]
+  a5a0fe7f1d: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 24}  # I never knew this existed
+  # Head South & pray at the Guthix Altar [Falador Medium Diary]
+  e86a9f5feb: {varplayer: FALADOR_ACHIEVEMENT_DIARY, bit: 20}  # Initialising...
+
+  # --- Fremennik Hard Diary ---
+  # Get 100% approval from your kingdom. [Fremennik Hard Diary]
+  1c1e24f71c: {varplayer: FREMENNIK_ACHIEVEMENT_DIARY, bit: 28}  # Miscellania 100% Support
+
+  # --- Kandarin Hard Diary ---
+  # Kill a Shadowhound [Kandarin Hard Diary]
+  d017d062f6: {varplayer: KANDARIN_ACHIEVEMENT_DIARY2, bit: 0}  # Kill a Shadow Hound
+
+  # --- Kandarin Medium Diary, Family Crest Quest ---
+  # Fish for a Bass and cook it [Kandarin Medium Diary, Family Crest Quest]
+  d5f308d73a: {varplayer: KANDARIN_ACHIEVEMENT_DIARY, bit: 16}  # Catch and Cook Bass
+
+  # --- Morytania Easy Diary, Animal Magnetism ---
+  # Have Sbott tan a HARD leather & Soft Leather [Morytania Easy Diary, Animal Magnetism]
+  997eaa576d: {varplayer: MORYTANIA_ACHIEVEMENT_DIARY, bit: 5}  # Sbott Tanning Hide
+
+  # --- Varrock Hard Diary ---
+  # Teleport to Padewana [Varrock Hard Diary]
+  4ee8b5f623: {varplayer: VARROCK_ACHIEVEMENT_DIARY2, bit: 0}  # Teleport to Paddewwa
+  # Go through the pipe to Moss Giants [Varrock Hard Diary]
+  ead91bdf69: {varplayer: VARROCK_ACHIEVEMENT_DIARY2, bit: 6}  # Obstacle Pipe

@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+# Fixtures are frozen bytes. Never let git normalise them.
+tests/fixtures/** -text -diff

@@ -1,0 +1,30 @@
+# Guide phrase -> the wiki entities it means.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# For steps whose target is a *kind* of NPC rather than a named one:
+# "Pickpocket a man/woman" means every Man and every Woman in the area, and no
+# grammar can extract that -- the words are lowercase, plural in meaning, and
+# split by a slash. The wiki has both pages, each with every id the game uses
+# (18 for Man, 11 for Woman), so once a person says which entities the phrase
+# means, resolution is exact as usual.
+#
+# Matching is: the phrase appears in the step text, case-insensitively, as a
+# whole phrase. That is a human asserting "these words mean these entities",
+# not a similarity search. Keep the phrases long enough to be unambiguous --
+# "man" alone would match "Head to the swamp" via "Hea-d-man"... and worse,
+# would match every step mentioning a man in passing.
+#
+# Only add a phrase whose meaning does not change with context. If a phrase
+# means different NPCs in different banks, it belongs in overrides.yaml keyed
+# by step id instead.
+#
+# Validate with:  python pipeline/merge_curated.py --check-entity-aliases
+
+aliases:
+  # Matching is case-insensitive, so one spelling covers the guide's variants.
+  "a man/woman":
+    - Man
+    - Woman
+  "a guard":
+    - Guard

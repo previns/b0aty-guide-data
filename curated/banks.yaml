@@ -1,0 +1,5 @@
+# HUMAN-EDITED. Bank name -> [x, y, plane].
+# RuneLite ships no bank table, so this is the one coordinate set written by hand.
+# Only add a bank you have actually stood in. An absent bank shows no map marker,
+# which is a fine outcome.
+banks: {}

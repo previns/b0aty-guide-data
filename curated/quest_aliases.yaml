@@ -1,0 +1,55 @@
+# Guide shorthand -> RuneLite `Quest` enum display name.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# Every value below is verified to exist in net.runelite.api.Quest. A value that
+# does not match the enum exactly is a bug, not an approximation -- merge_curated
+# fails the build rather than accepting one. Run:
+#
+#   python pipeline/merge_curated.py --check-aliases
+#
+# Tags NOT listed here stay unresolved on purpose. Many bracket tags in the guide
+# are not quests at all ("[35% fire weakness - bring fire runes]") and must not
+# be forced into this table.
+
+aliases:
+  # Apostrophes and articles the guide drops
+  "Dorics Quest": "Doric's Quest"
+  "Knights Sword": "The Knight's Sword"
+  "Knight's Sword": "The Knight's Sword"
+  "My Arms Big Adventure": "My Arm's Big Adventure"
+  "Restless Ghost": "The Restless Ghost"
+  "Grand Tree": "The Grand Tree"
+  "Tourist Trap": "The Tourist Trap"
+  "Hand in the Sand": "The Hand in the Sand"
+  "Depths of Despair": "The Depths of Despair"
+  "Eyes of Glouphrie": "The Eyes of Glouphrie"
+  "Forsaken Tower": "The Forsaken Tower"
+  "Fremennik Trials": "The Fremennik Trials"
+  "Digsite Quest": "The Dig Site"
+  "Ides of Milk": "The Ides of Milk"
+
+  # Numbered sequels the guide writes unnumbered
+  "Dragon Slayer": "Dragon Slayer I"
+  "Desert Treasure": "Desert Treasure I"
+
+  # Abbreviations and alternate spellings
+  "Mournings End Pt 1": "Mourning's End Part I"
+  "Mournings End Pt 2": "Mourning's End Part II"
+  "Mournings End pt 2": "Mourning's End Part II"
+  "Fairy Tale Part I": "Fairytale I - Growing Pains"
+  "Fairytale Part I": "Fairytale I - Growing Pains"
+  "In Search of Myreque": "In Search of the Myreque"
+  "Family Crest Quest": "Family Crest"
+  "Watchtower Quest": "Watchtower"
+  "Skippy & The Mogres": "Skippy and the Mogres"
+  "Garden of Tranquility": "Garden of Tranquillity"
+
+# Tags reviewed and deliberately left unresolved, with the reason. Recording
+# these stops them reappearing at the top of every regenerated worklist.
+not_a_quest:
+  "Giants Foundry": "a minigame, not a quest -- no Quest enum entry"
+  "Lamp on Herblore": "an instruction about lamp usage"
+  "Birdhouse Runs": "a recurring activity"
+  "Optional": "a marker, not a tag"
+  "Yellow Dyes": "an item note"

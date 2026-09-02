@@ -1,0 +1,104 @@
+name: Sync guide from wiki
+
+on:
+  schedule:
+    # 05:20 UTC daily. Off the hour, to be a polite API client.
+    - cron: "20 5 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Rebuild even if the wiki revision is unchanged"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: wiki-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Fetch wikitext
+        id: fetch
+        run: |
+          set +e
+          python pipeline/fetch.py --if-changed-from dist/source.json
+          code=$?
+          set -e
+          if [ "$code" = "3" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          elif [ "$code" = "0" ] || [ "$code" = "3" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            exit $code
+          fi
+
+      # The wiki page is unchanged, so there is nothing to build. Every other
+      # step is skipped and no PR is opened.
+      - name: Up to date
+        if: steps.fetch.outputs.changed == 'false'
+        run: echo "Wiki revision unchanged; nothing to do."
+
+      - name: Build
+        if: steps.fetch.outputs.changed == 'true'
+        run: |
+          python pipeline/fetch.py
+          python pipeline/parse.py
+          python pipeline/annotate.py
+          python pipeline/build_locations.py
+          python pipeline/resolve_wiki.py
+          python pipeline/merge_curated.py
+          python pipeline/emit.py
+          python pipeline/worklist.py
+          python -c "import json;print('REVID='+str(json.load(open('dist/guide.json',encoding='utf-8'))['sourceRevid']))" >> "$GITHUB_ENV"
+
+      # Runs before the PR is opened, so a regression fails the job loudly
+      # instead of arriving as a green pull request nobody reads closely.
+      - name: Validate
+        if: steps.fetch.outputs.changed == 'true'
+        run: python pipeline/validate.py --tolerance 2
+
+      - name: Regression tests
+        if: steps.fetch.outputs.changed == 'true'
+        run: python -m pytest tests -q
+
+      - name: Write PR body
+        if: steps.fetch.outputs.changed == 'true'
+        run: |
+          cp build/wikitext.json dist/source.json
+          python pipeline/release_notes.py --ref HEAD
+
+      - name: Open pull request
+        if: steps.fetch.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: wiki-sync
+          base: main
+          title: "Wiki sync: revision ${{ env.REVID }}"
+          body-path: build/pr-body.md
+          commit-message: "Sync guide data from the wiki"
+          add-paths: |
+            dist/
+            data/
+            docs/curation-worklist.md
+            curated/locations.generated.yaml
+          labels: wiki-sync
+          delete-branch: true
+          # Deliberately no auto-merge. A human reads the step diff before
+          # thousands of players see a changed route.

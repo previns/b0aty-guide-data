@@ -1,0 +1,117 @@
+# Guide category word -> a Quest Helper ItemCollections constant.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# The guide often names a *category* rather than an item: "Withdraw: Pickaxe"
+# means any pickaxe you own. No wiki page called "Pickaxe" carries an item id,
+# so these can never resolve through resolve_wiki.py -- correctly, since there
+# is no single right answer. Quest Helper already maintains the closed sets, in
+# order from best tier to worst, and build_atlas.py extracts them.
+#
+# Mapping a guide word onto a set is a judgement about what the guide MEANT,
+# which is why it is here and not in a script.
+#
+# Every constant below was checked against build/atlas.json by listing its
+# members, not from memory. Validate with:
+#
+#   python pipeline/merge_curated.py --check-collections
+#
+# The rule for adding a row: the guide's word must mean "any of these, take the
+# best you have". If it means one specific item, it is an alias, not a
+# collection, and does not belong here.
+#
+# A row may name one collection or a list of them, and a list entry may name a
+# wiki entity instead where no collection exists -- Quest Helper has no law
+# rune collection, so "Teleport Runes" mixes the two.
+
+collections:
+  # Tools. The guide never specifies a tier -- you bring what you have.
+  "Pickaxe": PICKAXES
+  "Axe": AXES
+
+  # Jewellery with charges. Every dose is a distinct item id, so a single id
+  # would break the moment a charge is used.
+  "Duelling Ring": RING_OF_DUELINGS
+  "Ring of Duelling": RING_OF_DUELINGS
+  "Games Necklace": GAMES_NECKLACES
+  "Games necklace": GAMES_NECKLACES
+
+  # Ardougne cloak: five tiers, and the guide uses the shorthand constantly.
+  # ARDY_CLOAKS holds the four diary capes plus the max cape.
+  "Ardy Cloak": ARDY_CLOAKS
+  "Ardougne Cloak": ARDY_CLOAKS
+  "Ardy Cape": ARDY_CLOAKS
+  "Ardougne Cape Teleport": ARDY_CLOAKS
+
+  # AIR_STAFF also covers the combination staves (smoke, dust, mist), which is
+  # right: any of them casts air spells, which is why the guide asks for one.
+  "Air Staff": AIR_STAFF
+
+  # ANTIFIRE_SHIELDS includes the plain anti-dragon shield, so the guide's two
+  # spellings both land correctly.
+  "Antifire Shield": ANTIFIRE_SHIELDS
+  "Antidragon Shield": ANTIFIRE_SHIELDS
+  "Antidragon fire Shield": ANTIFIRE_SHIELDS
+
+  # CATS is the superset and contains the wily and lazy variants.
+  "Cat": CATS
+  "Wily Cat": CATS
+
+  "Antipoison": ANTIPOISONS
+  "Prayer Potions": PRAYER_POTIONS
+  "Stamina Potions": STAMINA_POTIONS
+  "Super Restores": SUPER_RESTORE_POTIONS
+
+  # "Food" means "bring something that heals". GOOD_EATING_FOOD is Quest
+  # Helper's list for exactly that.
+  "Food": GOOD_EATING_FOOD
+  "food": GOOD_EATING_FOOD
+
+  # The runes the standard teleport spells need: law, plus the four elements.
+  # Which subset a given teleport uses depends on the destination and the step
+  # does not say, so the honest answer is all of them -- the bank tag shows
+  # every rune you might need rather than guessing at one spell.
+  #
+  # The elemental entries are collections rather than single ids on purpose:
+  # AIR_RUNE also covers mist, smoke and dust runes, so a combination rune in
+  # the bank shows up as the air rune it also is.
+  "Teleport Runes":
+    - Law Runes
+    - AIR_RUNE
+    - EARTH_RUNE
+    - FIRE_RUNE
+    - WATER_RUNE
+  "Varrock Teleport Runes":
+    - Law Runes
+    - AIR_RUNE
+    - FIRE_RUNE
+  "Combat Runes":
+    - AIR_RUNE
+    - EARTH_RUNE
+    - FIRE_RUNE
+    - WATER_RUNE
+  "Law": Law Runes
+
+  # The wiki's "Wine" is a disambiguation page, so it resolves to nothing. The
+  # guide means the drinkable one it trains Prayer and Combat with.
+  "Wines": Jug of wine
+  "Wine": Jug of wine
+
+  # Not an item but a technique, and the guide names it in an item position.
+  # It is done one of two ways -- knife on a teak log, or guam with swamp tar
+  # and a pestle and mortar -- so the row lists what either needs. Same
+  # reasoning as the teleport runes: the step does not say which method, so
+  # showing everything beats guessing at one.
+  "Tick Manipulation":
+    - Knife
+    - Teak logs
+    - Guam
+    - Swamp tar
+    - Pestle and mortar
+
+# Deliberately NOT mapped, with the reason. These stay unresolved on purpose --
+# a wrong expansion here would show the player the wrong items in their bank.
+#
+#   Combat Gear (7x)      Quest Helper itself declares this as id -1, i.e.
+#                         "the player knows". There is no set to point at.
+#   Crystal Armour (4x)   No collection exists, and the pieces differ by slot.

@@ -1,0 +1,7 @@
+# HUMAN-EDITED. Per-step fixes keyed by step id. Merged last, always wins.
+# Scripts read this file and must never write to it.
+#
+# steps:
+#   a1b2c3d4e5:
+#     target: {name: "Foo", kind: npc, ids: [123], points: [[3200,3200,0]], confidence: manual}
+steps: {}

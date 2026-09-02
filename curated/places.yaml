@@ -1,0 +1,63 @@
+# Guide destination spelling -> a place name that already resolves.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# Note what this file is NOT: a list of coordinates. Every value below is a
+# name that resolves through an existing authority -- a RuneLite world-map enum
+# or a wiki page with a {{Map}} -- so nothing here can put a marker somewhere
+# the pipeline could not already justify. A value that stops resolving fails
+# the build rather than silently freezing at whatever it meant last year.
+#
+# Validate with:  python pipeline/merge_curated.py --check-places
+#
+# Only add a row where the guide's spelling means one specific place. If it
+# means different places in different banks, use overrides.yaml keyed by step
+# id instead.
+
+aliases:
+  # The guide's typos. The wiki has no redirect for these, so resolve_wiki
+  # cannot reach them the way it reaches "Gertude" -> Gertrude.
+  "Civitis Illa Fortis": "Civitas illa Fortis"
+  "Padewana": "Paddewwa"
+  "Enakhrah": "Enakhra's Temple"
+
+  # Shorthand the guide uses for a longer name.
+  "Emir": "Emir's Arena"
+  "Ikov Temple": "Temple of Ikov"
+
+  # "Ferox" resolves to an NPC of that name, and destinations exclude NPCs on
+  # purpose -- the ring of dueling goes to the enclave, not to a person. The
+  # NPC happens to stand near it, which is exactly the kind of coincidence
+  # that would make a wrong rule look right.
+  "Ferox": "Ferox Enclave"
+
+  # The games necklace's "Burthorpe" option lands at the games room, and the
+  # guide means that teleport. The wiki's Burthorpe page marks four spots
+  # around the town, which left the destination ambiguous and drew no marker
+  # at all -- the landing point is the one coordinate that is actually true.
+  "Burthorpe": "Burthorpe Games Room"
+  "Burthrope": "Burthorpe Games Room"
+
+  # A fairy ring code with the words "fairy ring" left attached, so the code
+  # itself never matched. The rings are a fixed published table and already
+  # resolve on their own.
+  "AKR Fairy Ring": "AKR"
+  "BKR fairy ring": "BKR"
+
+# Deliberately NOT mapped, with the reason. These stay unresolved on purpose:
+#
+#   POH, House, Outside POH, Player Owned House
+#       A player-owned house is wherever that player put it. There is no
+#       coordinate to give, and guessing Rimmington would send half the
+#       readers to the wrong town.
+#
+#   Anywhere (3x), Minigame, Recharge Prayer, Run North, Huge Gate
+#       Not places. The extraction grammar took a fragment of the sentence,
+#       and no name would make them resolvable.
+#
+#   Sheep Herder, Fishing Contest, South Complete Dwarf Cannon
+#       Quest names sitting in a destination position, not somewhere to walk.
+#
+#   Suffering, Scorching Bow, Stiletto Fortre, Uncleaned find, Sunbeam ale
+#       Items, read as destinations because the guide writes shopping and
+#       crafting orders with the same "A -> B" arrow it uses for teleports.

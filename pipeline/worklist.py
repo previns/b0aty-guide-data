@@ -1,0 +1,208 @@
+"""Generate the human curation worklist.
+
+Everything the rules could not resolve, sorted by how many steps it affects, with
+fuzzy suggestions attached.
+
+Fuzzy matching is banned in the pipeline because a machine that must answer will
+invent an answer. It is fine *here*, because the output is a worksheet a person
+approves line by line before anything reaches curated/. Suggestions never flow
+into guide.json on their own.
+"""
+from __future__ import annotations
+
+import argparse
+import difflib
+import json
+import re
+import sys
+from collections import Counter
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO))
+
+from pipeline.build_locations import normalise  # noqa: E402
+
+
+def load_locations(path: Path) -> dict[str, list[tuple[str, str]]]:
+    """Read the generated YAML without a yaml dependency -- it is our own
+    fixed-shape output, not arbitrary YAML."""
+    out: dict[str, list[tuple[str, str]]] = {}
+    name = kind = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = re.match(r'\s*- name: (".*")', line)
+        if m:
+            name = json.loads(m.group(1))
+        m = re.match(r"\s*kind: (\S+)", line)
+        if m:
+            kind = m.group(1)
+        m = re.match(r'\s*key: (".*")', line)
+        if m and name:
+            out.setdefault(json.loads(m.group(1)), []).append((name, kind or "?"))
+    return out
+
+
+def load_quests(path: Path) -> dict[str, str]:
+    text = path.read_text(encoding="utf-8")
+    return {
+        normalise(name): name
+        for name in re.findall(r'\(\s*\d+\s*,\s*"([^"]+)"\s*\)', text)
+    }
+
+
+def suggest(term: str, pool: list[str], n: int = 3) -> list[str]:
+    return difflib.get_close_matches(normalise(term), pool, n=n, cutoff=0.62)
+
+
+def load_qh_hints(path: Path) -> list[tuple[tuple[int, int, int], str]]:
+    if not path.exists():
+        return []
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    out = []
+    for key, descriptions in payload.get("points", {}).items():
+        point = tuple(int(v) for v in key.split(","))
+        for description in descriptions:
+            out.append((point, description))
+    return out
+
+
+def qh_candidates(
+    name: str, hints: list[tuple[tuple[int, int, int], str]], limit: int = 3
+) -> tuple[list[str], int]:
+    """Quest Helper coordinates whose description names this place.
+
+    Whole-word matching only. Substring matching is what makes "Ardy" hit
+    "hardy gout tubers"; the word boundary costs nothing and removes that
+    entire class of false friend. The count of distinct points is reported
+    alongside, because a name with 19 of them is a decision, not an answer.
+    """
+    if len(name) < 4:
+        return [], 0
+    pattern = re.compile(rf"\b{re.escape(name)}\b", re.I)
+    matches = [(point, text) for point, text in hints if pattern.search(text)]
+    if not matches:
+        return [], 0
+
+    distinct = Counter(point for point, _ in matches)
+    rendered = []
+    for point, count in distinct.most_common(limit):
+        example = next(t for p, t in matches if p == point)
+        rendered.append(f"`{point[0]},{point[1]},{point[2]}` ×{count} — {example[:52]}")
+    return rendered, len(distinct)
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--annotated", type=Path, default=REPO / "build" / "annotated.json")
+    ap.add_argument("--locations", type=Path, default=REPO / "curated" / "locations.generated.yaml")
+    ap.add_argument("--quests", type=Path, default=REPO / "build" / "runelite" / "Quest.java")
+    ap.add_argument("--qh-hints", type=Path, default=REPO / "build" / "qh_hints.json")
+    ap.add_argument("--out", type=Path, default=REPO / "docs" / "curation-worklist.md")
+    args = ap.parse_args()
+
+    locations = load_locations(args.locations)
+    hints = load_qh_hints(args.qh_hints)
+    quests = load_quests(args.quests)
+    loc_keys = list(locations)
+    quest_keys = list(quests)
+
+    doc = json.loads(args.annotated.read_text(encoding="utf-8"))
+    steps = [st for s in doc["sections"] for st in s["steps"]]
+
+    destinations: Counter[str] = Counter()
+    tags: Counter[str] = Counter()
+    examples: dict[str, str] = {}
+
+    for step in steps:
+        ann = step.get("annotation", {})
+        if ann.get("intent") == "nav":
+            for value in (ann.get("targetName"), ann.get("destination")):
+                if value:
+                    destinations[value] += 1
+                    examples.setdefault(value, step["raw"])
+        for tag in ann.get("tags", []):
+            tags[tag] += 1
+            examples.setdefault(tag, step["raw"])
+
+    unresolved_dest = [d for d in destinations if normalise(d) not in locations]
+    unresolved_tags = [
+        t
+        for t in tags
+        if normalise(t) not in quests and "diary" not in t.lower()
+    ]
+
+    lines: list[str] = [
+        "# Curation worklist",
+        "",
+        "Generated by `pipeline/worklist.py`. Regenerate after every wiki sync.",
+        "",
+        "Each row is something the rules could not resolve. Suggestions come from",
+        "fuzzy matching and are **not** authoritative -- confirm or reject each one,",
+        "then write the confirmed mapping into `curated/aliases.yaml`. Rows left",
+        "alone stay unresolved, which is a valid outcome: an unresolved nav step",
+        "simply shows no map marker.",
+        "",
+        "Sorted by step count, so the top of each table is where the value is.",
+        "",
+        "## Navigation destinations",
+        "",
+        f"{len(unresolved_dest)} unresolved of {len(destinations)} distinct, "
+        f"covering {sum(destinations[d] for d in unresolved_dest)} of "
+        f"{sum(destinations.values())} nav steps.",
+        "",
+        "Quest Helper candidates are whole-word matches against its step",
+        "descriptions. `xN` is how many QH steps use that point. Where a name has",
+        "several distinct points, that is a decision to make, not an answer to",
+        "copy: \"Burthorpe\" appears at 19 different coordinates.",
+        "",
+        "| Steps | Destination | RuneLite guess | Quest Helper candidates | Example step |",
+        "|------:|-------------|----------------|-------------------------|--------------|",
+    ]
+
+    for dest in sorted(unresolved_dest, key=lambda d: (-destinations[d], d)):
+        hits = suggest(dest, loc_keys)
+        names = []
+        for key in hits:
+            names.extend(f"{n} ({k})" for n, k in locations[key][:1])
+        candidates, distinct = qh_candidates(dest, hints)
+        qh_cell = "<br>".join(candidates) if candidates else "—"
+        if distinct > len(candidates):
+            qh_cell += f"<br>*(+{distinct - len(candidates)} more distinct points)*"
+        example = examples.get(dest, "").replace("|", r"\|")[:70]
+        lines.append(
+            f"| {destinations[dest]} | `{dest}` | {'; '.join(names) or '—'} "
+            f"| {qh_cell} | {example} |"
+        )
+
+    lines += [
+        "",
+        "## Quest and diary tags",
+        "",
+        f"{len(unresolved_tags)} tags do not match RuneLite's `Quest` enum and are "
+        "not diary tags.",
+        "",
+        "Some of these are not quests at all (`[35% fire weakness - bring fire runes]`)",
+        "and should stay unresolved. Only map the ones that are genuinely quests.",
+        "",
+        "| Steps | Tag | Suggestions |",
+        "|------:|-----|-------------|",
+    ]
+
+    for tag in sorted(unresolved_tags, key=lambda t: (-tags[t], t)):
+        hits = suggest(tag, quest_keys)
+        names = "; ".join(quests[h] for h in hits)
+        lines.append(f"| {tags[tag]} | `{tag}` | {names or '—'} |")
+
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    print(f"nav destinations   {len(unresolved_dest):4d} unresolved / {len(destinations)} distinct")
+    print(f"  with a suggestion{sum(1 for d in unresolved_dest if suggest(d, loc_keys)):4d}")
+    print(f"quest tags         {len(unresolved_tags):4d} unresolved / {len(tags)} distinct")
+    print(f"  with a suggestion{sum(1 for t in unresolved_tags if suggest(t, quest_keys)):4d}")
+    print(f"\nwrote {args.out}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

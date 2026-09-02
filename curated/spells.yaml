@@ -1,0 +1,43 @@
+# Guide destination -> the spellbook entry that gets you there.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# For steps like "Teleport to Varrock" the guide names where it wants you and
+# not how, because on the standard spellbook there is only one answer. This
+# says which spell that is, so the plugin can ring it in the spellbook the way
+# it rings the cloak in your inventory.
+#
+# Every value is a constant in net.runelite.api.gameval.InterfaceID.MagicSpellbook,
+# checked against the ids extracted from the client jar. Validate with:
+#
+#   python pipeline/merge_curated.py --check-spells
+#
+# Only the standard spellbook. A destination reached by jewellery has an item
+# to ring instead, and one reached several ways is not a single spell -- if the
+# guide starts naming Ancient or Lunar teleports those want their own rows and
+# their own thought about which spellbook the player is on.
+
+spells:
+  "Varrock": VARROCK_TELEPORT
+  "Lumbridge": LUMBRIDGE_TELEPORT
+  "Falador": FALADOR_TELEPORT
+  "Camelot": CAMELOT_TELEPORT
+  "Ardougne": ARDOUGNE_TELEPORT
+  "Kourend Castle": KOUREND_TELEPORT
+  "Civitas Illa Fortis": FORTIS_TELEPORT
+  "Watchtower": WATCHTOWER_TELEPORT
+  "Trollheim": TROLLHEIM_TELEPORT
+  "Ape Atoll": APE_TELEPORT
+
+  # The house teleport, however the guide spells it. Where the house is does
+  # not matter here -- this is the spell to click, not a coordinate.
+  "POH": TELEPORT_TO_YOUR_HOUSE
+  "House": TELEPORT_TO_YOUR_HOUSE
+  "Player Owned House": TELEPORT_TO_YOUR_HOUSE
+
+# Deliberately NOT mapped:
+#
+#   Burthorpe, Castle Wars, Emir's Arena
+#       Jewellery, not spells. The guide reaches these with a games necklace or
+#       a ring of dueling, and where it names the item the inventory highlight
+#       already covers it.
