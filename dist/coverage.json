@@ -2,19 +2,19 @@
   "totalSteps": 2925,
   "sections": 236,
   "episodes": 24,
-  "stepsWithTarget": 1617,
-  "stepsWithTargetIds": 837,
-  "stepsWithTargetPoints": 857,
-  "stepsWithDestination": 298,
-  "stepsWithQuestTag": 400,
-  "itemMentions": 1742,
-  "itemsResolved": 1540,
+  "stepsWithTarget": 1540,
+  "stepsWithTargetIds": 888,
+  "stepsWithTargetPoints": 969,
+  "stepsWithDestination": 421,
+  "stepsWithQuestTag": 421,
+  "itemMentions": 2212,
+  "itemsResolved": 1921,
   "pct": {
-    "target": 55.28,
-    "targetIds": 28.62,
-    "targetPoints": 29.3,
-    "destination": 10.19,
-    "questTag": 13.68,
-    "items": 88.4
+    "target": 52.65,
+    "targetIds": 30.36,
+    "targetPoints": 33.13,
+    "destination": 14.39,
+    "questTag": 14.39,
+    "items": 86.84
   }
 }

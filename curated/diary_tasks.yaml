@@ -527,3 +527,7 @@ tasks:
   4ee8b5f623: {varplayer: VARROCK_ACHIEVEMENT_DIARY2, bit: 0}  # Teleport to Paddewwa
   # Go through the pipe to Moss Giants [Varrock Hard Diary]
   ead91bdf69: {varplayer: VARROCK_ACHIEVEMENT_DIARY2, bit: 6}  # Obstacle Pipe
+  # Untagged in the guide -- the wiki step carries no [Varrock Easy Diary]
+  # bracket, so it never reached curation at all. Bit from quest-helper's own
+  # VarrockEasy helper (notDogBone, bit 9), not inferred from the task order.
+  "3ad09c7fc7": {varplayer: VARROCK_ACHIEVEMENT_DIARY, bit: 9}   # bones on the Stray Dog

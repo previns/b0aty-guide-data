@@ -32,6 +32,29 @@ SCHEMA_VERSION = 1
 MIGRATION_THRESHOLD = 0.85
 
 
+# How far apart a set of coordinates may be and still describe one place.
+#
+# A town is about this across. Beyond it they are not one place with a fuzzy
+# middle, they are several, and a marker on each is the world map covered in
+# pins -- ninety-one of them for "Use the Deposit box by Entrana", ten thousand
+# tiles apart. The rule for entities has always been that ambiguity is
+# unresolved rather than first-match; this is that rule applied to one entity's
+# coordinates. The ids stay, so whichever deposit box is in the room is still
+# outlined. Only the claim to know where on the map it is goes away.
+ONE_PLACE = 64
+
+
+def scattered(points: list) -> bool:
+    """Whether coordinates disagree about where the step is sending the player."""
+    if len(points) < 2:
+        return False
+    xs = [p[0] for p in points if len(p) >= 2]
+    ys = [p[1] for p in points if len(p) >= 2]
+    if not xs:
+        return False
+    return max(max(xs) - min(xs), max(ys) - min(ys)) > ONE_PLACE
+
+
 RE_LINK = re.compile(r"\[\[(?P<target>[^\]|]+)(?:\|(?P<label>[^\]]*))?\]\]")
 
 
@@ -145,6 +168,11 @@ def project(doc: dict) -> dict:
                 out["videoIds"] = step["videoIds"]
             merged = step.get("merged") or {}
             out.update(merged)
+            target = out.get("target")
+            if target is not None:
+                # Last, so it sees the points every earlier pass and the curated
+                # overrides settled on.
+                target["scattered"] = scattered(target.get("points") or [])
             steps.append(out)
 
         sections.append(
@@ -182,6 +210,7 @@ def project(doc: dict) -> dict:
         # Quest Helper's step list for the quests some step references, stored
         # once here and referenced by key from the steps themselves.
         "questHelpers": doc.get("questHelpers", {}),
+        "diaryTasks": doc.get("diaryTasks", {}),
         # sha256 per screenshot, so the plugin can refuse bytes that do not
         # match what was hashed at build time. The host allowlist stops a link
         # pointing at another server; this stops the picture behind an

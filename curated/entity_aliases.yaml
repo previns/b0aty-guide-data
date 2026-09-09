@@ -28,3 +28,7 @@ aliases:
     - Woman
   "a guard":
     - Guard
+  # "Get a haircut North [Falador Easy Diary]" names the errand, never the
+  # person, so there was nothing to highlight and nowhere to walk.
+  "get a haircut":
+    - Hairdresser

@@ -57,6 +57,20 @@ each still writing its own artifact.
 `validate.py` reads `dist/guide.json`, so it runs **after** emit. Running it
 before reports the previous build's numbers and looks like a no-op change.
 
+`audit.py` reads it too, and asks a different question. `validate` asks whether
+the file is well-formed and whether coverage slipped. `audit` asks **where the
+data says something the plugin will act on and be wrong about** -- a boundary
+past the end of its quest, a branch condition carrying a constant name the
+plugin cannot look up, a shopkeeper with no ids, template braces that reached
+the overlay as part of a step's words. Every check is there because some
+mechanism trusts that field, and each failure is invisible from inside the
+client.
+
+A count of zero in its output is worth as much as a count of ten: it is the
+evidence a class of bug is gone rather than unexamined. It fixes nothing --
+a finding is either a rule to change or a row for `curated/`, and both are
+decisions.
+
 Run any stage against the frozen fixture instead of the network:
 
 ```
@@ -189,9 +203,33 @@ A reworded step gets a new id and is carried by `migrations`; a deleted step is
 pruned. A step that moves to a different section also gets a new id and will
 *not* migrate -- the section slug is part of the hash.
 
-Coverage as of 2026-09-01, revid 15326606: target 55.28%, targetIds 28.62%,
-targetPoints 29.30%, destination 10.19%, questTag 13.68%, items 88.40%.
+Coverage as of 2026-09-03, revid 15326606: target 59.86%, targetIds 30.02%,
+targetPoints 32.65%, destination 12.41%, questTag 14.36%, items 85.81%.
 `validate.py` prints these and fails on a regression worse than 2 points.
+
+**The items figure fell while the plugin got better**, and the baseline was
+rewritten deliberately once, on 2026-09-03. Item extraction was widened from
+withdraw lists alone to buy lists, slash-joined names and drops named after a
+kill. Mentions went 1,742 -> 2,100 and resolved went **1,540 -> 1,802**: 262
+more items the plugin can actually ring. The ratio fell from 88.40% to 85.81%
+because the new mentions are harder, not because anything stopped working.
+
+A ratio across a changed denominator is not a comparison. Record both numbers.
+Rewriting the baseline to make a gate pass is otherwise exactly the thing rule
+5 forbids, so it needs a reason written down like this one -- and the resolved
+*count* must go up, or it is not this situation.
+
+**The target figure fell 7.45 points on 2026-09-03, the second deliberate
+rewrite.** 222 steps carried a target of kind `quest` -- "Complete Knights
+Sword" resolved to a thing called "Knights Sword" with no ids and no
+coordinates. No npc and no piece of scenery is ever named that, so it matched
+nothing in any scene; it only made the step look answered and inflated this
+figure. Dropping them took `target` from 59.86% to 52.41%.
+
+Every figure that measures capability rose in the same build: targetIds 30.02 ->
+30.15, targetPoints 32.65 -> 32.75, destination 12.41 -> 14.39, items 85.81 ->
+86.27. Nothing the plugin could act on was lost -- only entries it could not.
+That is the same shape as the item rewrite above and it passes the same test.
 
 ## Annotation grammar
 
@@ -252,6 +290,26 @@ text moved.
 
 Never add an open-ended entity list here. NPC and object names are unbounded and
 belong to runtime matching.
+
+## What the guide does not say
+
+Two things were attempted, measured and rejected. Both are recorded so nobody
+re-derives them from scratch.
+
+**A running "what you should be carrying" across banks.** The guide says
+"deposit all" at 32 of its 211 banks, says nothing about depositing at 165, and
+mentions depositing only some things at 14. Carrying withdrawals forward and
+resetting at each deposit-all still reaches **60 items at 61 banks** -- more
+than an inventory holds. It would tell players they are missing forty things.
+
+**The worn-gear subset of the same idea**, on the reasoning that "wield it" is
+a commitment the guide does make. 29 steps say wield, equip or wear, but only
+**1** carries its own resolved item: the guide names the gear in prose the
+extraction does not reach, or names it a step earlier. Not enough to build on.
+
+`depositsAll` is still emitted (39 steps) because it is correct and cheap. If
+the wield steps ever resolve their items, the carry-forward becomes possible;
+until then it is not derivable from the text.
 
 ## Testing
 

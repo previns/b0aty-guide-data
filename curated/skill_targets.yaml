@@ -39,6 +39,10 @@ targets:
   "d230a48cbb": {skill: FARMING, level: 62}         # Tithe Farm until 62
 
   # --- the rest ---
+  # Carries a diary tag too, and both have to hold. The Lumbridge easy task
+  # can be finished below level 5, so the diary bit alone ticked this step
+  # while the player still had training left to do.
+  "0f6d8ccd8b": {skill: AGILITY, level: 5}          # Train Draynor Agility to 5
   "07cb234767": {skill: THIEVING, level: 50}        # Blackjack to 50
   "3ee93ec9af": {skill: MAGIC, level: 51}           # alchemy room until 51
   "a2312d14da": {skill: CONSTRUCTION, level: 26}    # Mahogany Homes until 26

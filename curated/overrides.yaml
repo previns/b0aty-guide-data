@@ -4,4 +4,283 @@
 # steps:
 #   a1b2c3d4e5:
 #     target: {name: "Foo", kind: npc, ids: [123], points: [[3200,3200,0]], confidence: manual}
-steps: {}
+steps:
+  # Source-verified stopping points authorised by the guide author, 2026-09-06.
+  # References are to helpers/quests in the vendored Quest Helper source.
+  # These are exact objectives, not the value of the route's next quest visit.
+  # Biohazard: Elena supplies all four before loadSteps moves to the Chemist.
+  dea73557d9:
+    questStopItems:
+      - {name: Plague sample, count: 1, ids: [418]}
+      - {name: Ethenea, count: 1, ids: [415]}
+      - {name: Liquid honey, count: 1, ids: [416]}
+      - {name: Sulphuric broline, count: 1, ids: [417]}
+  # SheepHerder: allSheepBurned; the main quest value stays at 2 throughout.
+  a3b6b9a8bf:
+    questStopCondition:
+      all:
+        - {var: {kind: varbit, id: 2233, value: 6}}
+        - {var: {kind: varbit, id: 2234, value: 6}}
+        - {var: {kind: varbit, id: 2232, value: 6}}
+        - {var: {kind: varbit, id: 2231, value: 6}}
+  # DwarfCannon.loadSteps: 9 -> talkToNulodion at Ice Mountain.
+  fe0dcd380a:
+    questStopValue: 9
+  # TribalTotem: 2 -> GPDT employee, 3 -> Wizard Cromperty (conversation done).
+  7563452209:
+    questStopValue: 3
+  # WaterfallQuest item requirements: both tomb rewards, not quest completion.
+  7976f276ec:
+    questFollow: true
+    questStopItems:
+      - {name: "Glarial's amulet", count: 1, ids: [295]}
+      - {name: "Glarial's urn", count: 1, ids: [296]}
+  # PrinceAliRescue: 100 -> returnToHassan; the prince has been freed.
+  6a8042b855:
+    questStopValue: 100
+  # PrinceAliRescue: "until you need to return to Osman". Current QH has no
+  # return-to-Osman step -- it makes the key at a furnace -- and varplayer 273
+  # cannot separate the middle of the quest: values 20, 30, 31, 32, 33, 40 and
+  # 50 all map to the same Ned step. So this has to be an item goal. Osman
+  # historically made the key from the imprint, making the print the handover.
+  # ItemID KEYPRINT = 2423. Authorised by the guide author, 2026-09-08.
+  f769b86e2b:
+    questStopItems:
+      - {name: Key print, count: 1, ids: [2423]}
+  # Biohazard: 14 -> tell Elena the plague is a hoax, not finish with Lathas.
+  9eb23a8187:
+    questStopValue: 14
+  # FairytaleII.setupConditions: talkedToGodfather >= 40, comment explicitly
+  # identifies this as the conversation unlocking fairy rings.
+  08c9e5d5ae:
+    questStopValue: 40
+  # TheGiantDwarf: 0 boatman -> 5 Veldaban inside Keldagrim after arrival.
+  a9c99f5511:
+    questStopValue: 5
+  # TheLostTribe: 6 -> Goblin Generals; 10 was the much later treaty delivery.
+  bd3b66eb6f:
+    questStopValue: 6
+  # AnimalMagnetism: 70 -> Old crone; 230 is the quest's final delivery.
+  08975f4fbc:
+    questStopValue: 70
+  # CreatureOfFenkenstrain: use brush on fireplace yields conductor mould.
+  # QH calls this same item "Conductor Mold", ItemID.FENK_LIGHTNING_MOULD = 4200.
+  4ed0ab6edd:
+    questStopItems:
+      - {name: Conductor Mold, count: 1, ids: [4200]}
+  # TaleOfTheRighteous: 5 -> first return to Phileas, 6 -> first Shiro talk,
+  # 14 -> return to Shiro after Gnosi. Guide's next line separately talks to
+  # Shiro after b64f6b40fe, so that macro must end BEFORE the conversation.
+  5e2d42a7f6:
+    questStopValue: 5
+  b64f6b40fe:
+    questStopValue: 6
+  641bdf1360:
+    questStopValue: 14
+  # TheAscentOfArceuus: 7 -> Karuulm; 12 -> device at the Dark Altar.
+  10da9f91b7:
+    questFollow: true
+    questStopValue: 7
+  91f094509d:
+    questStopValue: 12
+  # Ratcatchers: distinct trips, 90 -> Joe/Keldagrim, 105 -> Port Sarim.
+  8f0f335851:
+    questStopValue: 90
+  0e33bfd18f:
+    questStopValue: 105
+  # TaiBwoWannaiTrio.getMoreVessel/pickupVessel explicitly requests two;
+  # karambwanVessel.addAlternates accepts the baited vessel too.
+  b370a04ca1:
+    questStopItems:
+      - {name: Karambwan Vessel, count: 2, ids: [3157, 3159]}
+  # ATailOfTwoCats.doChores -> waitForPotatoesToGrow. Do not wait for grown
+  # potatoes (quest 45) or the later Apothecary visit (50): the route leaves
+  # while they grow. Conditions are QH's planted/bed/fire/milk/shears checks.
+  939e85a9e6:
+    questStopCondition:
+      all:
+        - {var: {kind: varbit, id: 1033, value: 4, op: ">="}}
+        - {var: {kind: varbit, id: 1029, value: 1}}
+        - {var: {kind: varbit, id: 1030, value: 2}}
+        - {var: {kind: varbit, id: 1031, value: 4}}
+        - {var: {kind: varbit, id: 1032, value: 8}}
+  # RoyalTrouble.talkedToMiscSubject switches guidance to Sigrid; the main
+  # quest value 20 covers nearly the entire quest and cannot express this.
+  3831ba09b7:
+    questStopCondition: {var: {kind: varbit, id: 2143, value: 1}}
+  # Author clarified "until actually dealing with hammerspike", 2026-09-06.
+  # OneSmallFavour: 225 final Hammerspike talk -> 230 return to Tassie.
+  531b99b2ef:
+    questStopValue: 230
+  # OlafsQuest: 50 gives Olaf food for the map; 60 starts digging from it.
+  824b6700a0:
+    questStopValue: 60
+  # MourningsEndPartI: learntAboutToads -> Feldip Hills, and four separate
+  # dye flags -> return to Essyllt. Neither action changes main quest var 5.
+  b6987fc352:
+    questStopCondition: {var: {kind: varbit, id: 9155, value: 1}}
+  1bc53cbeb0:
+    questStopCondition:
+      all:
+        - {var: {kind: varbit, id: 803, value: 1}}
+        - {var: {kind: varbit, id: 801, value: 1}}
+        - {var: {kind: varbit, id: 802, value: 1}}
+        - {var: {kind: varbit, id: 800, value: 1}}
+  # InSearchOfTheMyreque: 71..80 killHellhound, 85 goLearnExit.
+  b4fe127214:
+    questStopValue: 85
+  # Author confirmed AFTER the mirrors conversation. DesertTreasure: 10
+  # talkToEblisAtMirrors -> 11 getDiamonds.
+  7a7aa487b1:
+    questStopValue: 11
+  # AtFirstLight: 4 -> goFindFox, BEFORE making his poultice; at 7 the
+  # furSample condition enables the Atza handover (var 7 alone is insufficient).
+  2ea2b97ff4:
+    questStopValue: 4
+  b8c1cff7b4:
+    questStopItems:
+      - {name: Fur sample, count: 1, ids: [28981]}
+  # Author confirmed Guild Hunter Fox, not Guildmaster Apatura. QH's
+  # trimmedFur condition at state 9 switches Atza -> returnToFoxAfterTrim.
+  9fa1082ff2:
+    questStopItems:
+      - {name: Trimmed fur, count: 1, ids: [28982]}
+  # MeatAndGreet: 6 -> first return to Emelio after helping Alba; the guide
+  # later says continue AND complete, so the final return at 24 is too late.
+  6f23dd7754:
+    questStopValue: 6
+  # TheFinalDawn: 8 fightEnforcer -> 9 get/read scroll; 29 first Servius in
+  # Cam Torum; 44 Attala after the cultists -> 45 Servius in Tal Teklan.
+  596c86aa38:
+    questStopValue: 9
+  508ae8e785:
+    questStopValue: 29
+  c99b2bc33a:
+    questStopValue: 45
+  # TheFinalDawn.liftActivated, not its final quest conversation at 67.
+  465ff6a896:
+    questStopCondition: {var: {kind: varbit, id: 16694, value: 1}}
+  # Explicit guide continuations whose quest shorthand did not resolve.
+  # RFDPiratePete.setupRequirements and pickKelp/killCrab: unground ingredients.
+  ec108fdc26:
+    questHelper: recipefordisasterpiratepete
+    questStep: true
+    questFollow: true
+    questStopItems:
+      - {name: Crab meat, count: 3, ids: [7518]}
+      - {name: Kelp, count: 3, ids: [7516]}
+  # EadgarsRuse: 50 useParrotOnRack -> 60 bringItemsToEadgar.
+  e8649f6ed3:
+    questHelper: eadgarsruse
+    questStep: true
+    questFollow: true
+    questStopValue: 60
+  # Contact.pickUpKeris, not the later High Priest quest completion.
+  bc08effca5:
+    questHelper: contact
+    questStep: true
+    questFollow: true
+    questStopItems:
+      - {name: Keris, count: 1, ids: [10581]}
+  # EthicallyAcquiredAntiquities: fixedSail -> returnToCrewmember; 30 shame
+  # Curator Haig Halen -> 32 talk before cutscene. Guide says "Antiques".
+  b1609b5b66:
+    questHelper: ethicallyacquiredantiquities
+    questStep: true
+    questFollow: true
+    questStopItems:
+      - {name: Sails, count: 1, ids: [29904]}
+  c7e46066de:
+    questHelper: ethicallyacquiredantiquities
+    questStep: true
+    questFollow: true
+    questStopValue: 32
+  # Guide author confirmed two ores (not bars), and explicitly authorised
+  # recording this exact decision on 2026-09-06. QH's Family Crest item ID 446.
+  d5a2d20554:
+    questStopItems:
+      - name: "'perfect' gold ore"
+        count: 2
+        ids: [446]
+  # "Head North of Falador and kill a Black Bear". Black bears have no map
+  # coordinates on the wiki, so the only one available came from quest-helper,
+  # joined on the npc id -- and the quest that uses that id fights the Varrock
+  # bear, 357 tiles from where this step sends you. The waypoint pointed
+  # players across the map.
+  #
+  # The id stays, so the bear is still outlined the moment one loads. Only the
+  # coordinate goes: no source here knows which spawn the guide means, and
+  # typing one in from memory is the thing this pipeline exists not to do.
+  #
+  # This is a hand-written fix and not a rule, deliberately. 77 targets take
+  # their only coordinate from quest-helper, and the measurement is in
+  # docs/quest-helper-points.md: no distance test separates the wrong ones from
+  # the right ones without also throwing away Mudskipper Point and Shilo
+  # Village, which are far from the town the step names and are correct.
+  260e82444c:
+    target:
+      name: "Black Bear"
+      kind: npc
+      ids: [2839]
+      points: []
+      confidence: manual
+
+  # Travel lines that named a place the build could not place, 2026-09-08.
+  #
+  # The author reported "Head to Tree Gnome Village" pointing at the Hazeel Cult
+  # area instead. The cause is plain once measured: its target carries no ids and
+  # no points, and neither does its destination, so the plugin is handed a step
+  # with nothing to aim at. 265 steps are in that state, 52 of them "nav".
+  #
+  # The tempting rule -- borrow the coordinate of the quest the step names -- was
+  # measured and rejected. It is wrong far more often than it is right: it would
+  # send "Kill a giant rat" to Taverley, "Enter Varrock Sewer" to Varrock Square,
+  # and "Collect a Kebab & Egg" to Lletya. Narrowing it to nav targets whose name
+  # matches their own quest leaves five candidates, and even one of those is
+  # wrong: Black Knights' Fortress would point at Falador Castle, roughly 200
+  # tiles away, which is the same defect the author is reporting. It is therefore
+  # deliberately absent below.
+  #
+  # So these four are hand-verified against the quest helper's own first step,
+  # one at a time, and written down rather than derived. Same reasoning as the
+  # Black Bear entry above and docs/quest-helper-points.md.
+
+  # "Speak to King Bolren in the centre of the Tree Gnome Maze." That is the
+  # village the step is telling the player to travel to.
+  ab850a390d:
+    target:
+      name: "Tree Gnome Village"
+      kind: nav
+      ids: []
+      points: [[2541, 3170, 0]]
+      confidence: manual
+
+  # "Talk to Councillor Halgrive outside the East Ardougne church." The step says
+  # head north to the church and start the quest; this is that church.
+  7b84101455:
+    target:
+      name: "East Ardougne church"
+      kind: nav
+      ids: []
+      points: [[2615, 3298, 0]]
+      confidence: manual
+
+  # "Go to the top floor of the Watchtower north of Yanille." The trellis base is
+  # the tower itself, which is what the step names.
+  5fe924bc2c:
+    target:
+      name: "Watchtower"
+      kind: nav
+      ids: []
+      points: [[2548, 3119, 0]]
+      confidence: manual
+
+  # "Talk to the Zealot outside the Abandoned Mine in south west Morytania." The
+  # Zealot stands at the mine entrance, so this is the mine the step names.
+  f06e392444:
+    target:
+      name: "Haunted Mine"
+      kind: nav
+      ids: []
+      points: [[3443, 3258, 0]]
+      confidence: manual

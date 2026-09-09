@@ -45,8 +45,43 @@ aliases:
   "Skippy & The Mogres": "Skippy and the Mogres"
   "Garden of Tranquility": "Garden of Tranquillity"
 
+  # Numbered sequels, and the numbers the guide writes differently
+  "Fairy Tale Part 2": "Fairytale II - Cure a Queen"
+  "Fairytale Part II": "Fairytale II - Cure a Queen"
+  "Monkey Madness 2": "Monkey Madness II"
+  "Monkey Madness": "Monkey Madness I"
+
+  # Articles the guide drops, found by reading the guide end to end
+  "Porcine of Interest": "A Porcine of Interest"
+  "Giant Dwarf": "The Giant Dwarf"
+  "Lost Tribe": "The Lost Tribe"
+  "Ascent of Arceuus": "The Ascent of Arceuus"
+  "Path of Glouphrie": "The Path of Glouphrie"
+  "Great Brain Robbery": "The Great Brain Robbery"
+  "Queen of Thieves": "The Queen of Thieves"
+  "Kingdom Divided": "A Kingdom Divided"
+
+  # Spellings and names that differ by more than punctuation
+  "Fremmenik Trials": "The Fremennik Trials"
+  "Shades of Morton": "Shades of Mort'ton"
+  "Tale of Righteous": "Tale of the Righteous"
+  "Eadger's Ruse": "Eadgar's Ruse"
+  "Enakrah's Lament": "Enakhra's Lament"
+  "Tarn's Lair": "Lair of Tarn Razorlor"
+  "In Aid of Myreque": "In Aid of the Myreque"
+
 # Tags reviewed and deliberately left unresolved, with the reason. Recording
 # these stops them reappearing at the top of every regenerated worklist.
+  # Spelling variants the punctuation-blind match cannot reach, because the
+  # letters themselves differ rather than the punctuation.
+  "Witches Potion": "Witch's Potion"
+  "Witches House": "Witch's House"
+  "Legend' Quest": "Legends' Quest"
+  "Rat Catchers": "Ratcatchers"
+  "Goblin RFD": "Recipe for Disaster"
+  "Recipe for Disaster Goblin": "Recipe for Disaster"
+  "My Arms Big Adventure": "My Arm's Big Adventure"
+
 not_a_quest:
   "Giants Foundry": "a minigame, not a quest -- no Quest enum entry"
   "Lamp on Herblore": "an instruction about lamp usage"

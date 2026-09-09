@@ -15,6 +15,7 @@ import json
 import re
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -64,6 +65,41 @@ def constants(jar: Path, class_name: str) -> dict[str, int]:
     return {m.group(1): int(m.group(2)) for m in RE_CONST.finditer(result.stdout)}
 
 
+def interface_ids(jar: Path) -> dict[str, int]:
+    """`Shopmain.ITEMS` -> the number, for every nested class of InterfaceID.
+
+    Quest Helper points at parts of an interface by these names -- the shop
+    grid, the multi-skill menu, the Quetzal's icons -- and a highlight it hangs
+    on one is the only guidance a step has while a menu is open. Read the same
+    way as the spell ids, which are one nested class of this same table.
+
+    Keyed as quest-helper writes them: "Shopmain.ITEMS". The bare constants on
+    InterfaceID itself are kept under their own name.
+    """
+    out: dict[str, int] = dict(constants(jar, "net.runelite.api.gameval.InterfaceID"))
+
+    # The nested class names come from the jar's own entries: javap lists a
+    # class's constants, not the classes nested inside it.
+    with zipfile.ZipFile(jar) as archive:
+        nested_names = {
+            entry.rsplit("$", 1)[1][:-len(".class")]
+            for entry in archive.namelist()
+            if entry.startswith("net/runelite/api/gameval/InterfaceID$")
+            and entry.endswith(".class")
+        }
+
+    for nested in sorted(nested_names):
+        try:
+            for name, value in constants(
+                    jar, "net.runelite.api.gameval.InterfaceID$" + nested).items():
+                out[nested + "." + name] = value
+        except RuntimeError:
+            # A class javap cannot read is one name that will not resolve, and
+            # a highlight that cannot resolve is dropped rather than guessed.
+            continue
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--jar", type=Path, default=None, help="path to runelite-api-*.jar")
@@ -77,13 +113,14 @@ def main() -> int:
         return 1
 
     index = {kind: constants(jar, cls) for kind, cls in CLASSES.items()}
+    index["interface"] = interface_ids(jar)
     index["_source"] = jar.name
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(index), encoding="utf-8")
 
     print(f"jar {jar.name}")
-    for kind in CLASSES:
+    for kind in list(CLASSES) + ["interface"]:
         print(f"  {kind:8} {len(index[kind]):6} constants")
     print(f"\nwrote {args.out}")
     return 0

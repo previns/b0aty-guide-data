@@ -22,6 +22,11 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    # The whole pipeline runs in about four minutes. fetch_images is the one
+    # step that can hang: 172 screenshots from a third-party host, each with a
+    # 45-second timeout of its own, so a throttled host is over two hours before
+    # anything gives up -- and GitHub's default job timeout is six.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,18 +60,46 @@ jobs:
         if: steps.fetch.outputs.changed == 'false'
         run: echo "Wiki revision unchanged; nothing to do."
 
+      # Six stages cannot run here. build_id_index reads RuneLite's constants
+      # out of a jar with javap; build_atlas, build_quest_steps, build_qh_hints
+      # and build_quest_objects read the vendored Quest Helper source, which
+      # lives beside the repository rather than inside it. Their outputs are
+      # committed under pinned/ instead.
+      #
+      # Pinned rather than rebuilt on purpose. A Quest Helper refresh rewrites
+      # guidance across the whole guide and is reviewed by a person; if a runner
+      # re-derived it from upstream, a routine "Wiki sync" pull request would
+      # quietly carry that upgrade inside it. A wiki sync must change only what
+      # the wiki changed.
+      - name: Unpack pinned reference data
+        if: steps.fetch.outputs.changed == 'true'
+        run: python pipeline/pin_reference.py --unpack
+
+      # The order is refresh.py's, minus the pinned stages. merge_curated and
+      # emit run twice with fetch_images between them: fetch_images reads the
+      # guide emit just wrote, and its hashes have to reach the shipped file.
       - name: Build
         if: steps.fetch.outputs.changed == 'true'
         run: |
           python pipeline/fetch.py
           python pipeline/parse.py
           python pipeline/annotate.py
-          python pipeline/build_locations.py
+          python pipeline/fetch_shops.py
+          python pipeline/fetch_item_spawns.py
           python pipeline/resolve_wiki.py
+          python pipeline/merge_curated.py
+          python pipeline/emit.py
+          python pipeline/fetch_images.py
           python pipeline/merge_curated.py
           python pipeline/emit.py
           python pipeline/worklist.py
           python -c "import json;print('REVID='+str(json.load(open('dist/guide.json',encoding='utf-8'))['sourceRevid']))" >> "$GITHUB_ENV"
+
+      # Structural checks first: they say which step is wrong, where a coverage
+      # number only says that something is.
+      - name: Audit
+        if: steps.fetch.outputs.changed == 'true'
+        run: python pipeline/audit.py
 
       # Runs before the PR is opened, so a regression fails the job loudly
       # instead of arriving as a green pull request nobody reads closely.
@@ -89,10 +122,12 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: wiki-sync
-          base: main
+          base: master
           title: "Wiki sync: revision ${{ env.REVID }}"
           body-path: build/pr-body.md
           commit-message: "Sync guide data from the wiki"
+          # pinned/ is deliberately absent: a wiki sync must never move the
+          # quest-helper data underneath the guide.
           add-paths: |
             dist/
             data/

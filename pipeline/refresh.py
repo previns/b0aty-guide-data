@@ -38,12 +38,16 @@ STAGES = [
     ("build_atlas", False, "quest-helper coordinates, joined on game ids"),
     ("build_diary_tasks", False, "diary completion bits, in the wiki's task order"),
     ("build_quest_steps", False, "quest-helper step lists, keyed by quest progress"),
+    ("fetch_shops", True, "who sells what, so a buy step can point at a shopkeeper"),
+    ("fetch_item_spawns", True, "wiki ground spawns used by item-collection guidance"),
     ("resolve_wiki", True, "names to ids, through wiki pages only -- never by similarity"),
     ("merge_curated", False, "everything above, plus the human-only curated/ files"),
     ("emit", False, "dist/guide.json, with the migration map for reworded steps"),
     ("fetch_images", True, "a sha256 per screenshot -- reads the guide emit just wrote"),
     ("merge_curated", False, "again, now that the image hashes exist"),
     ("emit", False, "again, so the hashes reach the shipped file"),
+    ("audit", False,
+     "every assumption the plugin makes, checked against the file it will get"),
     ("validate", False, "coverage against the baseline -- reads dist/, so it must be last"),
 ]
 

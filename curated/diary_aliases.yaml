@@ -1,0 +1,35 @@
+# Diary name as the guide writes it -> the real diary name.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# The guide tags diary steps in brackets -- "[Varrock Easy Diary]" -- and those
+# tags are typed by hand, so some are misspelled or abbreviated. A tag that
+# does not name a real diary shows the player the wrong thing and, worse, keeps
+# the step out of diary curation entirely, so it can never auto-tick.
+#
+# Validate with:
+#
+#   python pipeline/merge_curated.py --check-diary-aliases
+#
+# Every left-hand side must appear in the guide and every right-hand side must
+# be a real diary, so a stale row fails the build rather than sitting unused.
+
+names:
+  # "Provinces" is plural. 26 steps between them, the largest single group.
+  "Western Province Easy Diary": "Western Provinces Easy Diary"
+  "Western Province Medium Diary": "Western Provinces Medium Diary"
+  "Western Province Hard Diary": "Western Provinces Hard Diary"
+
+  # Straight misspellings.
+  "Kandarian Easy Diary": "Kandarin Easy Diary"
+  "Varock Medium Diary": "Varrock Medium Diary"
+  "Morytania Medum Diary": "Morytania Medium Diary"
+  "Fremmenik Easy Diary": "Fremennik Easy Diary"
+  "Ardounge Medium Diary": "Ardougne Medium Diary"
+  "Desert East Diary": "Desert Easy Diary"
+
+  # Tags that name a diary and something else at once. The diary is the part
+  # this file is about; the quest half is handled by quest_aliases.yaml.
+  "Morytania Easy Diary, Animal Magnetism": "Morytania Easy Diary"
+  "Kandarin Easy Diary and Garden of Tranquility": "Kandarin Easy Diary"
+  "Kandarin Medium Diary, Family Crest Quest": "Kandarin Medium Diary"

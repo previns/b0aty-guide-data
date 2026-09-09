@@ -1,0 +1,34 @@
+# Guide name -> the exact wiki page it means.
+#
+# HUMAN-EDITED. Scripts read this and never write to it.
+#
+# For names where the wiki has the thing, but under several pages that only a
+# person can choose between. "Mysterious orb" is two different quest items;
+# "Chest key" is six. The resolver refuses these on purpose -- picking one
+# would be a guess, and a wrong item id rings the wrong thing in the bank.
+#
+# This is the one place that refusal can be answered, and it is answered by
+# naming a page, not an id: the page still has to exist and still has to carry
+# an infobox, so a typo fails the build rather than inventing an item.
+#
+# Validated by resolve_wiki.py on every run: a name that does not reach a page
+# with an infobox is reported as "curated disambiguation(s) did not resolve",
+# so a typo -- or a choice that is itself a disambiguation page, which is what
+# a bare "Waterpump" turned out to be -- fails loudly instead of silently.
+#
+# To find candidates, look in build/unresolved.json for
+# "disambiguation page; needs a curated choice" -- each entry lists the pages
+# it could have meant, under "choices".
+#
+# Leave a name out when the guide really is being vague. "Adamant", "Black" and
+# "Bronze" are metals, not items, and belong in item_collections.yaml instead.
+
+pages:
+  # Bank 2, during X Marks the Spot -- not the Client of Kourend orb, which the
+  # route does not reach until Bank 29.
+  "Mysterious Orb": "Mysterious orb (X Marks the Spot)"
+
+  # Bank 10, "Fill Bucket on Pump [Falador Easy Diary]". A bare "Pump" redirects
+  # to the Blast Furnace one, a different object in a different city, and
+  # "Waterpump" is itself a disambiguation across seven of them.
+  "Pump": "Waterpump (Falador)"

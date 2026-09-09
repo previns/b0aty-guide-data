@@ -273,6 +273,17 @@ class Parser:
                 break
 
             if stripped:
+                # The block's closing braces are usually a line of their own,
+                # but two of them sit on the end of the last step instead --
+                # "...while watching a movie}}". Those braces travelled all the
+                # way to the overlay as part of the step's own words.
+                #
+                # Only the text is cleaned. Treating this as the block's
+                # terminator as well moved where the recovery boundary falls,
+                # and with it which step a video anchors to -- a bigger change
+                # than the one being made, on ten traps that each have a test.
+                if stripped.endswith("}}") and not RE_CLOSE.match(stripped):
+                    stripped = stripped[:-2].rstrip()
                 steps_raw.append((i, stripped))
             i += 1
 

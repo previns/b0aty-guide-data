@@ -241,6 +241,11 @@ def parse_page(record: dict) -> dict | None:
     }
 
 
+RE_DISAMBIG = re.compile(r"\{\{\s*(?:disambig|disambiguation)", re.I)
+# The pages a disambiguation offers, so the report says what to choose between.
+RE_DISAMBIG_LINK = re.compile(r"\[\[([^\]|]+)")
+
+
 def title_variants(name: str) -> list[str]:
     """Deterministic spellings of the same name, tried in order.
 
@@ -302,6 +307,21 @@ def load_curated_items(curated: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8")).get("collections") or {}
 
 
+def load_disambiguations(curated: Path) -> dict[str, str]:
+    """Guide name -> the exact wiki page a person chose for it.
+
+    Empty when the file is absent, so the resolver still runs; every name then
+    simply stays unresolved as before.
+    """
+    import yaml
+
+    path = curated / "disambiguations.yaml"
+    if not path.exists():
+        return {}
+    loaded = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return {str(k): str(v) for k, v in (loaded.get("pages") or {}).items()}
+
+
 def collect_candidates(doc: dict) -> dict[str, set[str]]:
     """name -> the set of intents that asked for it."""
     candidates: dict[str, set[str]] = defaultdict(set)
@@ -316,13 +336,27 @@ def collect_candidates(doc: dict) -> dict[str, set[str]]:
             if ann.get("targetName"):
                 candidates[ann["targetName"]].add(intent or "link")
             for item in ann.get("items", []):
-                candidates[item].add("withdraw")
+                # Items carry a count now, so an entry is {name, count?}.
+                name = item["name"] if isinstance(item, dict) else item
+                candidates[name].add("withdraw")
+                # And the same name without a leading "Empty", so the ordinary
+                # item is on the books to fall back to.
+                bare = re.sub(r"^empty\s+", "", name, flags=re.I)
+                if bare != name:
+                    candidates[bare].add("withdraw")
             # Teleport destinations ("Ardy Cloak -> Wintertodt"). These were
             # never asked about, so every one of them reported as having no
             # wiki page when most have a perfectly good one with a {{Map}}.
             if ann.get("destination"):
                 candidates[ann["destination"]].add("nav")
     return candidates
+
+
+def load_shopkeepers(path: Path) -> list[str]:
+    """The owner of every shop with stock. Optional; empty before the stage runs."""
+    if not path.exists():
+        return []
+    return json.loads(path.read_text(encoding="utf-8")).get("owners") or []
 
 
 def main() -> int:
@@ -334,9 +368,11 @@ def main() -> int:
     ap.add_argument("--delay", type=float, default=0.4, help="seconds between API batches")
     ap.add_argument("--limit", type=int, default=0, help="only try the first N names")
     ap.add_argument("--curated", type=Path, default=REPO / "curated")
+    ap.add_argument("--shops", type=Path, default=REPO / "build" / "shops.json")
     args = ap.parse_args()
 
     doc = json.loads(args.input.read_text(encoding="utf-8"))
+    disambiguations = load_disambiguations(args.curated)
     candidates = collect_candidates(doc)
 
     # Entities named only in curated/entity_aliases.yaml. The grammar cannot
@@ -353,6 +389,14 @@ def main() -> int:
         for name in ([value] if isinstance(value, str) else value or []):
             if name and not name.isupper():
                 candidates[name].add("withdraw")
+    # Shopkeepers, from build/shops.json. The guide names a shop's goods and
+    # trusts the player to find the counter -- "Buy 2x Bronze Med Helm in
+    # Barbarian Village" never says Peksa -- so the only way the plugin can
+    # point at one is to know who sells what, and that needs their ids and
+    # coordinates like any other npc.
+    for name in load_shopkeepers(args.shops):
+        candidates[name].add("npc")
+
     names = sorted(candidates)
     if args.limit:
         names = names[: args.limit]
@@ -360,6 +404,8 @@ def main() -> int:
     lookups: list[str] = []
     for name in names:
         lookups.extend(title_variants(name))
+        if name in disambiguations:
+            lookups.append(disambiguations[name])
     lookups = list(dict.fromkeys(lookups))
 
     print(f"candidate names: {len(names)} ({len(lookups)} title variants)")
@@ -376,7 +422,14 @@ def main() -> int:
         parsed = None
         record = None
         used_variant = name
-        for variant in title_variants(name):
+        # A curated choice wins outright: it is a person answering the one
+        # question the wiki cannot, and it is still a page that has to exist
+        # and carry an infobox.
+        variants = list(title_variants(name))
+        if name in disambiguations:
+            variants.insert(0, disambiguations[name])
+
+        for variant in variants:
             record = records.get(variant)
             if record is None or record.get("missing"):
                 continue
@@ -386,7 +439,7 @@ def main() -> int:
                 break
 
         if record is None or (parsed is None and all(
-            (records.get(v) or {}).get("missing", True) for v in title_variants(name)
+            (records.get(v) or {}).get("missing", True) for v in variants
         )):
             unresolved[name] = {"reason": "no wiki page", "intents": sorted(intents)}
             stats["missing page"] += 1
@@ -396,12 +449,25 @@ def main() -> int:
             stats["  via singular form"] += 1
 
         if parsed is None:
+            # A disambiguation page is a different failure from a page that
+            # simply has no infobox, and it is the dangerous one: the wiki does
+            # have the item, under a name only a person can choose between.
+            # "Mysterious orb" is two different quest items, so refusing is
+            # right -- but reporting it as "no infobox" hid a fixable gap among
+            # hundreds of genuinely unfixable ones.
+            disambiguation = bool(RE_DISAMBIG.search(record.get("wikitext") or ""))
             unresolved[name] = {
-                "reason": "page has no usable infobox",
+                "reason": ("disambiguation page; needs a curated choice"
+                           if disambiguation else "page has no usable infobox"),
                 "wikiPage": record["title"],
                 "intents": sorted(intents),
             }
-            stats["no infobox"] += 1
+            if disambiguation:
+                unresolved[name]["choices"] = RE_DISAMBIG_LINK.findall(
+                    record.get("wikitext") or "")[:8]
+                stats["disambiguation, needs a curated choice"] += 1
+            else:
+                stats["no infobox"] += 1
             continue
 
         # Where the infobox disagrees with the verb we guessed, the infobox
@@ -441,6 +507,15 @@ def main() -> int:
                   "kind overrode intent", "missing page", "no infobox"):
         if label in stats:
             print(f"{label:<22}{stats[label]:>7}")
+    # A curated choice that did not resolve is a typo, and it would otherwise
+    # look exactly like the name having been ambiguous all along.
+    unused = sorted(n for n in disambiguations if n not in entities)
+    if unused:
+        print(f"\nWARNING: {len(unused)} curated disambiguation(s) did not resolve:")
+        for name in unused:
+            print(f"  {name!r} -> {disambiguations[name]!r}"
+                  " (no such page, or it carries no infobox)")
+
     print("\nresolved by kind:")
     for kind, count in by_kind.most_common():
         print(f"  {kind:<10}{count:>6}")

@@ -15,6 +15,11 @@
 # id instead.
 
 aliases:
+
+  # Names the guide writes without the wiki's punctuation or spacing.
+  "Wizards Tower": "Wizards' Tower"
+  "Wizard Tower": "Wizards' Tower"
+  "Lumberyard": "Lumber Yard"
   # The guide's typos. The wiki has no redirect for these, so resolve_wiki
   # cannot reach them the way it reaches "Gertude" -> Gertrude.
   "Civitis Illa Fortis": "Civitas illa Fortis"

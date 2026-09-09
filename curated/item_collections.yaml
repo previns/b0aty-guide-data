@@ -102,6 +102,18 @@ collections:
   # and a pestle and mortar -- so the row lists what either needs. Same
   # reasoning as the teleport runes: the step does not say which method, so
   # showing everything beats guessing at one.
+  # Desert Robes is a set, not an item. Resolving the phrase on its own found
+  # only the robe -- the legs -- so a player wearing just those looked fully
+  # equipped while missing the shirt and boots that keep them cool.
+  "Desert Robes":
+    - Desert shirt
+    - Desert robe
+    - Desert boots
+  "Desert Robes/boots":
+    - Desert shirt
+    - Desert robe
+    - Desert boots
+
   "Tick Manipulation":
     - Knife
     - Teak logs

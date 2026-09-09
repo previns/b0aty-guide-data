@@ -77,6 +77,23 @@ SCHEMA = {
                                 "kind": {"enum": ["step", "note", "trailing-note"]},
                                 "text": {"type": "string", "minLength": 1},
                                 "inventorySlots": {"type": "integer", "minimum": 0},
+                                "questFollow": {"type": "boolean"},
+                                "questStartOnly": {"type": "boolean"},
+                                "questStopValue": {"type": "integer", "minimum": 1},
+                                "questStopCondition": {"type": "object"},
+                                "questStopUnresolved": {"type": "boolean"},
+                                "questStopItems": {
+                                    "type": "array", "minItems": 1,
+                                    "items": {
+                                        "type": "object", "required": ["name", "count", "ids"],
+                                        "properties": {
+                                            "name": {"type": "string", "minLength": 1},
+                                            "count": {"type": "integer", "minimum": 1},
+                                            "ids": {"type": "array", "minItems": 1, "uniqueItems": True,
+                                                    "items": {"type": "integer", "minimum": 0}},
+                                        },
+                                    },
+                                },
                                 "dialogue": {
                                     "type": "array",
                                     "items": {"type": "array", "items": {"type": "integer"}},
