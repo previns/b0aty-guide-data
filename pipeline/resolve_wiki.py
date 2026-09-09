@@ -89,6 +89,10 @@ RE_MAP = re.compile(r"\{\{Map[^}]*?\bx\s*=\s*(\d+)[^}]*?\by\s*=\s*(\d+)", re.I)
 RE_MAP_POSITIONAL = re.compile(
     r"\{\{Map\b[^}]*?\|\s*(\d{3,5})\s*,\s*(\d{3,5})\s*[|}]", re.I)
 RE_PLANE = re.compile(r"\bplane\s*=\s*(\d+)", re.I)
+# One whole {{Map ...}} block, so it can be judged before its numbers are taken.
+RE_MAP_BLOCK = re.compile(r"\{\{Map\b[^}]*\}\}", re.I)
+# A pin dropped into prose rather than the page's own coordinate.
+RE_MAPLINK = re.compile(r"\btype\s*=\s*maplink\b", re.I)
 
 
 def api_get(params: dict) -> dict:
@@ -194,6 +198,16 @@ def fetch_pages(titles: list[str], cache: Path, delay: float) -> dict[str, dict]
     return results
 
 
+def map_points(text: str, plane: int) -> list[list[int]]:
+    """Every coordinate the {{Map}} templates in this text carry, in order."""
+    points: list[list[int]] = []
+    for x, y in RE_MAP.findall(text) + RE_MAP_POSITIONAL.findall(text):
+        point = [int(x), int(y), plane]
+        if point not in points:
+            points.append(point)
+    return points
+
+
 def parse_page(record: dict) -> dict | None:
     """Pull kind, IDs and coordinates out of a page's infobox."""
     if record.get("missing"):
@@ -220,13 +234,25 @@ def parse_page(record: dict) -> dict | None:
                 if value not in ids:
                     ids.append(value)
 
-    points: list[list[int]] = []
     plane_match = RE_PLANE.search(text)
     plane = int(plane_match.group(1)) if plane_match else 0
-    for x, y in RE_MAP.findall(text) + RE_MAP_POSITIONAL.findall(text):
-        point = [int(x), int(y), plane]
-        if point not in points:
-            points.append(point)
+
+    # A page's own coordinate is the map in its infobox. The other {{Map}}
+    # templates on it are `type=maplink` pins dropped into prose: Catherby's
+    # Spawns section pins a bucket of water and a burnt herring, and two of
+    # those pins are in Draynor. Reading them as the town's location turned
+    # "Bank at Catherby" from one tile into seven, five of which are not the
+    # bank -- and did the same to 44 other places, Al Kharid nine and Barbarian
+    # Village five.
+    #
+    # Preferred rather than banned. 16 pages carry no infobox map at all, and
+    # there their pins are the only answer: Bank Deposit Box is a list of
+    # deposit boxes and nothing else, so refusing maplinks outright lost it
+    # entirely. Authoritative first, pins only into silence.
+    authoritative = RE_MAP_BLOCK.sub(
+        lambda block: "" if RE_MAPLINK.search(block.group(0)) else block.group(0),
+        text)
+    points = map_points(authoritative, plane) or map_points(text, plane)
 
     if not ids and not points:
         return None
