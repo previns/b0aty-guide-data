@@ -1,8 +1,8 @@
 {
  "schemaVersion": 1,
  "sourcePage": "Guide:B0aty HCIM Guide V3",
- "sourceRevid": 15329305,
- "sourceRevisionAt": "2026-09-03T05:05:57Z",
+ "sourceRevid": 15347007,
+ "sourceRevisionAt": "2026-09-16T18:59:08Z",
  "episodes": [
   {
    "ordinal": 1,
@@ -444,6 +444,14 @@
    "title": "Episode 24 - The First Real Challenge",
    "videoIds": [
     "S-akWpucMa0"
+   ],
+   "sectionIds": []
+  },
+  {
+   "ordinal": 25,
+   "title": "Episode 25 - The Most Dangerous Encounter Yet",
+   "videoIds": [
+    "cDcF_cRTCRg"
    ],
    "sectionIds": []
   }
@@ -6940,6 +6948,11 @@
        [
         3546,
         5154,
+        0
+       ],
+       [
+        3308,
+        12443,
         0
        ]
       ],
@@ -37370,7 +37383,7 @@
         0
        ]
       ],
-      "wikiPage": "Fairy rings",
+      "wikiPage": "Fairy ring",
       "confidence": "wiki-redirect",
       "pointSource": "wiki",
       "scattered": true
@@ -77057,7 +77070,7 @@
         0
        ]
       ],
-      "wikiPage": "Fairy rings",
+      "wikiPage": "Fairy ring",
       "confidence": "wiki-redirect",
       "pointSource": "wiki",
       "scattered": true
@@ -94985,8 +94998,8 @@
        9083
       ],
       "points": [],
-      "wikiPage": "Seal of passage",
-      "confidence": "wiki-redirect",
+      "wikiPage": "Seal of Passage",
+      "confidence": "wiki-exact",
       "scattered": false
      }
     },
@@ -637930,6 +637943,8 @@
   "Upon creating your account, DO NOT choose a username with the words or phrases ‘Iron’ ‘HC’ ‘Fe’, 'GIM', 'GIMP'. This is the most important step of the guide.",
   "Use all Lamps on Herblore after quest is complete unless specified",
   "A lot of the time the guide will assume you have combat gear on you. Sometimes it is specified, sometimes it is not. I would always have a weapon/ammunition on you to kill monsters. Magic solves almost every fight except for [[Black Knight Titan]]",
+  "The guide now has a plugin available to walk you through the guide like a questhelper. There may be some bugs as I only playtested it up to bank 30.",
+  "https://runelite.net/plugin-hub/show/b0aty-hcim-guide-v3",
   "'''Macroquesting:''' Macroquesting is the process of completing multiple quests simultaneously, progressing your account in an \"optimal\" way, ensuring that the maximum number of quests are being done during any given visit to an area. It's a crucial part of efficient gameplay, for use when making alternate (possibly Ironman) accounts. For a given style of gameplay, it's theoretically possible to \"solve\" the exact chain of quest steps and item gathering grinds, however there is currently insufficient data in a suitable format to build such a solver.",
   "OPTIONAL: I made some tile markers for an efficient 25x4 Tithe Farm method here: https://pastebin.com/SjiqWaEJ (Copy and right click on world map orb -> import)",
   "Die to Hunllef"
@@ -637941,6 +637956,6 @@
   "ae34baad99": "8c44826480",
   "ba60f4f4fe": "c0297c1e56"
  },
- "contentHash": "75ae976870c7df0a",
- "generatedAt": "2026-09-09T02:08:06+00:00"
+ "contentHash": "72a68ff06be9f3d5",
+ "generatedAt": "2026-09-19T09:37:44+00:00"
 }
