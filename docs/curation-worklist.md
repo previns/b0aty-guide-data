@@ -12,7 +12,7 @@ Sorted by step count, so the top of each table is where the value is.
 
 ## Navigation destinations
 
-116 unresolved of 168 distinct, covering 151 of 372 nav steps.
+142 unresolved of 217 distinct, covering 190 of 459 nav steps.
 
 Quest Helper candidates are whole-word matches against its step
 descriptions. `xN` is how many QH steps use that point. Where a name has
@@ -23,119 +23,145 @@ copy: "Burthorpe" appears at 19 different coordinates.
 |------:|-------------|----------------|-------------------------|--------------|
 | 6 | `Burthorpe` | Burthorpe Games Room (minigame) | `2919,3559,0` ×3 — Talk to Unferth in north east Burthorpe.<br>`2820,3555,0` ×3 — Go northwest of Burthorpe, then south at the fork, a<br>`2919,3574,0` ×2 — Talk to Dunstan in north east Burthorpe.<br>*(+16 more distinct points)* | Teleport to Burthorpe |
 | 5 | `Blast Furnace` | — | `2930,10197,0` ×1 — Enter the blast furnace. | Minigame Teleport to Blast Furnace |
+| 5 | `Entrana` | Ship to Entrana (transport); Entrana Dungeon (dungeon) | `3047,3236,0` ×3 — Bank all weapons and armour you have, and go to Port<br>`2851,3350,0` ×1 — Travel to Entrana with the silver pot and have the H<br>`2853,3349,0` ×1 — Use the illuminated pouch on the Altar in the Entran<br>*(+8 more distinct points)* | Travel to Entrana [Falador Easy Diary] |
 | 5 | `POH` | — | — | Teleport to POH (Should be Hosidius) |
-| 4 | `Wintertodt` | — | `1624,3942,0` ×2 — Talk to Undor at the entrance to Wintertodt. If you'<br>`1545,3895,0` ×1 — Talk to Martin Holt again in the Settlement Ruins so<br>`1630,3965,0` ×1 — Use the Shielding potion on the Doors of Dinh in the<br>*(+1 more distinct points)* | Games necklace -> Wintertodt |
+| 4 | `Draynor` | Draynor Manor (teleport); Draynor Sewers (dungeon); Draynor Village (teleport) | `3151,3348,0` ×3 — Use a rope on the Strange Hole east of Draynor Manor<br>`3088,3255,0` ×3 — Talk to the Wise Old Man in Draynor Village.<br>`3103,3279,0` ×2 — Climb the rough wall just north-west of the gate of <br>*(+33 more distinct points)* | Head West towards Draynor hugging the fence to avoid the Jail Guards |
+| 4 | `Shantay Pass` | Carpet to Shantay Pass (transport) | `3304,3112,0` ×3 — Talk to Irena south of the Shantay Pass.<br>`3304,3116,0` ×1 — Go through Shantay Pass.<br>`3303,3122,0` ×1 — Buy a shantay pass from Shantay.<br>*(+2 more distinct points)* | Head to Shantay Pass |
+| 4 | `Wintertodt` | Wintertodt Camp (teleport) | `1624,3942,0` ×2 — Talk to Undor at the entrance to Wintertodt. If you'<br>`1545,3895,0` ×1 — Talk to Martin Holt again in the Settlement Ruins so<br>`1630,3965,0` ×1 — Use the Shielding potion on the Doors of Dinh in the<br>*(+1 more distinct points)* | Games necklace -> Wintertodt |
 | 3 | `Anywhere` | — | — | Teleport Anywhere to bank |
+| 3 | `Barbarian Village` | Barbarian (teleport); Draynor Village (teleport); Barbarian camp jail (dungeon) | `3085,3409,0` ×2 — Talk to Tassie Slipcast in the Barbarian Village pot<br>`3087,3415,0` ×1 — Attempt to recruit Checkal to your team in Barbarian<br>`3081,3420,0` ×1 — Climb down the entrance to the Stronghold of Securit<br>*(+2 more distinct points)* | Head to Barbarian Village |
 | 3 | `Dwarven Ferryman` | Dwarven Mine (dungeon) | `2829,10129,0` ×1 — Pay the Dwarven Ferryman 5 coins to travel across th<br>`2842,10129,0` ×1 — Speak with the Dwarven Ferryman to go to cross the r | Travel [[Dwarven Ferryman]] |
-| 3 | `Eagles Peak` | — | — | Talk to [[Charlie]] (1,1) [Eagles Peak] |
 | 3 | `Kourend Castle` | Kourend (teleport) | `1664,3670,0` ×2 — Talk to Martin Holt east of Kourend Castle.<br>`1614,3668,0` ×1 — Talk to Commander Fullore in Kourend Castle.<br>`1676,3674,0` ×1 — Talk to Commander Fullore east of the Kourend Castle<br>*(+9 more distinct points)* | Teleport to Kourend Castle |
+| 3 | `Kourend Woodland` | — | `1485,3507,0` ×1 — Catch a chinchompa in the Kourend Woodland. | Teleport to Kourend Woodland using [[Rada's blessing]] |
 | 2 | `Ardy` | — | — | Teleport to Ardy after getting the corpse and restock wines (don't go  |
 | 2 | `Ferox` | Inferno (minigame) | — | Birdhouse Run Method: Duelling Ring -> Ferox -> Withdraw Items -> Rech |
-| 2 | `Hosidius` | — | `1782,3572,0` ×3 — Speak to Lord Hosidius in his home on the south east<br>`1568,9955,0` ×2 — Talk to Lord Hosidius in Xeric's Lookout.<br>`1738,3550,0` ×2 — Harvest your herbs from the Hosidius patch.<br>*(+9 more distinct points)* | Teleport to Hosidius with Book of the Dead |
-| 2 | `House` | Hole (shortcut to boat) (dungeon) | `2618,3325,0` ×2 — Get a pigeon cage from behind Jerico's house.<br>`1401,2967,0` ×2 — Enter the house north of Patzi through the window to<br>`3068,3517,0` ×2 — Talk to Oziach in his house in north western Edgevil<br>*(+102 more distinct points)* | Teleport to House |
-| 2 | `Kourend Woodland` | — | `1485,3507,0` ×1 — Catch a chinchompa in the Kourend Woodland. | Teleport to Kourend Woodland using [[Rada's blessing]] |
+| 2 | `House` | — | `2618,3325,0` ×2 — Get a pigeon cage from behind Jerico's house.<br>`1401,2967,0` ×2 — Enter the house north of Patzi through the window to<br>`3068,3517,0` ×2 — Talk to Oziach in his house in north western Edgevil<br>*(+102 more distinct points)* | Teleport to House |
 | 2 | `Lunar Isle` | Lunar Isle Mine (dungeon); Ship to Lunar Isle (transport); Lunar Isle Teleport (teleport) | `2073,3912,0` ×3 — Equip your combat equipment, food, and light the Bra<br>`2151,3867,0` ×2 — Talk to the Oneiromancer in the south east of Lunar <br>`2083,3890,0` ×2 — Talk to Meteora in the south of Lunar Isle's town.<br>*(+14 more distinct points)* | Home Teleport to Lunar Isle |
+| 2 | `Minecart` | Wine Cellar (dungeon) | — | Head west to the Minecart and travel to Lovakengj |
+| 2 | `Ogres` | — | `2570,2975,0` ×1 — Kill ogres in Feldip Hills. | Head West to the Ogres |
 | 2 | `Piscarillius` | — | — | Kharedst's Memoirs -> Piscarillius (2) |
+| 2 | `Port Sarim` | Ship to Port Sarim (transport); Port Sarim Rat Pits (dungeon) | `3047,3236,0` ×3 — Bank all weapons and armour you have, and go to Port<br>`3027,3249,0` ×2 — Talk to Brian in the Port Sarim axe shop.<br>`3053,3251,0` ×2 — Talk to Redbeard Frank in Port Sarim.<br>*(+35 more distinct points)* | Head to Port Sarim |
 | 2 | `Shayzien` | Shayzien Prison (dungeon); Shayzien Crypts (dungeon) | `1484,3634,1` ×4 — Speak to Lord Shayzien upstairs of the War Tent in t<br>`1481,3633,0` ×4 — Climb up the ladder in the War Tent in the Shayzien <br>`1542,3570,0` ×3 — Talk to Phileas Rimor in Shayzien.<br>*(+15 more distinct points)* | Teleport to Shayzien |
+| 2 | `Varlamore` | Falador (teleport); Quetzal to Varlamore (transport) | `1746,3120,0` ×2 — Talk to the Knight of Varlamore on the south western<br>`1805,9522,0` ×2 — Talk to the Knight of Varlamore in the north trainin<br>`1582,3094,0` ×2 — Harvest your herbs from the Varlamore patch.<br>*(+3 more distinct points)* | Head to Varlamore |
 | 2 | `Veos` | — | `1824,3690,0` ×2 — Talk to Veos on the Port Piscarilius docks. You can <br>`3228,3242,0` ×1 — Talk to Veos in The Sheared Ram pub in Lumbridge to <br>`3054,3245,0` ×1 — Talk to Veos directly south of the Rusty Anchor Inn  | Head to [[Veos]] and travel to Port Piscarilius |
-| 2 | `Yanille` | — | `2551,3099,0` ×3 — Talk to Bert in west Yanille.<br>`2677,3087,0` ×2 — Go talk to Hazelmere in his hut east of Yanille (Fai<br>`2598,3085,0` ×2 — Ring the bell outside the Wizards' Guild in Yanille.<br>*(+20 more distinct points)* | Return to Yanille |
 | 2 | `Zanaris` | Clan Wars (minigame) | `3202,3169,0` ×4 — Travel to Zanaris.<br>`2447,4430,0` ×1 — Pickpocket the Fairy Godfather in the Zanaris Throne<br>`2386,4472,0` ×1 — Talk to Fairy Nuff in north west Zanaris.<br>*(+6 more distinct points)* | Fairy Ring -> Zanaris |
 | 1 | `AKR Fairy Ring` | — | — | Hosidius: Ardy Cloak 1 -> AKR Fairy Ring |
 | 1 | `Almera` | ALR (fairy-ring) | `2509,3494,0` ×1 — Board the log raft west of Almera.<br>`2521,3495,0` ×1 — Talk to Almera on top of Baxtorian Falls.<br>`2518,3430,0` ×1 — Go up the stairs in the house south of Almera's hous | Head south and start the Waterfall Quest by talking to [[Almera]] |
 | 1 | `Antonia` | — | — | Travel with [[Antonia]] to Aldarin |
 | 1 | `Ape Atoll Do` | Ape Atoll (teleport); Ape Atoll Dungeon (dungeon); Ship to Ape Atoll (transport) | — | Teleport to Ape Atoll [Western Province Hard Diary] < Do this even if  |
-| 1 | `Ardounge` | Ardougne (teleport); West Ardougne (teleport); Ardougne Cloak (teleport) | — | Teleport to Ardounge |
-| 1 | `Ardy- Rimmington Boat` | — | — | Teleport to Ardy->Rimmington Boat |
+| 1 | `Arceuus Chuch` | — | — | Head to Arceuus Chuch & dig in the center courtyard to obtain Damaged  |
+| 1 | `Ardougne Allotment Patch` | Ardougne Rat Pits (dungeon); Ardougne Castle basement (dungeon) | — | Head to Ardougne Allotment Patch |
+| 1 | `Ardougne Zoo` | Ardougne (teleport); Ardougne Sewers (dungeon); West Ardougne (teleport) | `2597,3266,0` ×3 — Talk to Larry at the Ardougne Zoo.<br>`2612,3285,0` ×3 — Travel to Ardougne Zoo and talk to Parroty Pete. Ask<br>`2607,3264,0` ×2 — Speak to Charlie in the Ardougne Zoo.<br>*(+1 more distinct points)* | Head to Ardougne Zoo |
+| 1 | `Ardounge` | Ardougne (teleport); West Ardougne (teleport) | — | Teleport to Ardounge |
+| 1 | `Asgarnia` | Mage Arena (minigame) | `3932,9631,1` ×1 — Talk to Asgarnia Smith inside the Vault. | Head into Asgarnia dungeon (Chronicle is emergency teleport if you gar |
 | 1 | `BKR fairy ring` | — | — | Salve Graveyard portal (Home teleport, recharge prayer on altar/pool,  |
-| 1 | `Bartender (Dead Man's Chest)` | — | — | Head to the Bar and complete the [[Bartender (Dead Man's Chest)]] Barc |
+| 1 | `Bandit Camp` | — | `3159,2978,0` ×2 — Buy a drink from the pub in the Bandit Camp, then ta<br>`3184,2989,0` ×1 — Talk to Eblis in the east of the Bandit Camp.<br>`3214,2954,0` ×1 — Talk to Eblis at the mirrors south east of the Bandi<br>*(+7 more distinct points)* | Head to Bandit Camp |
+| 1 | `Bar` | BLR (fairy-ring); BKR (fairy-ring); ALR (fairy-ring) | — | Head to the Bar and complete the [[Bartender (Dead Man's Chest)]] Barc |
 | 1 | `Bartender (Flying Horse Inn)` | — | — | Head into the pub for the Barcrawl ([[Bartender (Flying Horse Inn)]]) |
-| 1 | `Blessing Kourend Woodland` | — | — | Teleport Blessing -> Kourend Woodland |
+| 1 | `Betty` | — | `3014,3258,0` ×4 — Travel to Port Sarim, and talk to Betty in the magic<br>`3013,3258,0` ×2 — Stand in Betty's doorway and use the rose-tinted len<br>`3011,3260,0` ×1 — Head to the Rune Shop in north western Port Sarim an<br>*(+1 more distinct points)* | Head West to Betty and buy 2x Eye of Newt & 200 mind runes |
+| 1 | `Black Knights Base` | — | — | Head east towards Black Knights Base |
+| 1 | `Black Knights Fortress` | — | — | Buy 2x Bronze Med Helm in Barbarian Village [Black Knights Fortress][M |
 | 1 | `Blue Dragons` | — | `2898,9764,0` ×1 — Fish a lava eel from the lava south of the blue drag<br>`2906,9802,0` ×1 — Kill baby blue dragons. South east near the lava is  | Return to the Blue Dragons via Dusty Key gate |
 | 1 | `Boat to Port Sarim` | Ship to Port Sarim (transport); Rowboat to Port Phasmatys (transport); Rowboat to Mort Myre (transport) | — | Run South to Land's End -> Boat to Port Sarim |
 | 1 | `Burthrope` | — | — | Teleport to Burthrope |
+| 1 | `Camelot Castle` | Camelot Bank (teleport); Camelot (teleport) | `2763,3513,0` ×1 — Talk to King Arthur in Camelot Castle to start.<br>`2780,3515,0` ×1 — Go stand in the star symbol north east of Camelot Ca<br>`2769,3493,0` ×1 — Go up the ladder in the south east of Camelot castle<br>*(+1 more distinct points)* | Head North into the Camelot Castle and start Merlins Crystal by talkin |
+| 1 | `Canifis` | — | `3496,3479,0` ×4 — Talk to Malak in the pub in Canifis.<br>`3507,3489,0` ×2 — Climb the tall tree just north of the bank in Canifi<br>`3503,3477,0` ×2 — Talk to Vanstrom Klause in the Canifis pub.<br>*(+12 more distinct points)* | Head to Canifis |
+| 1 | `Catherby Allotment Patch` | — | — | Head to Catherby Allotment Patch |
 | 1 | `Civitis Illa Fortis` | Civitas illa Fortis (teleport) | — | Teleport to Civitis Illa Fortis |
 | 1 | `CoX until Prayer Scrolls` | — | — | Sang -> CoX until Prayer Scrolls |
+| 1 | `Complete Dwarf Cannon` | — | — | Head South & Complete Dwarf Cannon |
+| 1 | `Complete The Heroes Quest` | — | — | Head South & Complete The Heroes Quest |
 | 1 | `Crystal` | Crypt (dungeon) | `1913,4639,1` ×3 — Pull the Crystal Dispenser in the east room.<br>`1898,4650,1` ×3 — Put a cyan crystal in the pillar to the west.<br>`1898,4665,1` ×3 — Put a yellow crystal in the pillar to the east.<br>*(+39 more distinct points)* | Teleport Crystal to Lletya |
-| 1 | `Digsite` | Digsite Pendant (teleport) | `3378,3428,0` ×2 — Talk to Elissa in the north-east of the Digsite on t<br>`3345,3425,0` ×2 — Talk to the female student in the north west of the <br>`3369,3419,0` ×2 — Talk to the student in an orange shirt in the north <br>*(+7 more distinct points)* | Digsite Pendant -> Digsite |
 | 1 | `Disable level-up` | — | — | All Settings -> Disable level-up |
-| 1 | `Draynor` | Draynor Manor (teleport); Draynor Sewers (dungeon) | `3151,3348,0` ×3 — Use a rope on the Strange Hole east of Draynor Manor<br>`3088,3255,0` ×3 — Talk to the Wise Old Man in Draynor Village.<br>`3103,3279,0` ×2 — Climb the rough wall just north-west of the gate of <br>*(+33 more distinct points)* | Return to Draynor |
+| 1 | `Dragontooth Island` | Ship to Dragontooth Island (transport); Waterbirth Island (teleport); Harmony Island (teleport) | `3703,3487,0` ×1 — Talk to the Ghost captain at Port Phasmatys to trave | Head to Dragontooth Island [Morytania Medum Diary] |
 | 1 | `Eadgar` | — | `2893,3673,0` ×4 — Climb to the top of Trollheim and enter Eadgar's cav<br>`2891,10086,2` ×4 — Talk to Eadgar.<br>`2893,10073,2` ×2 — Leave Eadgar's cave.<br>*(+6 more distinct points)* | Return to [[Eadgar]] and continue until you have hidden the parrot in  |
-| 1 | `East Start X Marks the Spot` | — | — | Head East & Start X Marks the Spot on Veos (2,1) & complete the first  |
+| 1 | `Edgeville Bank` | Edgeville (teleport); Edgeville Dungeon (dungeon); Edgeville Monastery (teleport) | — | Head to Edgeville Bank |
+| 1 | `Emelio` | — | `1753,3074,0` ×4 — Talk to Emelio in Outer Fortis at the south-eastern <br>`1754,3074,0` ×3 — Return to Emelio with news of your kebab success!<br>`1798,9506,0` ×2 — Talk to Emelio to get another test kebab. | Head South-East back to Emelio |
 | 1 | `Emir` | — | `3377,3285,0` ×1 — Pray at the altar at the Emir's Arena with smite act | Teleport to Emir’s Arena |
-| 1 | `Enakhrah` | — | — | Camulet -> Enakhrah |
-| 1 | `Entrana` | Ship to Entrana (transport); Entrana Dungeon (dungeon) | `3047,3236,0` ×3 — Bank all weapons and armour you have, and go to Port<br>`2851,3350,0` ×1 — Travel to Entrana with the silver pot and have the H<br>`2853,3349,0` ×1 — Use the illuminated pouch on the Altar in the Entran<br>*(+8 more distinct points)* | Travel to Entrana [Falador Easy Diary] |
+| 1 | `Enakhrah` | Nardah (teleport) | — | Camulet -> Enakhrah |
 | 1 | `Essence Mine` | — | `3253,3401,0` ×2 — Teleport to the essence mine with Aubury in south ea<br>`3104,3162,0` ×1 — Teleport to the essence mine with Sedridor in the Wi<br>`3104,9571,0` ×1 — Teleport to the essence mine with Sedridor in the Wi<br>*(+5 more distinct points)* | Teleport to Essence Mine [Enter the Abyss] |
 | 1 | `Estate` | Quest Cape (teleport) | `2638,3293,0` ×2 — Talk to the Estate Agent in East Ardougne.<br>`1781,3619,0` ×1 — Search the desk in the house south of the Hosidius E<br>`2735,3500,0` ×1 — TALK to the estate agent to redecorate your house to<br>*(+1 more distinct points)* | Go to the [[Estate agent]] and move your house to Pollnivneach |
-| 1 | `Farming Guild` | Ranging Guild (minigame); Fishing Guild (teleport); Farming Cape (teleport) | `1242,3758,0` ×3 — Check the health of the fruit tree planted in the Fa<br>`1238,3726,0` ×2 — Harvest your herbs from the Farming Guild patch.<br>`1232,3736,0` ×2 — Check the health of the tree planted in the Farming <br>*(+6 more distinct points)* | Head South of the [[Farming Guild]] |
+| 1 | `Experiment Lair` | — | — | Head to the Experiment Lair and continue Creature of Fenkenstrain unti |
+| 1 | `Falador Allotment Patch` | — | — | Head to Falador Allotment Patch |
+| 1 | `Falador Loom` | Falador (teleport); Falador Park (teleport) | — | Head South to the Falador Loom & craft a basket & Strip of Cloth [Fala |
 | 1 | `Feldip Hills` | Feldip Hills Teleport (teleport) | `2649,2964,0` ×2 — Talk to Rantz on the east coast of Feldip Hills.<br>`2525,2916,0` ×2 — Talk to the Hunting Expert in his hut in the middle <br>`2631,2982,0` ×1 — Talk to Rantz in the east of Feldip Hills.<br>*(+8 more distinct points)* | Glider -> Feldip Hills -> Back to Al Kharid [Western Province Medium D |
-| 1 | `Fishing Contest` | Fishing Cape (teleport); Fishing Trawler (minigame) | — | You can get multiple Garlic by spamclicking the cupboard [Fishing Cont |
+| 1 | `Fishing Contest` | Fishing Trawler (minigame) | — | You can get multiple Garlic by spamclicking the cupboard [Fishing Cont |
 | 1 | `Forgotten Tower` | — | — | Run to the Forgotten Tower |
-| 1 | `Grand Exchange` | — | `2951,3451,0` ×1 — Bring Doric north of Falador all the required items.<br>`3140,3504,0` ×1 — Enter the trapdoor near the Grand Exchange.<br>`3122,3484,0` ×1 — Bring the Staff of Armadyl to Lucien in the house we<br>*(+2 more distinct points)* | Teleport to Grand Exchange via spellbook > Spirit tree (2) |
+| 1 | `Fossil Island` | Ship to Fossil Island (transport) | `3708,3833,0` ×3 — Check the health of the centre hardwood tree on Foss<br>`3715,3835,0` ×3 — Check the health of the eastern hardwood tree on Fos<br>`3702,3837,0` ×2 — Check the health of the western hardwood tree on Fos<br>*(+2 more distinct points)* | Head to Fossil Island |
+| 1 | `H` | — | — | Head south to [[H.A.M. Hideout]] |
+| 1 | `Haunted Mine` | Abandoned Mine (altar); Salt Mine (dungeon) | `3440,3232,0` ×3 — Enter the Haunted Mine.<br>`3430,3233,0` ×1 — Make sure you're prepared to fight Treus Dayth (leve | Head to the Haunted Mine |
 | 1 | `Huge Gate` | — | — | Head west then south through the [[Huge Gate]] Follow the path and col |
-| 1 | `Ice Mountain` | — | `3000,3494,0` ×2 — Enter Camdozaal, west of Ice Mountain.<br>`3003,3435,0` ×1 — Talk to Willow outside Falador, south of the Ice Mou<br>`3022,3453,0` ×1 — Talk to Rolad at the Ice Mountain entrance to the Dw<br>*(+2 more distinct points)* | Head North and go to the [[Ice Mountain]] There use Secateurs on White |
+| 1 | `Hunter Guild` | Hunter Guild Caverns (dungeon); Hunter's End (dungeon); Fishing Guild (teleport) | `1623,2982,0` ×2 — Talk to Guild Hunter Fox near the crevice south-east<br>`1554,3033,0` ×1 — Talk to Guildmaster Apatura in the Hunter Guild, sou<br>`1562,3060,0` ×1 — Get a box trap. You can buy one from Imia in the nor<br>*(+1 more distinct points)* | Head to Hunter Guild |
+| 1 | `Hunter's Guild` | Hunter's End (dungeon); Hunter Guild Caverns (dungeon); Myth's Guild (teleport) | — | Head West to the Hunter's Guild |
 | 1 | `Ice Queen` | Ice Queen's Lair (dungeon) | `2865,9948,0` ×1 — Kill the Ice Queen for ice gloves. | Head to the [[Ice Queen]] |
 | 1 | `Ikov Temple` | — | — | Run to Ikov Temple & collect Boots of Lightness |
-| 1 | `Jarvald` | — | `2620,3686,0` ×2 — Speak with Jarvald to travel to Waterbirth Island.<br>`2551,3754,0` ×1 — Collect 5 snape grass on Waterbirth Island. Speak wi | Head to Waterbirth Island by talking to [[Jarvald]] |
+| 1 | `Islwyn` | — | `2207,3159,0` ×2 — Talk to Islwyn in Isafdar. If he's not at the marked | Head to Islwyn & start Roving Elves (1,1) |
 | 1 | `Jolly Boar Inn` | — | `3286,3494,0` ×2 — Go upstairs in the Jolly Boar Inn north east of Varr<br>`3283,3501,0` ×1 — Talk to Elias White in the Jolly Boar Inn north-east<br>`3269,3480,0` ×1 — Follow the path to the south and inspect the plant s<br>*(+1 more distinct points)* | Head to [[Jolly Boar Inn]] |
-| 1 | `King Arthur` | — | `2763,3513,0` ×2 — Talk to King Arthur in Camelot Castle to start.<br>`1867,4233,0` ×1 — Free King Arthur<br>`1867,4235,0` ×1 — Talk to King Arthur in the basement.<br>*(+3 more distinct points)* | Head North into the Camelot Castle and start Merlins Crystal by talkin |
+| 1 | `Karamja Gloves` | Karamja Dungeon (dungeon); Karamja (teleport) | — | Teleport on your Karamja Gloves |
+| 1 | `Keldagrim` | Keldagrim Entrance (dungeon); Aldarin (teleport) | `2842,10129,0` ×2 — Talk to the Dwarven Engineer in west Keldagrim.<br>`2732,3713,0` ×1 — Travel to the Keldagrim south mines and talk to Dond<br>`2781,10161,0` ×1 — Travel to the Keldagrim south mines and talk to Dond<br>*(+8 more distinct points)* | Head to Keldagrim |
+| 1 | `Kharyrll Portal` | Kharyrll (teleport); Return Portal (transport) | — | Teleport to POH -> Kharyrll Portal [Morytania Hard Diary] |
 | 1 | `King Roald` | — | `3222,3473,0` ×4 — Talk to King Roald in Varrock Castle.<br>`3221,3473,0` ×3 — Talk to King Roald.<br>`3926,4945,0` ×2 — Talk to King Roald.<br>*(+2 more distinct points)* | Head to [[King Roald]] and start Priest in Peril (1,1,3) |
 | 1 | `Lady Lumbridge` | Lumbridge (teleport) | — | Head South to [[Lady Lumbridge]] |
 | 1 | `Lady of the Waves` | — | `2763,2952,0` ×1 — Charter the Lady of the Waves from south of Cairn Is<br>`2761,2959,1` ×1 — Charter the Lady of the Waves from south of Cairn Is | Head West & take the [[Lady of the Waves]] to Port Khazard [Karamja Me |
-| 1 | `Last Man Standing Castle Wars` | Last Man Standing (minigame) | — | Minigame Teleport to Last Man Standing -> Castle Wars portal |
-| 1 | `Lletya` | — | `2354,3170,0` ×3 — Talk to Arianwyn in Lletya.<br>`2324,3152,0` ×2 — Talk to Elena in the south west of Lletya.<br>`2352,3170,0` ×2 — Talk to Baxtorian in Lletya about Trahaearn.<br>*(+15 more distinct points)* | Teleport to Lletya |
+| 1 | `Library` | Arceuus Library (teleport) | `3211,3493,0` ×3 — Talk to Surok Magis in the Varrock Library.<br>`3211,3494,0` ×2 — Talk to Reldo in the Varrock Castle's library.<br>`1633,3808,0` ×2 — Give the tomes to Logosia in the Arceuus library.<br>*(+15 more distinct points)* | Head South to Library |
 | 1 | `Lovakenj` | — | — | Teleport to Lovakenj with Book of the Dead |
-| 1 | `Magic combat tutor` | — | — | Head North-West to [[Magic combat tutor]] & drop Air & Mind Runes and  |
+| 1 | `Lumberyard` | Lumberyard Teleport (teleport); Lumbridge (teleport) | `3306,3505,0` ×1 — Search for a kitten in the crates in the Lumberyard.<br>`3310,3509,1` ×1 — Climb down ladder in the Lumberyard.<br>`3310,3509,0` ×1 — Climb up the ladder in the Lumberyard. | Head North-East to the Lumberyard |
+| 1 | `Lumbridge Swamp Dungeon` | Lumbridge Swamp Caves (dungeon) | — | Head to Lumbridge Swamp Dungeon |
+| 1 | `Lunar Spellbook` | — | `2158,3864,0` ×1 — Activate the lunar spellbook for NPC Contact. Either | Teleport to POH -> Lunar Spellbook |
+| 1 | `Mad Eadger` | Kandarin Headgear (teleport) | — | Head to Mad Eadger at the top of Trollheim and continue Eadger's Ruse  |
+| 1 | `Magic` | — | `3050,9840,0` ×4 — Go to the north east of the Dwarven Mines and use th<br>`1585,3821,0` ×2 — Climb up the stairs in the Tower of Magic in Arceuus<br>`1868,6430,0` ×2 — Kill radiant sanguisphera with Protect from Magic on<br>*(+55 more distinct points)* | Head North-West to [[Magic combat tutor]] & drop Air & Mind Runes and  |
 | 1 | `Martin the Master Gardener Continue Fairy Tale Part I` | — | — | Return to [[Martin the Master Gardener]] & Continue Fairy Tale Part I  |
-| 1 | `Minecart` | Wine Cellar (dungeon) | — | Return to Minecart & take to Shayzien East (B) |
 | 1 | `Minecart (North-East)` | Wine Cellar (dungeon) | — | Blessing -> Minecart (North-East) -> Farming Guild (2) |
 | 1 | `Minigame` | — | `3289,2800,0` ×2 — Enter the Pyramid plunder minigame. If you don't see<br>`1934,4427,3` ×2 — Talk to the guardian mummy to start the minigame. If<br>`2896,3529,0` ×1 — Talk to Denulth in Burthorpe. You can get there with<br>*(+4 more distinct points)* | Return to Minigame teleport location and take the green portal east to |
-| 1 | `Miscellania` | Ship to Miscellania (transport) | `2506,3849,0` ×4 — Talk to Advisor Ghrim in Miscellania castle.<br>`2506,3872,0` ×2 — Talk to Princess Astrid in Miscellania castle.<br>`2501,3860,1` ×2 — Return to King Vargas in Miscellania castle.<br>*(+9 more distinct points)* | Teleport to Miscellania and collect your resources (check allocation b |
 | 1 | `Mistrock` | — | — | Head South to [[Mistrock]] & deposit all there |
-| 1 | `North-East of Falador` | — | `3012,3453,0` ×1 — Go talk to Nulodion at the Dwarven Black Guard camp  | Head North-East of Falador |
+| 1 | `Morton` | Mort'ton (teleport) | — | Head to Morton |
+| 1 | `Morytania Allotment Patch` | — | — | Head to Morytania Allotment Patch |
+| 1 | `Mount Karuulm` | — | `1311,3807,0` ×3 — Go to Mount Karuulm, go down the elevator, and speak<br>`1306,10205,0` ×1 — Go to Mount Karuulm, go down the elevator, and speak<br>`1312,10186,0` ×1 — Inspect the ancient grave south of Mount Karuulm.<br>*(+3 more distinct points)* | Head to Mount Karuulm |
+| 1 | `Museum` | — | `3257,3448,0` ×1 — Talk to Curator Haig in the Varrock Museum.<br>`3964,4920,0` ×1 — Talk to Curator Haig in the Varrock Museum.<br>`3719,3812,0` ×1 — Talk to Jardric in the museum camp.<br>*(+6 more distinct points)* | Head to the Museum, Take the Cleaning Kit and clean [[Uncleaned find]] |
 | 1 | `Old Man Yarlo` | — | `3240,3395,0` ×2 — Talk to Old Man Yarlo in south Varrock. | Return to [[Old Man Yarlo]] & continue Daddy's Home |
 | 1 | `Ortus Farm` | — | — | Head North-West to [[Ortus Farm]] |
 | 1 | `Outpost` | — | `3041,3202,0` ×2 — Talk to the squire in Port Sarim to travel to the Vo<br>`3212,3263,0` ×1 — Tell Larry about the outpost and travel back to the <br>`3201,3266,0` ×1 — Speak to the sheep-penguins once again in the Lumbri<br>*(+6 more distinct points)* | Teleport to Outpost |
 | 1 | `Outside POH` | — | — | Teleport Outside POH |
-| 1 | `POH AJP` | — | — | Teleport to POH -> AJP |
-| 1 | `POH BIP` | — | — | Teleport to POH -> BIP |
-| 1 | `POH BLP` | — | — | Teleport to POH -> BLP |
-| 1 | `POH CIR` | — | — | Teleport to POH -> CIR |
-| 1 | `POH CKS` | — | — | Teleport POH -> CKS |
-| 1 | `POH DLQ` | — | — | Teleport POH -> DLQ |
-| 1 | `POH Kharyrll Portal` | — | — | Teleport to POH -> Kharyrll Portal [Morytania Hard Diary] |
-| 1 | `POH Lunar Spellbook` | — | — | Teleport to POH -> Lunar Spellbook |
 | 1 | `Padewana` | Paddewwa (teleport) | — | Teleport to Padewana [Varrock Hard Diary] |
 | 1 | `Pest Control` | Pest Control Novice (minigame); Ship to Pest Control (transport); Pest Control Veteran (minigame) | `3041,3202,0` ×1 — Talk to the squire to travel to the Void Knights' Ou<br>`2658,2639,0` ×1 — Complete a novice game of Pest Control.<br>`2637,2653,0` ×1 — Complete a veteran game of Pest Control.<br>*(+1 more distinct points)* | Minigame Teleport to Pest Control [Western Province Medium Diary] |
 | 1 | `Player Owned House` | — | — | Teleport to Player Owned House |
-| 1 | `Pollnivneach` | Carpet to Pollnivneach (transport) | `3351,2962,0` ×2 — Climb onto the basket south of the Camel Store in Po<br>`3310,2962,0` ×1 — Enter the smokey well west of Pollnivneach. You'll n<br>`3355,2953,0` ×1 — Use a coin on the pot next to the Snake Charmer in P<br>*(+2 more distinct points)* | Travel to Pollnivneach via Magic Carpet |
+| 1 | `Port Khazard` | Ship to Port Khazard (transport); Khazard (teleport) | `2678,3153,0` ×2 — Talk to Tindel Marchant in Port Khazard.<br>`2664,3160,0` ×1 — Talk to Murphy in Port Khazard.<br>`2659,3160,0` ×1 — Catch a manta ray in the Fishing Trawler and cook it<br>*(+2 more distinct points)* | Head to Port Khazard |
 | 1 | `Port Phasmatys` | Ship to Port Phasmatys (transport); Port Phasmatys Brewery (dungeon); Rowboat to Port Phasmatys (transport) | `3677,3508,0` ×3 — Talk to Velorina in east Port Phasmatys.<br>`3658,3409,0` ×2 — Enter the spider cave south of Port Phasmatys.<br>`3660,3508,0` ×2 — Enter Port Phasmatys.<br>*(+16 more distinct points)* | Return to Port Phasmatys |
 | 1 | `Port Piscarilius` | Port Sarim Rat Pits (dungeon); Ship to Port Sarim/Port Piscarilius (transport) | `1775,3681,0` ×1 — Talk to Martin Holt at the Legless Faun pub in the s<br>`1764,10158,0` ×1 — Speak to Lady Piscarilius in the sewers under Port P<br>`1813,3745,0` ×1 — Climb down the man hole in Port Piscarilius.<br>*(+3 more distinct points)* | Travel to Port Piscarilius via Veos |
-| 1 | `Port Sarim` | Ship to Port Sarim (transport); Port Sarim Rat Pits (dungeon) | `3047,3236,0` ×3 — Bank all weapons and armour you have, and go to Port<br>`3027,3249,0` ×2 — Talk to Brian in the Port Sarim axe shop.<br>`3053,3251,0` ×2 — Talk to Redbeard Frank in Port Sarim.<br>*(+35 more distinct points)* | Return to Port Sarim |
-| 1 | `Priffdinas` | — | — | Teleport to Priffdinas |
+| 1 | `Port Tyras` | Port Roberts (teleport) | — | Charter to Port Tyras |
+| 1 | `Priffdinas` | Prifddinas (teleport) | — | Teleport to Priffdinas |
+| 1 | `Puro Puro` | — | — | Head to Puro Puro |
 | 1 | `Pyramid Plunder Loot` | Pyramid Plunder (minigame) | — | Go to Pyramid Plunder & Loot all Gold Chests until Room 6, and all Sar |
+| 1 | `Quarry` | — | `3175,2887,0` ×2 — Return to fight the Mysterious Figure, through the p | Head North to the Quarry |
+| 1 | `Rasolo` | — | `2531,3420,0` ×2 — Talk to Rasolo south of Baxtorian Falls.<br>`2547,3421,0` ×1 — Equip the Ring of Visibility, then go down the ladde | Head to Rasolo |
 | 1 | `Recharge Prayer` | — | — | Ardy Cloak -> Recharge Prayer |
 | 1 | `Redbeard Frank` | — | `3053,3251,0` ×2 — Talk to Redbeard Frank in Port Sarim. | Return to [[Redbeard Frank]] |
 | 1 | `Regulus Cento` | — | `1701,3143,0` ×1 — Speak to Regulus Cento south of the Grand Museum.<br>`3281,3413,0` ×1 — Talk to Regulus Cento outside Varrock's East Gate to<br>`1699,3141,0` ×1 — TALK to Regulus Cento south-east of the palace. | Travel east to [[Regulus Cento]] & travel to Varlamore |
+| 1 | `Relleka` | Rellekka (teleport) | `2707,3732,0` ×1 — Talk to Larry in Relleka.<br>`2659,3671,0` ×1 — Enter the Relleka province. | Head towards Relleka |
+| 1 | `Rimmington Boat` | Rimmington (teleport) | — | Teleport to Ardy->Rimmington Boat |
 | 1 | `Rolad` | — | `3022,3453,0` ×2 — Talk to Rolad at the Ice Mountain entrance to the Dw<br>`3019,9850,0` ×1 — Go back up to Rolad. | Return to Rolad [Between a Rock] |
 | 1 | `Run North` | Return Portal (transport) | `3439,9271,0` ×1 — As fast as possible, run back to the juncture, then <br>`2859,3939,0` ×1 — Wait a few seconds, then run north to the next point | Ardougne: Ardy Cloak 1 -> Run North |
 | 1 | `Rune Essence Mine` | Lunar Isle Mine (dungeon) | `2683,3326,0` ×1 — Have Wizard Cromperty teleport you to the Rune essen<br>`3253,3402,0` ×1 — Go to the Rune Essence mine by talking to any of the<br>`3103,9571,0` ×1 — Teleport to the Rune essence mine via Sedridor. | Teleport to Rune Essence Mine [Lumbridge Easy Diary] |
 | 1 | `Scorching Bow` | — | — | Tormented Synapse Order: Purging Staff -> Scorching Bow -> Emberlight  |
+| 1 | `Shantay Pass If` | Carpet to Shantay Pass (transport) | — | Head South to Shantay Pass - If you turned your desert robe top & bott |
 | 1 | `Shayzien East (B)` | Shayzien Prison (dungeon); Shayzien Crypts (dungeon) | — | Minecart -> Shayzien East (B) |
 | 1 | `Sheep Herder` | — | — | Head North to the church then start [[Sheep Herder]] (1,1) Wear Plague |
-| 1 | `Smokey well` | — | `3310,2962,0` ×2 — Enter the smokey well west of Pollnivneach. You'll n | Head to the [[Smokey well]] West of Polnivneach |
-| 1 | `Soul Wars Edgeville` | Soul Wars (minigame) | — | Minigame teleport to Soul Wars > Edgeville |
-| 1 | `South Complete Dwarf Cannon` | — | — | Head South & Complete Dwarf Cannon |
-| 1 | `South Complete The Heroes Quest` | — | — | Head South & Complete The Heroes Quest |
-| 1 | `South West of Gu-tanoth` | — | — | Head South West of Gu-tanoth and take the hole (North of the Death Run |
+| 1 | `Smokey` | — | `3310,2962,0` ×2 — Enter the smokey well west of Pollnivneach. You'll n | Head to the [[Smokey well]] West of Polnivneach |
+| 1 | `Sorcerer's Tower` | Sorceress's Garden (minigame); Slayer Tower (teleport) | `2702,3405,3` ×1 — Speak to Thormac on the top floor of the Sorcerer's <br>`2701,3408,0` ×1 — Climb to the top of the Sorcerer's Tower south of Se<br>`2704,3403,1` ×1 — Climb to the top of the Sorcerer's Tower south of Se<br>*(+1 more distinct points)* | Head South-West to Sorcerer's Tower |
+| 1 | `Soul Wars Edgeville` | Soul Wars (minigame); Edgeville (teleport) | — | Minigame teleport to Soul Wars > Edgeville |
+| 1 | `Southern Trapdoor` | — | — | Head down the Southern Trapdoor |
 | 1 | `Stiletto Fortre` | — | — | Mould Order: Flamberge Blade -> Stiletto Fortre -> Serpent Blade -> De |
 | 1 | `Suffering` | — | — | Zenyte Order: Anguish -> Suffering -> Tormented Bracelet -> Torture Am |
 | 1 | `Sunbeam ale` | — | — | Head East after selling Eclipse reds and buy 3 [[Sunbeam ale]]s from t |
+| 1 | `Sunlight Antelopes` | — | — | Head East towards the Sunlight Antelopes |
+| 1 | `Sword Shop` | — | — | Head South to the Sword Shop and go up the ladder. Loot the lit candle |
 | 1 | `TOA` | — | — | Rapier -> TOA |
-| 1 | `Tzhaar Fight Pits` | TzHaar Fight Pit (minigame); TzHaar Fight Cave (minigame); TzHaar City (Mor Ul Rek) (dungeon) | — | Minigame Teleport to Tzhaar Fight Pits |
-| 1 | `Uncleaned find` | — | — | Head to the Museum, Take the Cleaning Kit and clean [[Uncleaned find]] |
+| 1 | `Trader Crewmember` | — | `1742,3135,0` ×1 — Return up north and speak to any Trader Crewmember. | Head back to the Trader Crewmember |
+| 1 | `Tree Gnome Village` | Tree Gnome Village Dungeon (dungeon); Draynor Village (teleport); Elder Gnome child (teleport) | `2490,3180,0` ×2 — Check the health of the fruit tree planted outside t<br>`2533,3155,0` ×1 — Go to the centre of the Tree Gnome Village and go do<br>`2548,9565,0` ×1 — Get the Tree Gnome Village dungeon key from the crat<br>*(+3 more distinct points)* | Go upstairs again and Collect 4x logs on the top floor [Tree Gnome Vil |
+| 1 | `Tzhaar Fight Pits` | TzHaar Fight Pit (minigame); TzHaar Fight Cave (minigame) | — | Minigame Teleport to Tzhaar Fight Pits |
+| 1 | `Varrock Sewer` | Varrock Sewers (dungeon); Varrock GE (teleport); Varrock (teleport) | `3243,9867,0` ×2 — Talk to Phingspet in Varrock Sewer.<br>`3237,3458,0` ×1 — Go down into Varrock Sewer via the Manhole south eas | Head to Varrock Sewer |
 | 1 | `Watchtower Wizard` | Watchtower (teleport); Watchtower Yanille (teleport) | `2549,3111,1` ×4 — Go to the top floor of the Watchtower north of Yanil<br>`2546,3114,2` ×4 — Go to the top floor of the Watchtower north of Yanil<br>`2544,3111,0` ×4 — Return to the Watchtower Wizard with the fingernails<br>*(+2 more distinct points)* | Return to Watchtower Wizard |
 | 1 | `With Wizard Comperty` | — | — | Teleport With Wizard Comperty [Enter the Abyss] |
-| 1 | `Xerics Heart` | — | — | Teleport to Xerics Heart on Xerics Talisman [Kourend Hard Diary] |
 | 1 | `Zaff` | — | `3202,3434,0` ×1 — Talk to Zaff in the Varrock staff shop. | Head East and buy an Air Staff from [[Zaff]]. Equip it. |
 
 ## Quest and diary tags
