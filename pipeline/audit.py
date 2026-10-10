@@ -178,9 +178,19 @@ def main() -> int:
     found.check("a branch condition can be answered", len(instructions))
     found.check("an interface mark names an interface", len(instructions))
     found.check("an interface mark carries only what the plugin reads", len(instructions))
+    found.check("a combination lock can be solved", len(instructions))
     for owner, key, record in instructions:
         tag = f"{owner}@{key}"
-        if not (record.get("text") or record.get("point") or record.get("ids")):
+        # A conditional whose own default is nothing still gives something, so
+        # long as every branch does. Quest Helper writes exactly that --
+        # `super(questHelper, null, requirements)` on Recruitment Drive's
+        # MissCheeversStep -- where there is no advice until the player is
+        # somewhere specific, and the branches carry all of it.
+        speaks = record.get("text") or record.get("point") or record.get("ids")
+        branches = record.get("whenIn") or []
+        if not speaks and not (branches and all(
+                branch.get("text") or branch.get("point") or branch.get("ids")
+                for branch in branches)):
             found.fail("every instruction gives the player something", tag)
         if record.get("point") is not None and not point_ok(record["point"]):
             found.fail("every instruction point is three numbers",
@@ -199,6 +209,10 @@ def main() -> int:
                            f"{tag} {mark}")
         if when is not None and not condition_ok(when):
             found.fail("a branch condition can be answered", f"{tag} {when}")
+        for lock in record.get("combinationLocks") or ():
+            problem = lock_problem(lock)
+            if problem:
+                found.fail("a combination lock can be solved", f"{tag} {problem}")
 
     # --- the rules the plugin acts on -------------------------------------
     print("\nrules")
@@ -294,9 +308,12 @@ def main() -> int:
     arrives = [(sec, st) for sec, st in steps if st.get("arrivesAt")]
     found.check("a step that ticks on arriving has somewhere to arrive", len(arrives))
     for section, step in arrives:
-        points = (step.get("destination") or {}).get("points") or []
+        points = list((step.get("destination") or {}).get("points") or [])
         points += (step.get("target") or {}).get("points") or []
-        if not points:
+        travel = (step.get("travel") or {}).get("destination")
+        if travel:
+            points.append(travel)
+        if not point_ok(step["arrivesAt"]) or step["arrivesAt"] not in points:
             found.fail("a step that ticks on arriving has somewhere to arrive",
                        where(section, step))
 
@@ -348,7 +365,7 @@ def main() -> int:
         return not (target.get("ids") or target.get("name") or step.get("items")
                     or step.get("questHelper") or step.get("diaryTask")
                     or step.get("teleport") or step.get("completion")
-                    or step.get("banking") or step.get("dialogue")
+                    or step.get("banking") or step.get("dialogue") or step.get("inventoryAction")
                     or (step.get("destination") or {}).get("points"))
     blank = [st for _, st in steps if bare(st)]
     gaps = [st for st in blank if not st.get("advice")]
@@ -522,12 +539,71 @@ def main() -> int:
     return 1 if bad else 0
 
 
+def lock_problem(lock: dict) -> str | None:
+    """Why a combination lock could not be solved, or nothing.
+
+    Every dial is drawn from this: which arrow to click and how many times. A
+    target outside the dial's range, or two arrows that are the same child,
+    would point the player at the wrong control with full confidence.
+    """
+    size = lock.get("size")
+    if not isinstance(size, int) or not 2 <= size <= 128:
+        return f"dial size {size!r}"
+    for name in ("parent", "submit"):
+        if not isinstance(lock.get(name), int) or lock[name] <= 0:
+            return f"{name} {lock.get(name)!r}"
+    cycles = lock.get("cycles") or []
+    if not 2 <= len(cycles) <= 8:
+        return f"{len(cycles)} dials"
+    seen = set()
+    for dial in cycles:
+        target = dial.get("target")
+        if not isinstance(target, int) or not 0 <= target < size:
+            return f"target {target!r} outside a dial of {size}"
+        for name in ("varc", "down", "up"):
+            if not isinstance(dial.get(name), int) or dial[name] < 0:
+                return f"{name} {dial.get(name)!r}"
+        if dial["down"] == dial["up"]:
+            return f"both arrows are child {dial['down']}"
+        for name in ("down", "up"):
+            if dial[name] in seen:
+                return f"child {dial[name]} used by two dials"
+            seen.add(dial[name])
+    return None
+
+
 def condition_ok(when: dict) -> bool:
     """Whether a branch condition is one the plugin can actually evaluate."""
+    if "dialog" in when:
+        # DialogRequirement: words the dialogue has to contain, and optionally
+        # who must be saying them. No words would match every line spoken.
+        found = when["dialog"]
+        text = found.get("text")
+        return (isinstance(text, list) and bool(text)
+                and all(isinstance(said, str) and said for said in text)
+                and isinstance(found.get("active", False), bool)
+                and (found.get("speaker") is None or isinstance(found.get("speaker"), str)))
+    for remembered in ("memory", "once"):
+        if remembered in when:
+            # RuneliteRequirement and Conditions(true, ...): a fact kept once the
+            # inner condition passes. Only as good as that inner condition.
+            found = when[remembered]
+            return (isinstance(found.get("key"), str) and bool(found["key"])
+                    and isinstance(found.get("when"), dict) and condition_ok(found["when"]))
     if "open" in when:
         # "Is that interface on screen" -- a widget lookup, and the thing that
         # makes a puzzle inside a menu answerable at all.
         return isinstance(when["open"], int)
+    if "widget" in when:
+        # "Is that interface showing these words" -- Quest Helper's
+        # WidgetTextRequirement, and how it knows a puzzle is open rather than
+        # merely reachable. Needs somewhere to look and something to read;
+        # without the words it would hold for any interface at all.
+        found = when["widget"]
+        return (isinstance(found.get("group"), int)
+                and isinstance(found.get("child"), int)
+                and bool(found.get("text"))
+                and all(isinstance(said, str) and said for said in found["text"]))
     if "here" in when:
         # "Is that thing in the scene" -- answered by the same walk the tracker
         # already does. Ids only: a constant that did not resolve leaves the

@@ -48,6 +48,7 @@ PINNED = REPO / "pinned"
 # do not quietly come apart.
 COMPRESSED = (
     "ids.json",
+    "diary_tasks.json",
     "atlas.json",
     "qh_hints.json",
     "quest_objects.json",

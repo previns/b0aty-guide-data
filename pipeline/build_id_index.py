@@ -36,6 +36,10 @@ CLASSES = {
     # Per-spell widget ids, so a step can point at the spell to click. A nested
     # class, which javap takes with a dollar sign.
     "spell": "net.runelite.api.gameval.InterfaceID$MagicSpellbook",
+    # What an interface is showing right now, which is not a varbit: a
+    # combination lock keeps each dial's current letter in a client-side int,
+    # and a puzzle solver has no way to read the dials without them.
+    "varclient": "net.runelite.api.gameval.VarClientID",
 }
 
 RE_CONST = re.compile(r"\bint\s+([A-Z0-9_]+)\s*=\s*(-?\d+)")

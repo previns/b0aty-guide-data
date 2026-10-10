@@ -88,6 +88,9 @@ RE_ID_FIELD = re.compile(r"^\|\s*id(\d*)\s*=\s*([0-9][0-9,\s]*?)\s*$", re.M)
 RE_MAP = re.compile(r"\{\{Map[^}]*?\bx\s*=\s*(\d+)[^}]*?\by\s*=\s*(\d+)", re.I)
 RE_MAP_POSITIONAL = re.compile(
     r"\{\{Map\b[^}]*?\|\s*(\d{3,5})\s*,\s*(\d{3,5})\s*[|}]", re.I)
+# A row of a Location table: {{TeleportLocationLine|name=...|x=1491|y=3283}}.
+RE_LOCATION_LINE = re.compile(
+    "LocationLine[^}]*?[|]x *= *([0-9]+)[^}]*?[|]y *= *([0-9]+)", re.I)
 RE_PLANE = re.compile(r"\bplane\s*=\s*(\d+)", re.I)
 # One whole {{Map ...}} block, so it can be judged before its numbers are taken.
 RE_MAP_BLOCK = re.compile(r"\{\{Map\b[^}]*\}\}", re.I)
@@ -208,6 +211,16 @@ def map_points(text: str, plane: int) -> list[list[int]]:
     return points
 
 
+def location_lines(text: str, plane: int) -> list[list[int]]:
+    """Coordinates from a page's Location table rows, in order."""
+    points: list[list[int]] = []
+    for x, y in RE_LOCATION_LINE.findall(text):
+        point = [int(x), int(y), plane]
+        if point not in points:
+            points.append(point)
+    return points
+
+
 def parse_page(record: dict) -> dict | None:
     """Pull kind, IDs and coordinates out of a page's infobox."""
     if record.get("missing"):
@@ -253,6 +266,19 @@ def parse_page(record: dict) -> dict | None:
         lambda block: "" if RE_MAPLINK.search(block.group(0)) else block.group(0),
         text)
     points = map_points(authoritative, plane) or map_points(text, plane)
+
+    # A Location table, which some scenery uses instead of a map. Statue (Ates)
+    # is six statues listed as rows -- "The Darkfrost, west of the base camp" --
+    # and carries no {{Map}} at all, so it resolved to eighteen ids and nowhere
+    # to send anyone. The guide's "Use the Icon on the Statue (Ates)" drew no
+    # line until the statue rendered, which is after the walk that needed it.
+    #
+    # Scenery only. Twenty item pages carry the same template, and there the
+    # rows are where the jewellery teleports *to*: reading them as the item's
+    # own location would put an amulet of glory in Edgeville, Karamja and the
+    # Gnome Stronghold at once.
+    if not points and kind == "object":
+        points = location_lines(text, plane)
 
     if not ids and not points:
         return None

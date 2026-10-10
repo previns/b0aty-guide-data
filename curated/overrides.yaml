@@ -5,6 +5,39 @@
 #   a1b2c3d4e5:
 #     target: {name: "Foo", kind: npc, ids: [123], points: [[3200,3200,0]], confidence: manual}
 steps:
+  # Author requested concurrent reminders, not interruption of Quest Helper.
+  # TheGrandTree.loadSteps: 80 is the shipyard/foreman stage; 100 is Anita/key
+  # and invasion-plan retrieval; 110 begins delivery of the obtained plans.
+  # These are reminders only, not new completion boundaries.
+  '57ebcf3e91':
+    questSideTaskOf: 7f0ea48b57
+    questSideTaskFrom: 80
+  '30f3fe36a6':
+    questSideTaskOf: fe6303f975
+    questSideTaskFrom: 100
+    # RuneLite ItemID.SWAMP_TOAD, not the distinct TOADS_LEGS item.
+    items:
+      - {name: Swamp toads, count: 2, ids: [2150]}
+  '4d95617033':
+    questSideTaskOf: fe6303f975
+    questSideTaskFrom: 110
+  # RuneLite ItemID.YELLOWDYE / REDDYE; other similarly named dummy IDs are not dyes.
+  '8233da328e':
+    items:
+      - {name: Yellow dye, count: 2, ids: [1765]}
+      - {name: Red Dye, count: 3, ids: [1763]}
+  # Author authorised source-verified item mappings during the guide-wide
+  # regression audit, 2026-09-09. Scoped here: generic wiki titles "Bananas",
+  # "Rum" and "Fur" denote other items and are not global synonyms.
+  # PiratesTreasure.java: tenBananas = ItemRequirement(..., ItemID.BANANA, 10).
+  '54e5f491c0':
+    items:
+      - {name: bananas, count: 10, ids: [1963]}
+  # RumSmugglingStep.java: karamjanRum uses ItemID.KARAMJA_RUM;
+  # getRumFromCrate is the Wydin stockroom step in this guide sentence.
+  '1f9257ad78':
+    items:
+      - {name: rum, ids: [431]}
   # Source-verified stopping points authorised by the guide author, 2026-09-06.
   # References are to helpers/quests in the vendored Quest Helper source.
   # These are exact objectives, not the value of the route's next quest visit.
@@ -218,6 +251,13 @@ steps:
   # the right ones without also throwing away Mudskipper Point and Shilo
   # Village, which are far from the town the step names and are correct.
   260e82444c:
+    # Authorised item mapping, 2026-09-09: OSRS Wiki Black bear drop table
+    # names one each of Raw bear meat, Bones and Bear fur. Bear fur ID 948
+    # agrees with QH MourningsEndPartI.java (ItemID.FUR), not generic Fur/6814.
+    items:
+      - {name: Raw Bear Meat, ids: [2136]}
+      - {name: Bones, ids: [526]}
+      - {name: fur, ids: [948]}
     target:
       name: "Black Bear"
       kind: npc
@@ -283,4 +323,77 @@ steps:
       kind: nav
       ids: []
       points: [[3443, 3258, 0]]
+      confidence: manual
+
+  # Planting steps name the crop; the player is carrying the seed. Each of these
+  # resolved to the wiki's plural page, which is a farming sack or basket of the
+  # harvested produce -- so the guide said "plant onions" and the plugin
+  # outlined a sack of them.
+  #
+  # Not fixed by a rule, deliberately. Thirteen of the guide's sixteen "Plant"
+  # steps already name the seed or sapling outright and resolve correctly; a
+  # rule rewriting "Plant X" to X seed would have to leave those alone, and
+  # "Plant the White Tree Shoot" is not a seed at all. Three steps, each with
+  # the guide's own withdraw line as evidence.
+
+  # Bank 107's withdraw carries "6x onion Seeds" -- ONION_SEED = 5319.
+  bc3613b036:
+    target:
+      name: "Onion seed"
+      kind: item
+      ids: [5319]
+      points: []
+      confidence: manual
+
+  # The same withdraw carries "6x Cabbage Seeds" -- CABBAGE_SEED = 5324.
+  1a2cbae29f:
+    target:
+      name: "Cabbage seed"
+      kind: item
+      ids: [5324]
+      points: []
+      confidence: manual
+
+  # Bank 74 withdraws a Seedbox and says "Thieve Masterfarmers for the correct
+  # Seeds and plant them", so the strawberries are planted from thieved seed.
+  # STRAWBERRY_SEED = 5323.
+  59653a0852:
+    target:
+      name: "Strawberry seed"
+      kind: item
+      ids: [5323]
+      points: []
+      confidence: manual
+
+  # "Head to Varlamore" pointed into Varlamore itself, [1580, 3120, 0], which is
+  # not somewhere you can walk to from Varrock. The way there is Regulus Cento,
+  # who runs the quetzal, and Bank 5's own step already says so: "Travel east to
+  # Regulus Cento & travel to Varlamore".
+  #
+  # Not resolved by the travel matcher, and deliberately not forced through it:
+  # that needs the step to name a vehicle, and "Head to Varlamore" names none.
+  # Loosening it would answer "Head to Catherby" with a boat.
+  #
+  # Corroborated from both directions. Shortest Path's transports.tsv:
+  #   3280 3412 0  ->  1700 3141 0   Travel Primio 12888   Children of the Sun
+  # and the wiki puts Regulus Cento at [3281, 3413, 0] and [1700, 3143, 0] --
+  # the same two ends, a tile apart. Primio is the quetzal; Cento is the handler,
+  # and he is the one our data resolves.
+  #
+  # The Varrock end only: the step means getting there from here.
+  2fe97854d4:
+    target:
+      name: "Regulus Cento"
+      kind: npc
+      ids: [12884, 12885]
+      points: [[3281, 3413, 0]]
+      confidence: manual
+
+  # Same sentence, in the melee training section.
+  7508bab217:
+    target:
+      name: "Regulus Cento"
+      kind: npc
+      ids: [12884, 12885]
+      points: [[3281, 3413, 0]]
       confidence: manual

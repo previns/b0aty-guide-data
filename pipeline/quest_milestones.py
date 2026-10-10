@@ -162,6 +162,10 @@ def pin_explicit_milestones(doc: dict, quests: dict, aliases: dict) -> dict:
             if not merged.get("questStep") or not quest:
                 continue
             text = strip_links(step["raw"]).strip()
+            # Completing/continuing the quest follows its live instruction, even
+            # when the quest's name also resolves to an NPC (Restless Ghost).
+            if re.match(r"^(?:complete|finish|continue)\s+", text, re.I):
+                merged["questFollow"] = True
             # '...unlock X, then complete these diary steps' does not finish
             # this quest. A last appearance in the route is not completion proof.
             partial = bool(BOUNDED.search(text) or re.search(r"\b(?:to unlock|to access)\b", text, re.I))

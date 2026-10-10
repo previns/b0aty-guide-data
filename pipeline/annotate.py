@@ -311,7 +311,10 @@ def skip_lead_ins(words: list[str]) -> list[str]:
 # one is a pickup now that RE_VEHICLE_TO has already claimed "Take the boat
 # to Brimhaven".
 RE_COLLECTS = re.compile(
-    r"(?:\b(?:collect|loot|pick\s+up)|^\s*take)\s+(?:the|an|a|all|some)?\s*", re.I)
+    r"(?:\b(?:collect|loot|pick\s+up)|^\s*take)\s+(?:(?:the|an|a|all|some)\s+)?", re.I)
+
+# An explicit timed errand, not arbitrary travel using the word 'take'.
+RE_TIMED_TAKE = re.compile(r"^\s*(?:When|During)\b[^,]*,\s*take\s+(?:(?:the|an|a|all|some)\s+)?", re.I)
 
 # What follows the drops and is not one of them.
 # Where to do it, not part of what is gathered: "Mine 10x Clay on the way",
@@ -339,7 +342,7 @@ RE_GATHERS = re.compile(
 
 # "until 46 Fishing", "until 6,099 Thieving Experience" -- a grind to a level,
 # where the number is the goal and not a quantity of anything.
-RE_UNTIL = re.compile(r"until", re.I)
+RE_UNTIL = re.compile(r"\buntil\b", re.I)
 
 
 def thing_worked(text: str, item: str) -> str | None:
@@ -409,11 +412,36 @@ def split_item_list(blob: str) -> list[dict]:
     """
     blob = RE_SLOTS.sub(" ", blob)
     blob = strip_links(blob)
+    # Commas inside notes or thousands are not item separators. Splitting
+    # first turned "1,200 Nature Runes" into 200 and leaked dose/cost notes
+    # into neighbouring requirements throughout the guide.
+    blob = re.sub(r"\([^()]*\)", " ", blob)
+    blob = re.sub(r"(?<=\d),(?=\d{3}(?:\D|$))", "", blob)
+    # "100+" is a minimum quantity, whereas "Coal+Iron" separates goods.
+    blob = re.sub(r"(?<!\d)\+", "&", blob)
     parts = re.split(r",|&|\band\b", blob)
     items: list[str] = []
+    hide_colour = None
     for part in parts:
         part = re.sub(r"\(.*?\)", " ", part)
         part = part.strip(" .;:")
+        # Rune shorthand shares only 'Runes', not the last element's quantity
+        # or element. Parse each quantity independently: 6xAir is six air runes,
+        # not an item named '6xAir Water Runes'. Restrict this to explicit rune
+        # names; arbitrary slash prose must remain unresolved.
+        rune_list = re.fullmatch(r"(.+?)\s+Runes?", part, re.I)
+        if rune_list and '/' in rune_list[1]:
+            rune_parts = rune_list[1].split('/')
+            matches = [re.fullmatch(
+                r"\s*(?:(\d+)\s*x?\s*|All\s+)?(Air|Water|Earth|Fire|Mind|Body|Cosmic|Chaos|Nature|Law|Death|Blood|Soul|Astral|Wrath)\s*",
+                value, re.I) for value in rune_parts]
+            if all(matches):
+                for match in matches:
+                    item = {'name': match[2] + ' Runes'}
+                    if match[1] and int(match[1]) != 1:
+                        item['count'] = int(match[1])
+                    items.append(item)
+                continue
         # Keep the leading quantity: "15 Pineapples", "5x Food", "4x Logs".
         # It used to be discarded, which is why a step saying to buy five jugs
         # of wine could not tell one jug from five.
@@ -434,6 +462,16 @@ def split_item_list(blob: str) -> list[dict]:
             continue
         if not re.search(r"[A-Za-z]", part):
             continue
+        full_hide = re.fullmatch(r"(Green|Blue|Red|Black)\s+[Dd]\s*[\' -]?hide\s+(Chaps|Body|Vambs|Vambraces)", part, re.I)
+        if full_hide:
+            hide_colour = full_hide[1].lower()
+            suffix = "vambraces" if full_hide[2].lower() == "vambs" else full_hide[2].lower()
+            part = f"{hide_colour} d'hide {suffix}"
+        elif hide_colour and re.fullmatch(r"Vambs|Vambraces|Chaps|Body", part, re.I):
+            suffix = "vambraces" if part.lower() == "vambs" else part.lower()
+            part = f"{hide_colour} d'hide {suffix}"
+        else:
+            hide_colour = None
         for name in expand_slashes(part):
             items.append({"name": name, "count": count} if count != 1 else {"name": name})
     return items
@@ -569,17 +607,13 @@ def annotate_step(raw: str) -> dict:
         # Brimhaven" as well as its destination.
         journeying = (out.get("teleportItem") or "destination" in out
                       or RE_SHORTCUT.match(delinked))
-        gathered = None if journeying else RE_COLLECTS.search(delinked)
+        gathered = None if journeying else (RE_COLLECTS.search(delinked) or RE_TIMED_TAKE.match(delinked))
         if gathered:
             rest = delinked[gathered.end():].split(".")[0]
-            rest = RE_TRAILING_GATHER.sub("", RE_BRACKET.sub(" ", rest)).replace("+", "&")
-            # Only parts that read as a name. Searching mid-sentence for
-            # "collect" catches plenty of prose -- "max hit is 1" arrived as an
-            # item -- and every one of those is a name the wiki cannot resolve,
-            # which drags the honest coverage figure down with it. A drop is
-            # capitalised; a clause is not.
-            picked = [i for i in split_item_list(rest)
-                      if any(w[:1].isupper() for w in i["name"].split())]
+            rest = RE_TRAILING_GATHER.sub("", RE_BRACKET.sub(" ", rest))
+            # Capitalization cannot distinguish an item from prose. Retain
+            # candidates for exact resolution, as for purchase/withdraw lists.
+            picked = split_item_list(rest)
             if picked:
                 out["items"] = picked
                 out["collects"] = True
@@ -593,9 +627,8 @@ def annotate_step(raw: str) -> dict:
             # first)" -- the aside is advice about the mining, not part of what
             # is mined, and left on it made a name nothing could resolve.
             rest = delinked[gathering.end():].split(".")[0].split(" (")[0]
-            rest = RE_TRAILING_GATHER.sub("", RE_BRACKET.sub(" ", rest)).replace("+", "&")
-            mined = [i for i in split_item_list(rest)
-                     if any(w[:1].isupper() for w in i["name"].split())]
+            rest = RE_TRAILING_GATHER.sub("", RE_BRACKET.sub(" ", rest))
+            mined = split_item_list(rest)
             if mined:
                 out["items"] = mined
                 out["collects"] = True
@@ -646,10 +679,10 @@ def annotate_step(raw: str) -> dict:
             # 100 Buckets of sand" is two things. Read as one it resolved to
             # nothing at all, so the shop rang neither of them.
             rest = RE_TRAILING_CLAUSE.sub(
-                "", delinked[bought.end():].split(".")[0]).replace("+", "&")
-            # Same guard the drops use: a name, not a leftover clause.
-            purchases = [i for i in split_item_list(rest)
-                         if any(w[:1].isupper() for w in i["name"].split())]
+                "", delinked[bought.end():].split(".")[0])
+            # Purchase lists name goods regardless of capitalization. Exact
+            # wiki resolution, not an uppercase letter, establishes identity.
+            purchases = split_item_list(rest)
             if purchases:
                 out["items"] = purchases
                 out["buys"] = True

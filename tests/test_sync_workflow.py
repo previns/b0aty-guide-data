@@ -134,3 +134,8 @@ def test_the_reference_data_is_unpacked_before_anything_reads_it():
     names = [s.get("name") or "" for s in workflow()["jobs"]["sync"]["steps"]]
     assert "Unpack pinned reference data" in names
     assert names.index("Unpack pinned reference data") < names.index("Build")
+
+
+def test_inventory_actions_are_built_before_merge():
+    run = stages_the_workflow_runs()
+    assert run.index('resolve_wiki') < run.index('build_inventory_actions') < run.index('merge_curated')

@@ -6,10 +6,14 @@ leaves open.
 
 What this actually protects against
 -----------------------------------
-The screenshots are hotlinked from i.ibb.co, a public image host, and their
-links come from a wiki page anyone can edit. Checking the host stops a link
-being pointed at some other server, but not at different content on the same
-one.
+The screenshots are served from the `images` branch of the plugin's own
+repository. They used to be hotlinked from i.ibb.co, which meant every player
+who opened the sidebar handed their IP to a third-party image host; the plugin
+hub says so on the install page, and its maintainers suggested this instead.
+
+The links still come from a wiki page anyone can edit. Checking the host stops
+a link being pointed at some other server, but not at different content on the
+same one.
 
 Two ways that could go wrong, and what closes each:
 
@@ -39,7 +43,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 
 USER_AGENT = "b0aty-guide-data/0.1 (https://github.com/previns/b0aty-guide-data)"
-ALLOWED_HOST = "i.ibb.co"
+ALLOWED_HOST = "raw.githubusercontent.com"
 MAX_BYTES = 4 * 1024 * 1024
 
 

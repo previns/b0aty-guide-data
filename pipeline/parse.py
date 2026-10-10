@@ -23,6 +23,33 @@ RE_CHECKLIST_OPEN = re.compile(r"^\{\{\s*Checklist\s*\|\s*title\s*=(?P<rest>.*)$
 RE_CLOSE = re.compile(r"^\}\}\s*$")
 RE_STEP = re.compile(r"^(?P<bullet>\*+)\s?(?P<text>.*)$")
 RE_EXTIMAGE = re.compile(r"^\{\{\s*Extimage\s*\|(?P<url>[^|}]+)", re.I)
+
+# Where the plugin actually loads a screenshot from.
+#
+# The wiki page hotlinks them from i.ibb.co. Fetching from there made every
+# player's IP visible to a third-party image host, which the plugin hub labels
+# with "submits your IP address to a server not controlled or verified by the
+# RuneLite developers" -- a warning on the install page that the plugin hub
+# maintainers suggested removing by serving the pictures from a branch of the
+# plugin's own repository instead.
+#
+# The wiki stays the source: the id in the ibb link is the file name on that
+# branch, so the guide author goes on pasting Extimage links and nothing about
+# how the page is written changes.
+IMAGE_BRANCH = ("https://raw.githubusercontent.com/previns/"
+                "b0aty-hcim-guide-v3/images/")
+RE_HOSTED_IMAGE = re.compile(r"^https://i\.ibb\.co/([A-Za-z0-9]+)/[^/]+$")
+
+
+def mirrored(url: str) -> str:
+    """The plugin's own copy of a hotlinked screenshot, or the link unchanged.
+
+    A link this does not recognise is left alone rather than guessed at: it
+    then fails the validator's host check loudly, which is the right way to
+    find out the guide has started using a host nobody mirrored.
+    """
+    found = RE_HOSTED_IMAGE.match(url.strip())
+    return IMAGE_BRANCH + found.group(1) + ".png" if found else url.strip()
 RE_YOUTUBE = re.compile(r"^\{\{\s*Youtube\s*\|(?P<id>[^|}]+)", re.I)
 RE_HEADING = re.compile(r"^(?P<level>=+)\s*(?P<title>.+?)\s*(?P=level)\s*$")
 RE_COMMENT = re.compile(r"^<!--(?P<body>.*?)-->\s*$")
@@ -132,7 +159,7 @@ class Parser:
             if m:
                 # Every Extimage in this page sits immediately before the
                 # checklist it illustrates, so it attaches forward.
-                self.pending_images.append(m.group("url").strip())
+                self.pending_images.append(mirrored(m.group("url")))
                 i += 1
                 continue
 

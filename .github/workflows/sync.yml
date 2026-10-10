@@ -86,7 +86,9 @@ jobs:
           python pipeline/annotate.py
           python pipeline/fetch_shops.py
           python pipeline/fetch_item_spawns.py
+          python pipeline/fetch_transports.py
           python pipeline/resolve_wiki.py
+          python pipeline/build_inventory_actions.py
           python pipeline/merge_curated.py
           python pipeline/emit.py
           python pipeline/fetch_images.py

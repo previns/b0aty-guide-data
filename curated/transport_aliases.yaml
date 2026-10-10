@@ -1,0 +1,8 @@
+# Exact source-verified travel shorthand, not approximate place matching.
+# Quest Helper ClientOfKourend.finishQuest calls the same docks "Piscarilius"
+# and explicitly says to take the minecart from Arceuus to "Port Piscarilius".
+aliases:
+  Piscarilius: Port Piscarilius
+  # The guide explicitly selects (8). Shortest Path minecarts.tsv identifies
+  # that network menu entry as "8: Mount Quidamortem" at 1255,3548,0.
+  Mount Quidermortum: Mount Quidamortem

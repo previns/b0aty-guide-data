@@ -88,8 +88,29 @@ def test_most_of_quest_helpers_branches_are_kept():
 def test_a_shipped_branch_condition_is_one_the_plugin_can_answer():
     """Anything else must be dropped at build time, never shipped half-read."""
     def answerable(when: dict) -> bool:
+        if "dialog" in when:
+            # DialogRequirement: words to find in a line of dialogue.
+            text = when["dialog"].get("text")
+            return (isinstance(text, list) and bool(text)
+                    and all(isinstance(said, str) and said for said in text))
+        for remembered in ("memory", "once"):
+            if remembered in when:
+                # A fact kept once its inner condition passed -- only as good
+                # as that inner condition.
+                found = when[remembered]
+                return (isinstance(found.get("key"), str) and bool(found["key"])
+                        and isinstance(found.get("when"), dict)
+                        and answerable(found["when"]))
         if "open" in when:
             return isinstance(when["open"], int)
+        if "widget" in when:
+            # WidgetTextRequirement: somewhere to look, and words to read.
+            # Without the words it would hold for any interface at all.
+            found = when["widget"]
+            return (isinstance(found.get("group"), int)
+                    and isinstance(found.get("child"), int)
+                    and bool(found.get("text"))
+                    and all(isinstance(said, str) and said for said in found["text"]))
         if "here" in when:
             return (when["here"].get("kind") in ("npc", "object", "groundItem")
                     and bool(when["here"].get("ids")))

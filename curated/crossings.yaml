@@ -1,0 +1,49 @@
+# HUMAN-EDITED. Places that cannot be reached on foot.
+# Scripts read this file and must never write to it.
+#
+# The travel matcher only answers a step that names a vehicle, because "Head to
+# Catherby" means walk there and answering it with a boat would be a different
+# instruction. But "Head to Entrana" names no vehicle either, and there is no
+# walking to Entrana -- the step was left pointing at a coordinate across open
+# water, which the plugin cannot path to. Six steps in the guide read that way.
+#
+# Whether a place can be walked to is a fact about the map, not about the
+# sentence, so it is stated here rather than guessed from the text. A place
+# named here is treated as though the step had said the vehicle.
+#
+# The kind is the scheduled passenger service, and one kind only. Listing a
+# place's charter service as well makes every charter destination a candidate
+# and the direction unresolvable, so the crossing stops resolving at all.
+#
+# Deliberately absent, and must stay absent:
+#   Prifddinas   -- walkable through Isafdar once Song of the Elves is done.
+#   Land's End   -- walkable from Kourend; this guide says "Walk south to
+#                   Land's End" and means it.
+#   Corsair Cove -- the dungeon from Feldip Hills is a walking route.
+# Each of these is a ship route endpoint, which is exactly why endpoint
+# membership alone cannot decide this and the list is written by hand.
+crossings:
+  # The two the guide actually needs today.
+  Entrana: ships          # monks' boat from Port Sarim; no land bridge.
+  Brimhaven: ships        # Karamja; Captain Barnaby from Ardougne or Rimmington.
+
+  # Islands the guide does not yet name without a vehicle. Listed so a future
+  # revision of the wiki page is covered the day it is written, not after a
+  # player walks into open water. Every one is verified present as a route
+  # label of this kind in build/transports.json.
+  Musa Point: ships
+  Ape Atoll: boats
+  # ships, not boats: the boats rows labelled "Fossil Island" are the
+  # rowboats already ON the island, to Lithkren and the underwater area.
+  # The way there from the mainland is the Digsite barge, filed under
+  # ships as "Digsite, Fossil Island".
+  Fossil Island: ships
+  Lunar Isle: ships
+  Miscellania: ships
+  "Void Knights' Outpost": ships
+  "Mos Le'Harmless": ships
+  Braindeath Island: boats
+  Waterbirth Island: boats
+  Jatizso: boats
+  Neitiznot: boats
+  Iceberg: boats

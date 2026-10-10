@@ -1,0 +1,32 @@
+{
+  "verifiedOn": "2026-10-07",
+  "recipes": [
+    {
+      "product": "Soft Clay",
+      "source": "https://oldschool.runescape.wiki/w/Soft_clay#Container",
+      "consumed": [
+        {
+          "names": [
+            "Clay"
+          ],
+          "count": 1
+        },
+        {
+          "names": [
+            "Jug of Water",
+            "Bucket of Water",
+            "Bowl of Water",
+            "Vial of Water"
+          ],
+          "count": 1
+        }
+      ],
+      "produced": {
+        "names": [
+          "Soft Clay"
+        ],
+        "count": 1
+      }
+    }
+  ]
+}

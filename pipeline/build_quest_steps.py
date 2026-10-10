@@ -77,6 +77,7 @@ this pipeline, this one takes their *prose*, not only ids and coordinates.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -105,12 +106,24 @@ DEFAULT_SOURCE = REPO.parent / "B0aty Guide" / "quest-helper-master"
 RE_WP = re.compile(r"^new\s+WorldPoint\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(-?\d+)\s*\)")
 RE_ID_CONST = re.compile(r"\b(NpcID|ObjectID|NullObjectID|QHObjectID)\.([A-Z0-9_]+)")
 RE_CLASS = re.compile(r"\bclass\s+(\w+)\s+extends\s+(\w+)")
+# A step class imported from another quest's package.
+RE_QUEST_IMPORT = re.compile(
+    r"import\s+com\.questhelper\.helpers\.quests\.(\w+)\.(\w+)\s*;")
 RE_ASSIGNED_TO = re.compile(r"(\w+)\s*=\s*$")
 RE_NEW = re.compile(r"\bnew\s+([A-Z]\w*)\s*\(")
 RE_SUPER = re.compile(r"\bsuper\s*\(")
 # private QuestStep getTalkToGertrude() { ... return talkToGertrude; }
 RE_RETURN = re.compile(r"\breturn\s+([^;]+);")
 # steps.put(0, x); steps.put(0, x = build()); steps.put(0, build());
+# RuneLite's Quest name -> the Quest Helper folder for the same sub-quest.
+RFD_FOLDERS = {
+    "Recipe for Disaster - Another Cook's Quest": "recipefordisasterstart",
+    "Recipe for Disaster - Mountain Dwarf": "recipefordisasterdwarf",
+    "Recipe for Disaster - Wartface & Bentnoze": "recipefordisasterwartfaceandbentnoze",
+    "Recipe for Disaster - King Awowogei": "recipefordisastermonkeyambassador",
+    "Recipe for Disaster - Culinaromancer": "recipefordisasterfinale",
+}
+RE_COMPLEX_STATE = re.compile("extends[ ]+ComplexStateQuestHelper")
 RE_PUT = re.compile(r"steps\.put\(\s*(\d+)\s*,\s*([^;]+?)\s*\)\s*;")
 # Three quests build the map instead, as a chain of .put off an ImmutableMap
 # builder rather than a named variable. Underground Pass is one, and it
@@ -261,14 +274,68 @@ def declarations(text: str) -> dict[str, tuple[str, list[str]]]:
         if name not in out:
             out[name] = (EXPRESSION, [expression.strip()])
 
-    classes = dict(RE_CLASS.findall(text))
+    # Each super(questHelper, ...) belongs to the class it is written inside,
+    # which is the nearest one declared above it. `text` is every file in the
+    # quest's folder joined together, so handing every super() call to every
+    # class -- and letting setdefault give them all the first one -- crossed
+    # sibling solvers over: A Kingdom Divided declares StonePuzzleStep and
+    # StatuePuzzle side by side, and both resolved to "Solve the statue
+    # puzzle." It stayed invisible while PuzzleWrapperStep's own sentence
+    # overwrote the result.
+    declared = [(m.start(), m.group(1), m.group(2)) for m in RE_CLASS.finditer(text)]
+    found: dict[str, list[list[str]]] = {}
     for match in RE_SUPER.finditer(text):
         args = read_args(text, match.end() - 1)
         if not args or args[0] != "questHelper":
             continue
-        for name, parent in classes.items():
-            out.setdefault(name, (parent, args))
+        enclosing = None
+        for start, name, parent in declared:
+            if start > match.start():
+                break
+            enclosing = (name, parent)
+        if enclosing:
+            out.setdefault(enclosing[0], (enclosing[1], args))
+            found.setdefault(enclosing[0], []).append(args)
+
+    # A solver whose only sentence belongs to the step class nested inside it.
+    # Scrambled's EggSolver says nothing itself: its instruction -- "Rotate the
+    # piece until you're prompted to move it" -- is on the private EggPieceStep
+    # it builds, which nothing else can name. Taking it is only safe for a
+    # class that has none of its own, and only from a class written inside its
+    # braces, so the two never compete.
+    for start, name, parent in declared:
+        if name in out:
+            continue
+        body = _class_body(text, start)
+        if body is None:
+            continue
+        inside = [(at, other) for at, other, _ in declared
+                  if body[0] < at < body[1] and other in found]
+        if len(inside) != 1:
+            continue
+        out[name] = (parent, found[inside[0][1]][0])
     return out
+
+
+def _class_body(text: str, start: int) -> tuple[int, int] | None:
+    """The span between a class declaration's own braces, or nothing.
+
+    Counted rather than guessed: a nested class is inside these, a sibling
+    declared after them is not, and that is the whole difference between a
+    solver's own instruction and the next class's.
+    """
+    opened = text.find("{", start)
+    if opened == -1:
+        return None
+    depth = 0
+    for at in range(opened, len(text)):
+        if text[at] == "{":
+            depth += 1
+        elif text[at] == "}":
+            depth -= 1
+            if depth == 0:
+                return (opened, at)
+    return None
 
 
 def _first_text(args: list[str]) -> str | None:
@@ -330,16 +397,39 @@ def unescape(body: str) -> str:
     return " ".join(body.split())
 
 
-def _first_point(args: list[str]) -> list[int] | None:
+def _first_point(args: list[str], decls: dict | None = None) -> list[int] | None:
     """The first argument that <em>is</em> a WorldPoint.
 
     Not one that merely contains one: a Zone is two of them and means an area
     the player might be in, not a place to walk to.
+
+    Quest Helper usually writes the coordinate inline, and 8,599 steps do. 27 in
+    four quests name it first and pass the name:
+
+        WorldPoint tomasPoint = new WorldPoint(1796, 3781, 0);
+        talkToLawry = new NpcStep(this, NpcID.PISCQUEST_OFFICIAL_VISIBLE,
+            tomasPoint, "Speak to Tomas Lawry in Port Piscarilius.");
+
+    Reading only the inline form left those steps with an npc id and nowhere to
+    walk, so nothing was routed to and the only thing the plugin could still
+    mark was the letter in the inventory -- which is what the author saw.
+
+    Resolved through the declarations, and only when the named thing really is a
+    WorldPoint: a Zone declared the same way is still an area, not a destination.
     """
     for arg in args:
         found = RE_WP.match(arg)
         if found:
             return [int(found.group(1)), int(found.group(2)), int(found.group(3))]
+
+    for arg in args:
+        declared = (decls or {}).get(arg.strip())
+        if not declared or declared[0] != "WorldPoint" or len(declared[1]) < 3:
+            continue
+        try:
+            return [int(v) for v in declared[1][:3]]
+        except (TypeError, ValueError):
+            continue
     return None
 
 
@@ -375,6 +465,14 @@ def item_declarations(text: str) -> dict[str, dict]:
         record = _item_from(read_args(text, match.end() - 1))
         if record is not None:
             out[before.group(1)] = record
+    for match in re.finditer(r"\b(\w+)\.addAlternates\s*\(", text):
+        item = out.get(match[1])
+        args = read_args(text, match.end() - 1)
+        if item is not None and all(re.fullmatch(r"ItemID\.\w+", arg.strip()) for arg in args):
+            item.setdefault("alternates", []).extend(arg.strip()[7:] for arg in args)
+    for name, enabled in re.findall(r"\b(\w+)\.setHighlightInInventory\(\s*(true|false)\s*\)", text):
+        if name in out:
+            out[name]["highlight"] = enabled == "true"
     return out
 
 
@@ -402,6 +500,234 @@ def _item_from(args: list[str]) -> dict | None:
     return record
 
 
+def cyclic_widget_puzzles(text: str, ids: dict) -> list[dict]:
+    """Read QH's independent cyclic-dial solver, not arbitrary puzzle code.
+
+    The exact shortest-direction expression and submit guard are required.
+    A changed algorithm is unsupported, never approximated as this one. IDs,
+    targets and cycle length all come from source, not from the quest name.
+    """
+    text = strip_comments(text)
+    compact = re.sub(r"\s+", "", text)
+    direction = re.search(r"Math\.floorMod\(currentPos-target,(\d+)\)<Math\.floorMod\(target-currentPos,\1\)\?arrowLeftId:arrowRightId", compact)
+    if not direction or 'if(currentPos!=target)returnid;return0;' not in compact:
+        return []
+    guard = re.search(r"if\((highlightButtons\.get\(\d+\)(?:\+highlightButtons\.get\(\d+\))*)==0\)\{highlightButtons\.put\(\d+,COMPLETE\);\}", compact)
+    if not guard:
+        return []
+    numbers = int_constants(text)
+    for name, expression in re.findall(r"\bint\s+(\w+)\s*=\s*(InterfaceID\.\w+\.\w+)\s*;", text):
+        numbers[name] = _widget_number(expression, ids.get('interface', {}), {})
+    calls = re.findall(r"highlightButtons\.replace\((\d+),matchStateToSolution\(VarbitID\.(\w+),(\w+),(\w+),(\w+)\)\);", compact)
+    slots = [int(n) for n in re.findall(r'get\((\d+)\)', guard[1])]
+    if not 2 <= len(calls) <= 8 or [int(c[0]) for c in calls] != slots or len(set(slots)) != len(slots):
+        return []
+    size = int(direction[1])
+    submit = numbers.get('COMPLETE')
+    if not submit or not 2 <= size <= 128:
+        return []
+    cycles = []
+    for _, var, target, right, left in calls:
+        values = [ids.get('varbit', {}).get(var), numbers.get(target), numbers.get(left), numbers.get(right)]
+        if any(v is None for v in values) or not 1 <= values[1] <= size or min(values[2:]) <= 0:
+            return []
+        cycles.append(dict(zip(('varbit', 'target', 'left', 'right'), values), size=size))
+    return [{'cycles': cycles, 'submit': submit}]
+
+
+def combination_lock(text: str, ids: dict) -> dict | None:
+    """QH's ChestCodeStep, read exactly or not at all.
+
+    A row of dials, each showing one letter of a code. The solver reads each
+    dial's current value out of a client int, works out whether up or down is
+    the shorter way round, and draws that arrow with the number of clicks on
+    it. What the player sees in Quest Helper is five highlighted arrows and
+    five numbers; what they saw here was nothing, because none of this is data
+    in the constructor -- it is an algorithm, and the constructor only says
+    which letters to stop on.
+
+    Recognised by its own arithmetic, not by the quest it appears in: the
+    shortest-direction expression, the distance expression, and the arrow
+    numbering. A changed algorithm is unsupported rather than approximated,
+    because a puzzle solved the wrong way is worse than one left alone.
+
+    Returns the parts that are the same at every call site. The letters
+    themselves are arguments, and are read from the call.
+    """
+    compact = re.sub(r"\s+", "", strip_comments(text))
+    direction = re.search(
+        r"Math" + re.escape(".") + r"floorMod" + re.escape("(")
+        + r"currentValue-target,SIZE_OF_LOOP" + re.escape(")")
+        + r"<Math" + re.escape(".") + r"floorMod" + re.escape("(")
+        + r"target-currentValue,SIZE_OF_LOOP" + re.escape(")")
+        + r"" + re.escape("?") + r"arrowDownId:arrowUpId", compact)
+    distance = ("returnMath.min(Math.floorMod(currentValue-target,SIZE_OF_LOOP),"
+                "Math.floorMod(target-currentValue,SIZE_OF_LOOP));")
+    if not direction or distance not in compact:
+        return None
+    if "if(currentValue!=target)returnid;return0;" not in compact:
+        return None
+
+    numbers = int_constants(text)
+    start = numbers.get("START_DOWN_ARROW")
+    interval = numbers.get("ARROW_INTERVAL")
+    if start is None or interval is None or not 1 <= interval <= 32:
+        return None
+    # The up arrow is the one after the down arrow, and the solver says so.
+    if "intarrowUPID=START_DOWN_ARROW+1+(ARROW_INTERVAL*i);" not in compact:
+        return None
+    if "intarrowDownID=START_DOWN_ARROW+(ARROW_INTERVAL*i);" not in compact:
+        return None
+
+    # Whitespace is already gone, so each of these reads as one run of
+    # characters and needs no escaping beyond the literal punctuation.
+    varc = re.search("START_VARCLIENTINT_POS=VarClientID[.]([A-Za-z0-9_]+);", compact)
+    lock = re.search("client[.]getWidget[(]InterfaceID[.]([A-Za-z0-9_]+[.][A-Za-z0-9_]+)[)]"
+                     ";if[(]widget!=null[)][{]Widgetarrow=widget[.]getChild", compact)
+    confirm = re.search("client[.]getWidget[(]InterfaceID[.]([A-Za-z0-9_]+[.][A-Za-z0-9_]+)[)]"
+                        ";if[(]widget!=null[)][{]graphics", compact)
+    if not (varc and lock and confirm):
+        return None
+    base = (ids.get("varclient") or {}).get(varc.group(1))
+    table = ids.get("interface") or {}
+    parent = table.get(lock.group(1))
+    submit = table.get(confirm.group(1))
+    if base is None or parent is None or submit is None:
+        return None
+    found = {"varc": base, "parent": parent, "submit": submit,
+             "down": start, "up": start + 1, "interval": interval}
+    # The sentence the class hands its parent, and the parameters it builds it
+    # out of. "Open the " + objectName + " using the code " + answer + "." is
+    # not a literal, so it was refused and the step fell back to the wrapper's
+    # "Work out how to open the chest". Rendering it needs the call site, which
+    # is where the letters live too.
+    plain = strip_comments(text)
+    signature = re.search("public" + " ([A-Za-z0-9_]+)"
+                          + r"\s*\(([^)]*)\)\s*\{\s*super\s*\(", plain)
+    if signature:
+        names = []
+        for part in signature.group(2).split(","):
+            words = part.replace("...", " ").split()
+            if len(words) >= 2:
+                names.append(words[-1])
+        arguments = read_args(plain, plain.index("super", signature.end() - 8) + 5)
+        if names and names[0].lower().endswith("helper") and len(arguments) >= 2:
+            found["params"] = names[1:]
+            found["template"] = arguments[1]
+    return found
+
+
+def combination_locks(text: str, ids: dict) -> dict[str, dict]:
+    """Class name -> its lock, for every solver of this shape in the folder.
+
+    Read one class at a time. A quest can hold several locks with different
+    codes -- The Blood Moon Rises has four -- so the answer belongs to the step
+    that opens that lock, never to the quest.
+    """
+    out: dict[str, dict] = {}
+    for match in RE_CLASS.finditer(text):
+        body = _class_body(text, match.start())
+        if body is None:
+            continue
+        found = combination_lock(text[match.start():body[1] + 1], ids)
+        if found is not None:
+            out[match.group(1)] = found
+    return out
+
+
+def _combination_step(args: list[str], lock: dict) -> dict | None:
+    """One `new ChestCodeStep(this, "chest", "NALIA", 10, 3, 3, 4, 4, 9)`.
+
+    The class says how a combination lock is solved; this call says which
+    letters to stop on. Both are needed and neither is enough on its own.
+    """
+    given = [a.strip() for a in args if a.strip() != "getQuestHelper()"]
+    numbers = [int(a) for a in given if re.fullmatch("-?[0-9]+", a)]
+    if len(numbers) < 3:
+        # No targets. The Heart of Darkness reads its code off a book while the
+        # player is standing there, so there is nothing here to solve with.
+        return None
+    size, targets = numbers[0], numbers[1:]
+    if not 2 <= size <= 128 or not 2 <= len(targets) <= 8:
+        return None
+    if any(not 0 <= target < size for target in targets):
+        return None
+    cycles = [{"varc": lock["varc"] + i, "target": target,
+               "down": lock["down"] + lock["interval"] * i,
+               "up": lock["up"] + lock["interval"] * i}
+              for i, target in enumerate(targets)]
+    return {"kind": "walk", "constant": None, "point": None,
+            "text": _rendered(lock, given) or "",
+            "combinationLocks": [{"parent": lock["parent"], "submit": lock["submit"],
+                                  "size": size, "cycles": cycles}]}
+
+
+def _rendered(lock: dict, args: list[str]) -> str | None:
+    """The class's own sentence, with this call's arguments put into it.
+
+    Not a guess: parameters are bound in the order Java binds them, and a term
+    that does not resolve to a literal abandons the whole sentence rather than
+    rendering half of one.
+    """
+    params, template = lock.get("params"), lock.get("template")
+    if not params or not template:
+        return None
+    bound = dict(zip(params, args))
+    said = []
+    for part in template.split("+"):
+        part = part.strip()
+        literal = _verbatim(part)
+        if literal is None:
+            literal = _verbatim(bound.get(part, ""))
+        if literal is None:
+            return None
+        said.append(literal)
+    return "".join(said).strip() or None
+
+
+def _verbatim(arg: str) -> str | None:
+    """A Java string literal, exactly as written.
+
+    _first_text trims and refuses short ones, which is right for an
+    instruction and wrong for a fragment of one: "Open the " loses the space
+    that separates it from the next word, and "." disappears entirely.
+    """
+    arg = (arg or "").strip()
+    if len(arg) < 2 or not arg.startswith(chr(34)) or not arg.endswith(chr(34)):
+        return None
+    slash, quote = chr(92), chr(34)
+    body = arg[1:-1]
+    if quote in body.replace(slash + quote, ""):
+        return None
+    return body.replace(slash + quote, quote).replace(slash + slash, slash)
+
+
+def item_alternatives(text: str, ids: dict) -> dict[str, dict]:
+    """Explicit QH substitutes, scoped to this quest and joined by numeric ID."""
+    text = strip_comments(text)
+    declared = item_declarations(text)
+    found = {}
+    conflicts = set()
+    for match in re.finditer(r"\b(\w+)\.addAlternates\s*\(", text):
+        item = declared.get(match[1], {})
+        primary = ids.get(item.get("constant"))
+        args = read_args(text, match.end() - 1)
+        if primary is None or not args or any(not re.fullmatch(r"ItemID\.\w+", a.strip()) for a in args):
+            continue
+        others = [ids.get(a.strip().split(".")[1]) for a in args]
+        if any(n is None for n in others):
+            continue
+        notes = re.findall(r"\(can be ([^()]+)\)", item.get("name", ""), re.I)
+        if not notes:
+            continue
+        values = {"ids": sorted(set([primary, *others])), "notes": notes}
+        key = str(primary)
+        if key in found and found[key] != values:
+            conflicts.add(key)
+        found[key] = values
+    return {k: v for k, v in found.items() if k not in conflicts}
+
+
 def step_items(args: list[str], declared: dict[str, dict]) -> list[dict]:
     """The item requirements handed to one step, in the order it names them.
 
@@ -421,6 +747,9 @@ def step_items(args: list[str], declared: dict[str, dict]) -> list[dict]:
         if re.fullmatch(r"\w+", arg):
             record = declared.get(arg)
         else:
+            highlighted = re.fullmatch(r"(\w+)\.highlighted\(\)", arg.strip())
+            if highlighted and highlighted[1] in declared:
+                record = dict(declared[highlighted[1]], highlight=True)
             found = RE_ITEM_DECL.match(arg)
             if found:
                 record = _item_from(read_args(arg, found.end() - 1))
@@ -501,13 +830,69 @@ def zones_of(name: str, decls: dict) -> list[list[int]] | None:
 
 RE_ADD_DIALOG = re.compile(r"(\w+)\.addDialogSteps?\s*\(")
 RE_ADD_DIALOG_CHANGE = re.compile(r"(\w+)\.addDialogChange\s*\(")
-RE_ADD_ALTERNATE = re.compile(r"(\w+)\.addAlternate(?:Npcs|Objects)\s*\(")
+# Also the cast form, `((ObjectStep) findDaconiaStone).addAlternateObjects(...)`.
+# quest-helper casts whenever the field is declared as a plain QuestStep, and it
+# does so 254 times out of 482 -- so reading only the bare form threw away more
+# than half of every step's alternate ids, across 61 quests. The Grand Tree has
+# two roots to search and only one of them was ever outlined.
+RE_ADD_ALTERNATE = re.compile(
+    r"(\w+)\s*\)?\s*\.addAlternate(?:Npcs|Objects)\s*\(")
 RE_BARE_ID = re.compile(r"^(?:NpcID|ObjectID|NullObjectID|QHObjectID)\.([A-Z0-9_]+)$")
 
 
 # goThroughRoom6.addTileMarker(new WorldPoint(3162, 4600, 1), SpriteID.X)
 # dropPetRock.addTileMarkers(new WorldPoint(...), new WorldPoint(...))
 RE_ADD_TILE_MARKER = re.compile(r"(\w+)\.addTileMarkers?\(")
+
+
+def route_steps(text: str) -> dict[str, bool]:
+    return {m[1]: True for m in re.finditer(r"\b(\w+)\s*\)*\s*\.setLinePoints\s*\(", text)}
+
+
+def line_points(text: str) -> dict[str, list]:
+    """Keep literal, unambiguous QH routes, including explicit segment breaks."""
+    text = strip_comments(text)
+    assignments = {}
+    for match in re.finditer(r"\b(\w+)\s*=(?!=)\s*([^;]+);", text):
+        assignments.setdefault(match[1], []).append(match[2].strip())
+
+    def literal(expr, seen=frozenset()):
+        expr = expr.strip()
+        if re.fullmatch(r"\w+", expr):
+            values = assignments.get(expr, [])
+            mutates = re.search(r"\b" + re.escape(expr) + r"\.(?:add|addAll|remove|clear|set|sort)\s*\(", text)
+            if len(values) != 1 or expr in seen or mutates:
+                return None
+            return literal(values[0], seen | {expr})
+        wrapper = re.fullmatch(r"new\s+ArrayList\s*<>\s*\((.*)\)", expr, re.S)
+        if wrapper:
+            return literal(wrapper[1], seen)
+        reverse = re.fullmatch(r"Lists\.reverse\s*\((.*)\)", expr, re.S)
+        if reverse:
+            points = literal(reverse[1], seen)
+            return list(reversed(points)) if points else None
+        match = re.fullmatch(r"(?:Arrays\.asList|List\.of)\s*(\(.*\))", expr, re.S)
+        if not match:
+            return None
+        points = []
+        for arg in read_args(match[1], 0):
+            if arg.strip() == "null":
+                points.append(None)
+                continue
+            point = re.fullmatch(r"new\s+WorldPoint\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([0-3])\s*\)", arg.strip())
+            if not point:
+                return None
+            points.append([int(n) for n in point.groups()])
+        return points if sum(point is not None for point in points) >= 2 else None
+
+    out = {}
+    for match in re.finditer(r"\b(\w+)\s*\)*\s*\.setLinePoints\s*\(", text):
+        args = read_args(text, match.end() - 1)
+        points = literal(args[0]) if len(args) == 1 else None
+        out.setdefault(match[1], []).append(points)
+    # Multiple state-dependent routes require execution, not a first-match guess.
+    return {name: values[0] for name, values in out.items()
+            if values[0] and all(value == values[0] for value in values)}
 
 
 def tile_markers(text: str) -> dict[str, list[list[int]]]:
@@ -836,6 +1221,19 @@ def dialogue_options(text: str) -> dict[str, list[str]]:
     return out
 
 
+def dialogue_rules(text: str) -> dict[str, list[dict]]:
+    """Conditional menu choices: retain every source exclusion, never flatten."""
+    out = {}
+    for match in re.finditer(r'(\w+)\.addDialogStepWithExclusions?\s*\(', text):
+        args = read_args(text, match.end() - 1)
+        if len(args) < 2 or any(not re.fullmatch(r'"(?:\\.|[^"\\])*"', a.strip()) for a in args):
+            continue
+        values = [a.strip()[1:-1].replace('\\"', '"') for a in args]
+        if all(values):
+            out.setdefault(match[1], []).append({'text': values[0], 'unless': values[1:]})
+    return out
+
+
 def dialogue_changes(text: str) -> dict[str, list[dict]]:
     """Variable -> the options quest-helper relabels, and what it says of them.
 
@@ -1082,8 +1480,71 @@ def build(name: str, decls: dict, branches: dict, seen: frozenset,
         return aliased
     rest = [a for a in args if a not in ("this", "questHelper")]
 
+    # A combination lock. The class holds the algorithm and this call holds the
+    # code, so the step is built here rather than delegated: delegating reached
+    # the class, whose sentence is assembled at runtime out of these very
+    # arguments, and came back with the word "chest".
+    lock = ((drawn or {}).get("locks") or {}).get(declared_type)
+    if lock is not None:
+        made = _combination_step(rest, lock)
+        if made is not None:
+            made.update(_extras(name, drawn))
+            return made
+
     text = _first_text(rest)
-    point = _first_point(rest)
+    # PuzzleWrapperStep(this, solvingStep, hiddenText, ...) carries two
+    # sentences. PuzzleWrapperStep.java sets `this.text = hiddenStep.getText()`
+    # and keeps the real one as `solvingStep`, switching between them on Quest
+    # Helper's "Show Puzzle Solutions" config: hiddenText is what a player sees
+    # with solutions turned OFF. "Work out how to open the chest in Marcellus'
+    # house" is that sentence; "Search the chest... The code is 'NALIA'" is the
+    # step behind it.
+    #
+    # Taking the string argument meant the wrapper's own sentence overwrote the
+    # step it wraps, so 48 puzzles across 21 quests shipped the version that
+    # withholds the answer and none shipped the answer. Children of the Sun said
+    # "Mark the suspect guards" nine times without ever saying which guards.
+    #
+    # A guide is the solutions-on case by definition, so the wrapper's sentence
+    # is demoted to a fallback and the step it wraps speaks for itself.
+    hidden = None
+    if declared_type == "PuzzleWrapperStep":
+        # Only an argument that is a string in its own right. _first_text also
+        # finds literals nested inside another constructor, and the wrapped
+        # step is usually written inline: `new ChestCodeStep(this, "chest",
+        # "NALIA", 10, ...)` handed back the word "chest", which then reached
+        # the overlay as the instruction for opening the chest.
+        for arg in rest:
+            stripped = arg.strip()
+            if stripped.startswith(chr(34)) and stripped.endswith(chr(34)):
+                said = _first_text([stripped])
+                if said:
+                    hidden = said
+                    break
+        text = None
+        # The wrapped step, resolved as the class it is rather than the call
+        # that made it. A solver written inline -- `new ChestCodeStep(this,
+        # "chest", "NALIA", 10, ...)` -- builds its sentence at runtime out of
+        # those arguments, so reading the call hands back a parameter: the word
+        # "chest" arrived as the instruction for opening the chest. The class's
+        # own super() sentence is the instruction; its arguments are not.
+        for arg in rest:
+            stripped = arg.strip()
+            if not _is_a_step(stripped, decls):
+                continue
+            built = RE_NEW.match(stripped)
+            locks = (drawn or {}).get("locks") or {}
+            if built and built.group(1) in decls and built.group(1) not in locks:
+                inner = _delegate(built.group(1), decls, branches, seen, wants, drawn)
+            else:
+                # A lock is the exception: its sentence and its solution are
+                # both built out of the call's own arguments, so the call is
+                # what has to be read.
+                inner = _delegate(stripped, decls, branches, seen, wants, drawn)
+            if inner and (inner.get("text") or "").strip():
+                text = inner["text"]
+                break
+    point = _first_point(rest, decls)
     named = _first_id(rest)
 
     mine = step_items(rest, wants or {})
@@ -1098,7 +1559,8 @@ def build(name: str, decls: dict, branches: dict, seen: frozenset,
     # and the left tool on the gear" is the entire point of that step, and it is
     # the kind of thing Quest Helper says during an interface where there is
     # nothing in the world to outline.
-    if not text:
+    if not text and declared_type != "PuzzleWrapperStep":
+        # A wrapper has already resolved its own, by class rather than by call.
         for arg in rest:
             # Only from an argument that is itself a step. A requirement carries
             # a name -- `new ItemRequirement("Coins", ItemID.COINS)` -- and
@@ -1107,9 +1569,25 @@ def build(name: str, decls: dict, branches: dict, seen: frozenset,
             if not _is_a_step(arg, decls):
                 continue
             inner = _delegate(arg, decls, branches, seen, wants, drawn)
+            if inner is None:
+                # An inline `new StonePuzzleStep(this)`. Its words are in that
+                # class's own `super(questHelper, "...")`, not in this
+                # constructor, and the argument is not a declared name, so
+                # delegation by name finds nothing and the search falls through
+                # to whatever else is in scope -- which put A Kingdom Divided's
+                # statue puzzle on its wall panel. Resolve the class itself.
+                built = RE_NEW.match(arg.strip())
+                if built:
+                    inner = _delegate(built.group(1), decls, branches, seen,
+                                      wants, drawn)
             if inner and (inner.get("text") or "").strip():
                 text = inner["text"]
                 break
+
+    # Nothing readable behind the wrapper -- a solver class with its words in
+    # its own source, not in the constructor. Its sentence is better than none.
+    if not text and hidden:
+        text = hidden
 
     if named is not None or point is not None:
         kind = "walk"
@@ -1196,6 +1674,24 @@ def build(name: str, decls: dict, branches: dict, seen: frozenset,
             record["items"] = mine
         record.update(extras)
         return record
+
+    # A conditional whose default is nothing -- `super(questHelper, null,
+    # requirements)` -- but which has branches of its own. Recruitment Drive
+    # writes MissCheeversStep that way: the entire vial challenge lives in its
+    # addStep chain, and returning nothing here dropped all three of its
+    # instructions. There is no default to describe, but the branches are the
+    # step, and they are what the player needs.
+    here = when_in(name, decls, branches, seen, wants, drawn)
+    if not here:
+        here = when_in(declared_type, decls, branches, seen, wants, drawn)
+    if here:
+        record = {"kind": "walk", "constant": None, "point": None,
+                  "text": text or "", "conditional": True,
+                  "branches": len(here), "whenIn": here}
+        if mine:
+            record["items"] = mine
+        record.update(extras)
+        return record
     return None
 
 
@@ -1272,7 +1768,12 @@ def requirement_of(name: str, decls: dict, wants: dict,
 
     chained = RE_ALSO_CHECK_BANK.match(name.strip())
     if chained:
-        return requirement_of(chained.group(1), decls, wants, seen - {name})
+        base = requirement_of(chained.group(1), decls, wants, seen - {name})
+        if base is not None and "item" in base and ".alsoCheckBank(" in name:
+            return {"item": dict(base["item"], bank=True)}
+        return base
+    if name in wants:
+        return {"item": dict(wants[name])}
 
     quantity = re.fullmatch(r"(\w+)\.quantity\s*\(\s*([^()]+)\s*\)", name.strip())
     if quantity:
@@ -1297,6 +1798,44 @@ def requirement_of(name: str, decls: dict, wants: dict,
         entry = (found.group(1), read_args(name, found.end() - 1))
 
     kind, args = entry
+    if kind == "RuneliteRequirement":
+        if len(args) not in (3, 4):
+            return None
+        key = _widget_text(args[1])
+        expected = "true"
+        condition_arg = args[2]
+        if len(args) == 4 and _widget_text(args[2]) is not None:
+            expected = _widget_text(args[2])
+            condition_arg = args[3]
+        nested = requirement_of(condition_arg, decls, wants, seen)
+        if not key or nested is None:
+            return None
+        return {"memory": {"key": key, "value": expected, "when": nested}}
+
+    if kind == "DialogRequirement":
+        talker = None
+        active = False
+        texts = args
+        if len(args) >= 3 and args[2].strip() in ("true", "false"):
+            talker = "@player" if args[0].strip().endswith(".getPlayerName()") else _widget_text(args[0])
+            if talker is None and args[0].strip() != "null": return None
+            active, texts = args[2].strip() == "true", [args[1]]
+        elif len(args) >= 3 and args[1].strip() in ("true", "false"):
+            talker = _widget_text(args[0])
+            if talker is None and args[0].strip() != "null": return None
+            active, texts = args[1].strip() == "true", args[2:]
+        words = [_widget_text(arg) for arg in texts]
+        if not words or not all(words): return None
+        found = {"text": words, "active": active}
+        if talker is not None: found["speaker"] = talker
+        return {"dialog": found}
+
+    if kind == "Conditions" and args and args[0].strip() in ("true", "false"):
+        body = requirement_of("new Conditions(" + ",".join(args[1:]) + ")", decls, wants, seen)
+        if body is None or args[0].strip() == "false": return body
+        key = hashlib.sha1(json.dumps(body, sort_keys=True).encode()).hexdigest()[:16]
+        return {"once": {"key": key, "when": body}}
+
     if kind == "ZoneRequirement":
         boxes = zones_of(name, decls) if name in decls else None
         if boxes is None:
@@ -1330,6 +1869,50 @@ def requirement_of(name: str, decls: dict, wants: dict,
         packed = (numbers[0] if len(numbers) == 1
                   else (numbers[0] << 16) | numbers[1])
         return {"open": packed}
+
+    if kind == "WidgetTextRequirement":
+        # "Is that interface showing these words." Quest Helper guards every
+        # one of its interface solvers with this -- the chest in the Ribbiting
+        # Tale and in the Heart of Darkness are both
+        # WidgetTextRequirement(809, 5, 9, "Confirm") -- and refusing the shape
+        # dropped the branch holding the answer. 352 conditions are this.
+        #
+        # Its constructors are a packed component or a group and child, then
+        # optionally a third int naming a child of that child, then one or more
+        # strings. A bare `true`/`false` before the strings is checkChildren,
+        # which widens the search to the widget's static children.
+        numbers: list[int] = []
+        texts: list[str] = []
+        children = False
+        for arg in args:
+            arg = arg.strip()
+            if arg in ("true", "false"):
+                children = arg == "true"
+                continue
+            said = _widget_text(arg)
+            if said is not None:
+                texts.append(said)
+                continue
+            if texts:
+                # An int after the strings is not part of this shape.
+                return None
+            number = _widget_number(arg, VAR_IDS.get("interface") or {}, {})
+            if number is None:
+                return None
+            numbers.append(number)
+        if not texts or len(numbers) not in (1, 2, 3):
+            return None
+        if len(numbers) == 1:
+            group, child = numbers[0] >> 16, numbers[0] & 0xFFFF
+        else:
+            group, child = numbers[0], numbers[1]
+        found = {"group": group, "child": child, "text": texts}
+        # Only a third int means a child of the child; -1 is QH's "the parent".
+        if len(numbers) == 3 and numbers[2] != -1:
+            found["index"] = numbers[2]
+        if children:
+            found["children"] = True
+        return {"widget": found}
 
     if kind in ("ItemRequirement", "ItemRequirements", "Conditions"):
         # LogicType.OR makes the list a choice rather than a conjunction.
@@ -1589,24 +2172,36 @@ def _zone_args(args: list[str], decls: dict) -> list[list[int]]:
     return boxes
 
 
+def resolved_item_ids(item, ids, collections):
+    constant = item.pop("constant", None)
+    collection = item.pop("collection", None)
+    alternates = item.pop("alternates", [])
+    names = ([constant] if constant else []) + alternates
+    if names:
+        found = [ids.get("item", {}).get(name) for name in names]
+        if any(number is None for number in found): return []
+        return list(dict.fromkeys(found))
+    return list(collections.get(collection) or ()) if collection else list(item.get("ids") or ())
+
+
 def resolve_requirement(condition: dict, ids: dict, collections: dict) -> bool:
     """Turn an item condition's constant into ids. False if it will not."""
     if "item" in condition:
         item = condition["item"]
-        constant = item.pop("constant", None)
-        collection = item.pop("collection", None)
-        numbers = []
-        if constant:
-            number = ids.get("item", {}).get(constant)
-            if number is not None:
-                numbers = [number]
-        elif collection:
-            numbers = list(collections.get(collection) or ())
+        numbers = resolved_item_ids(item, ids, collections)
         if not numbers:
             return False
         item["ids"] = numbers
         return True
-    if "open" in condition:
+    if "dialog" in condition:
+        return True
+    for key in ("memory", "once"):
+        if key in condition:
+            return resolve_requirement(condition[key]["when"], ids, collections)
+    if "open" in condition or "widget" in condition:
+        # Nothing to resolve: both are interface coordinates already, with no
+        # constant to look up. Omitting "widget" here dropped every branch its
+        # condition guarded even after the condition itself became readable.
         return True
     if "here" in condition:
         found = condition["here"]
@@ -1687,7 +2282,7 @@ def _extras(name: str, drawn: dict | None) -> dict:
     panel = drawn.get("panel", {}).get(name)
     if panel is not None:
         out["panel"] = panel
-    for field in ("icon", "dialogue", "choices", "alternates", "tiles", "widgets"):
+    for field in ("icon", "dialogue", "dialogueRules", "choices", "alternates", "tiles", "linePoints", "questRoute", "widgets"):
         value = drawn.get(field, {}).get(name)
         if value:
             out[field] = value
@@ -1833,6 +2428,12 @@ def _names_in(expression: str, methods: dict[str, str]) -> list[str]:
     direct = re.match(r"^(\w+)\s*(?:=|$)", expression.strip())
     if direct:
         names.append(direct.group(1))
+    # A step held by another object: ".put(0, startingOff.talkToKingBolren)".
+    # The Path of Glouphrie keeps every step in a section class and lists them
+    # this way, and taking only a bare name dropped all twenty-five.
+    field = re.match(r"^\w+(?:\.\w+)+$", expression.strip())
+    if field:
+        names.append(expression.strip().rsplit(".", 1)[1])
     for call in re.findall(r"\b(\w+)\s*\(", expression):
         returned = methods.get(call)
         if returned:
@@ -1899,10 +2500,11 @@ def steps_in(text: str, registers: str | None = None) -> dict[int, dict]:
     follow_methods(text, decls, methods)
     wants = item_declarations(text)
     drawn = {"icon": icon_constants(text), "dialogue": dialogue_options(text),
-             "choices": dialogue_changes(text),
+             "dialogueRules": dialogue_rules(text), "choices": dialogue_changes(text),
              "alternates": alternate_ids(text), "said": renamed(text),
-             "tiles": tile_markers(text), "panel": panel_order(text),
-             "widgets": _merged_widgets(text, VAR_IDS)}
+             "tiles": tile_markers(text), "linePoints": line_points(text), "questRoute": route_steps(text), "panel": panel_order(text),
+             "widgets": _merged_widgets(text, VAR_IDS),
+             "locks": combination_locks(text, VAR_IDS)}
     registers = text if registers is None else strip_comments(registers)
 
     branches = add_steps(text)
@@ -1923,6 +2525,22 @@ def steps_in(text: str, registers: str | None = None) -> dict[int, dict]:
     for value, source in {int(a): int(b) for a, b in RE_PUT_ALIAS.findall(registers)}.items():
         if source in out and value not in out:
             out[value] = dict(out[source])
+
+    # A ComplexStateQuestHelper fills no steps.put table. It hands back the
+    # whole quest from loadStep() as one ConditionalStep whose branches turn on
+    # varbits, items and zones -- the shape everything above already reads. It
+    # was simply never asked for, so Elemental Workshop I and Alfred Grimhand's
+    # Barcrawl extracted nothing at all and the guide said "Complete Elemental
+    # Workshop I" with no guidance behind it. One slot, at 0: the plugin looks
+    # up the nearest slot at or below the quest's progress, so it answers at
+    # every stage, and the branches inside it do the choosing.
+    if not out and RE_COMPLEX_STATE.search(registers):
+        root = methods.get("loadStep")
+        for candidate in (_names_in(root, methods) if root else ()):
+            record = build(candidate, decls, branches, frozenset(), wants, drawn)
+            if record is not None:
+                out[0] = record
+                break
     return out
 
 # QUEST_X_MARKS_THE_SPOT(VarbitID.CLUEQUEST) / (VarPlayerID.FOO)
@@ -2059,15 +2677,7 @@ def resolve_step_items(steps: dict, ids: dict, collections: dict) -> int:
     for record in every(steps):
         kept = []
         for item in record.get("items", ()):
-            numbers: list[int] = []
-            constant = item.pop("constant", None)
-            collection = item.pop("collection", None)
-            if constant:
-                number = ids.get("item", {}).get(constant)
-                if number is not None:
-                    numbers = [number]
-            elif collection:
-                numbers = list(collections.get(collection) or ())
+            numbers = resolved_item_ids(item, ids, collections)
             if not numbers:
                 continue
             item["ids"] = numbers
@@ -2173,9 +2783,9 @@ def panel_anchor_index(text: str, ids: dict) -> dict[str, list[int]]:
     branches = add_steps(text)
     wants = item_declarations(text)
     drawn = {"icon": icon_constants(text), "dialogue": dialogue_options(text),
-             "choices": dialogue_changes(text),
+             "dialogueRules": dialogue_rules(text), "choices": dialogue_changes(text),
              "alternates": alternate_ids(text), "said": renamed(text),
-             "tiles": tile_markers(text), "panel": panel_order(text),
+             "tiles": tile_markers(text), "linePoints": line_points(text), "questRoute": route_steps(text), "panel": panel_order(text),
              "widgets": _merged_widgets(text, VAR_IDS)}
 
     out: dict[str, list[int]] = {}
@@ -2202,9 +2812,9 @@ def anchor_index(text: str, registers: str, ids: dict) -> dict[str, list[int]]:
     branches = add_steps(text)
     wants = item_declarations(text)
     drawn = {"icon": icon_constants(text), "dialogue": dialogue_options(text),
-             "choices": dialogue_changes(text),
+             "dialogueRules": dialogue_rules(text), "choices": dialogue_changes(text),
              "alternates": alternate_ids(text), "said": renamed(text),
-             "tiles": tile_markers(text), "panel": panel_order(text),
+             "tiles": tile_markers(text), "linePoints": line_points(text), "questRoute": route_steps(text), "panel": panel_order(text),
              "widgets": _merged_widgets(text, VAR_IDS)}
 
     puts = RE_PUT.findall(registers)
@@ -2392,7 +3002,26 @@ def main() -> int:
             continue
         seen.add(source.parent)
         files = sorted(source.parent.glob("*.java"))
-        text = "\n".join(f.read_text(encoding="utf-8", errors="replace") for f in files)
+        # And everything in its subfolders. The Path of Glouphrie declares
+        # every step in sections/StartingOff.java and its siblings and only
+        # lists them in the main class -- ".put(0, startingOff.talkToKingBolren)"
+        # -- so reading one level found the table and none of its steps, and
+        # the quest extracted nothing.
+        nested = sorted(f for f in source.parent.rglob("*.java") if f.parent != source.parent)
+        text = chr(10).join(f.read_text(encoding="utf-8", errors="replace") for f in files + nested)
+        # A solver borrowed from another quest. The Ribbiting Tale and The
+        # Final Dawn both open their chest with Desert Treasure II's
+        # ChestCodeStep, and The Heart of Darkness uses Secrets of the
+        # North's arrow chest. Reading one folder leaves that class
+        # undeclared, so the step falls back to the first string in the
+        # constructor: the branch holding the answer arrived saying "chest".
+        for match in RE_QUEST_IMPORT.finditer(text):
+            package, class_name = match.groups()
+            if package == source.parent.name:
+                continue
+            borrowed = source.parent.parent / package / (class_name + ".java")
+            if borrowed.is_file():
+                text += chr(10) + borrowed.read_text(encoding="utf-8", errors="replace")
         for path in files:
             folders[path.stem] = (source.parent.name, text, path)
 
@@ -2423,6 +3052,15 @@ def main() -> int:
         step_item_ids += resolve_step_items(steps, ids, collections)
         icons += resolve_icons(steps, ids)
         zone_branches += resolve_conditions(steps, ids, collections)
+        # Scope solver metadata to this helper's source folder. Every selected
+        # branch keeps it: a text/listener condition may be unsupported, but
+        # the actual visible puzzle controls are sufficient to show its hint.
+        puzzles = []
+        for puzzle_source in sorted(path.parent.glob('*.java')):
+            puzzles.extend(cyclic_widget_puzzles(puzzle_source.read_text(encoding='utf-8'), ids))
+        if puzzles:
+            for instruction in every(steps):
+                instruction['widgetPuzzles'] = puzzles
         named_ids += sum(1 for s in steps.values() if s.get("constant"))
         spoken += sum(len(s.get("dialogue", ())) for s in every(steps))
         alternates += sum(max(0, len(s.get("ids", ())) - 1) for s in every(steps))
@@ -2436,6 +3074,7 @@ def main() -> int:
         quests[key] = {
             "var": variable,
             "items": wanted,
+            "itemAlternatives": item_alternatives(own, ids["item"]),
             # Where each thing this quest names sits on its own timeline, so a
             # guide step that names the same thing can be placed against it.
             "anchors": anchor_index(text, own, ids),
@@ -2460,6 +3099,15 @@ def main() -> int:
             # the quest it belongs to: "recipefordisaster" is RFD - Start,
             # which is where a player told to start it should be sent.
             aliases.setdefault(name, key)
+
+    # RuneLite and Quest Helper name the Recipe for Disaster sub-quests
+    # differently, and the guide reaches a quest through RuneLite's name.
+    # Three of the eight happened to squash to the same folder; these five did
+    # not, so "Complete Dwarf RFD" linked to nothing. Only where the folder was
+    # actually extracted -- an alias to nothing would hide that it is missing.
+    for runelite, folder in RFD_FOLDERS.items():
+        if folder in quests:
+            aliases.setdefault(re.sub(r"[^a-z0-9]", "", runelite.lower()), folder)
 
     aliases = {name: key for name, key in aliases.items() if name not in quests}
 

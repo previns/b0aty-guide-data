@@ -17,6 +17,23 @@ import jsonschema
 
 REPO = Path(__file__).resolve().parent.parent
 
+ACTION_IDS = {"type": "array", "minItems": 1, "uniqueItems": True,
+              "items": {"type": "integer", "minimum": 0}}
+ACTION_ITEM = {"type": "object", "required": ["ids", "count"],
+               "properties": {"ids": ACTION_IDS, "count": {"type": "integer", "minimum": 1}}}
+INVENTORY_ACTION = {
+    "type": "object", "required": ["kind", "highlightIds"],
+    "properties": {
+        "kind": {"enum": ["interact", "recipe"]}, "highlightIds": ACTION_IDS,
+        "source": {"type": "string", "minLength": 1},
+        "count": {"type": "integer", "minimum": 1},
+        "consumed": {"type": "array", "minItems": 1, "items": ACTION_ITEM},
+        "produced": ACTION_ITEM,
+    },
+    "if": {"properties": {"kind": {"const": "recipe"}}},
+    "then": {"required": ["source", "count", "consumed", "produced"]},
+}
+
 SCHEMA = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
@@ -76,6 +93,26 @@ SCHEMA = {
                                 "depth": {"type": "integer", "minimum": 1, "maximum": 4},
                                 "kind": {"enum": ["step", "note", "trailing-note"]},
                                 "text": {"type": "string", "minLength": 1},
+                                "inventoryAction": INVENTORY_ACTION,
+                                "completionManual": {"type": "boolean"},
+                                "completion": {
+                                    "type": "object",
+                                    "properties": {
+                                        "varbit": {"type": "integer", "minimum": 1},
+                                        "varbitValue": {"type": "integer", "minimum": 1},
+                                        "varplayer": {"type": "integer", "minimum": 1},
+                                        "bit": {"type": "integer", "minimum": 0, "maximum": 31},
+                                        "skill": {"type": "string", "minLength": 1},
+                                        "level": {"type": "integer", "minimum": 1, "maximum": 99},
+                                    },
+                                    "dependentRequired": {"varbit": ["varbitValue"], "varbitValue": ["varbit"],
+                                                          "varplayer": ["bit"], "bit": ["varplayer"],
+                                                          "skill": ["level"], "level": ["skill"]},
+                                    "anyOf": [{"required": ["varplayer", "bit"]},
+                                              {"required": ["varbit", "varbitValue"]},
+                                              {"required": ["skill", "level"]}],
+                                },
+                                "collects": {"type": "boolean"},
                                 "inventorySlots": {"type": "integer", "minimum": 0},
                                 "questFollow": {"type": "boolean"},
                                 "questStartOnly": {"type": "boolean"},
@@ -143,6 +180,12 @@ SCHEMA = {
 }
 
 
+# The branch of the plugin repository the screenshots are served from. Loading
+# them from a third-party host put every player's IP in front of a server the
+# RuneLite developers cannot vouch for, and the install page said so.
+IMAGE_PREFIX = ("https://raw.githubusercontent.com/previns/"
+                "b0aty-hcim-guide-v3/images/")
+
 def invariants(guide: dict) -> list[str]:
     """Structural truths a schema cannot express."""
     errors: list[str] = []
@@ -190,7 +233,7 @@ def image_problems(guide: dict) -> list[str]:
     problems = []
     for section in guide.get("sections", []):
         for url in section.get("imageUrls", []) or []:
-            if not url.startswith("https://i.ibb.co/"):
+            if not url.startswith(IMAGE_PREFIX):
                 problems.append(f"{section.get('title')}: image on an unexpected host: {url}")
             elif url not in hashes:
                 problems.append(f"{section.get('title')}: no recorded hash for {url}")

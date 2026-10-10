@@ -62,6 +62,16 @@ aliases:
   "Kingdom Divided": "A Kingdom Divided"
 
   # Spellings and names that differ by more than punctuation
+  # Found auditing "Complete ..." steps that carried no guidance, 2026-10-07.
+  "Garden of Death": "The Garden of Death"
+  "Barcrawl": "Alfred Grimhand's Barcrawl"
+  # Recipe for Disaster sub-quests, written the way the guide writes them.
+  "Dwarf RFD": "Recipe for Disaster - Mountain Dwarf"
+  "Evil Dave RFD": "Recipe for Disaster - Evil Dave"
+  "Lumbridge RFD": "Recipe for Disaster - Lumbridge Guide"
+  # Drops the article and the word "Labour". Quest.java:225 is
+  # THE_RIBBITING_TALE_OF_A_LILY_PAD_LABOUR_DISPUTE(3515, ...).
+  "Ribbiting Tale of a Lily Pad Dispute": "The Ribbiting Tale of a Lily Pad Labour Dispute"
   "Fremmenik Trials": "The Fremennik Trials"
   "Shades of Morton": "Shades of Mort'ton"
   "Tale of Righteous": "Tale of the Righteous"

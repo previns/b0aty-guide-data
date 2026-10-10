@@ -192,7 +192,7 @@ def test_an_image_with_no_hash_fails_validation():
     import validate
 
     problems = validate.image_problems({
-        "sections": [{"title": "Bank 1", "imageUrls": ["https://i.ibb.co/a/b.png"]}],
+        "sections": [{"title": "Bank 1", "imageUrls": ["https://raw.githubusercontent.com/previns/b0aty-hcim-guide-v3/images/a.png"]}],
         "imageHashes": {},
     })
     assert problems and "no recorded hash" in problems[0]
@@ -204,8 +204,8 @@ def test_a_malformed_hash_fails_validation():
     import validate
 
     problems = validate.image_problems({
-        "sections": [{"title": "Bank 1", "imageUrls": ["https://i.ibb.co/a/b.png"]}],
-        "imageHashes": {"https://i.ibb.co/a/b.png": "tooshort"},
+        "sections": [{"title": "Bank 1", "imageUrls": ["https://raw.githubusercontent.com/previns/b0aty-hcim-guide-v3/images/a.png"]}],
+        "imageHashes": {"https://raw.githubusercontent.com/previns/b0aty-hcim-guide-v3/images/a.png": "tooshort"},
     })
     assert problems and "malformed" in problems[0]
 
@@ -216,6 +216,6 @@ def test_a_properly_hashed_image_passes():
     import validate
 
     assert validate.image_problems({
-        "sections": [{"title": "Bank 1", "imageUrls": ["https://i.ibb.co/a/b.png"]}],
-        "imageHashes": {"https://i.ibb.co/a/b.png": "a" * 64},
+        "sections": [{"title": "Bank 1", "imageUrls": ["https://raw.githubusercontent.com/previns/b0aty-hcim-guide-v3/images/a.png"]}],
+        "imageHashes": {"https://raw.githubusercontent.com/previns/b0aty-hcim-guide-v3/images/a.png": "a" * 64},
     }) == []

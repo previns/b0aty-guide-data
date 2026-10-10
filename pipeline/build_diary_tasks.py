@@ -43,10 +43,47 @@ RE_PANEL = re.compile(
 RE_CONDITION = re.compile(r"(\w+)\.setDisplayCondition\(\s*(\w+)\s*\)")
 
 
+def completion_signals(source: Path, ids: dict) -> dict:
+    """Extract diary reward state exactly as QuestHelperQuest tests completion."""
+    info = source / "src/main/java/com/questhelper/questinfo"
+    quest_text = (info / "QuestHelperQuest.java").read_text(encoding="utf-8")
+    bit_text = (info / "QuestVarbits.java").read_text(encoding="utf-8")
+    bits = dict(re.findall(r"(ACHIEVEMENT_DIARY_\w+)\(VarbitID\.(\w+)\)", bit_text))
+    signals = {}
+    for title, constant, value in re.findall(
+            r'"([^"\n]+ Diary)"\s*,\s*QuestVarbits\.(ACHIEVEMENT_DIARY_\w+)\s*,\s*(\d+)\s*,\s*QuestDetails\.Type\.ACHIEVEMENT_DIARY', quest_text):
+        bit = bits.get(constant)
+        number = ids.get("varbit", {}).get(bit)
+        if not isinstance(number, int) or int(value) <= 0:
+            continue
+        # Source enum gives the region and tier, including Lumbridge's short
+        # regional name. No prose similarity or guessed numeric identifiers.
+        short = constant.removeprefix("ACHIEVEMENT_DIARY_").replace("_", " ").title() + " Diary"
+        row = {"varbit": number, "varbitName": bit, "varbitValue": int(value), "title": title}
+        for name in {title, short}:
+            if name in signals and signals[name] != row:
+                raise ValueError(f"ambiguous diary completion: {name}")
+            signals[name] = row
+    return signals
+
+
+def whole_diary(text: str, signals: dict) -> dict | None:
+    """Whole-diary commands only, never a task or an extra action after it."""
+    text = re.sub(r"\s*(?:\[[^\]]*\]|\([^()]*\))\s*$", "", text).strip()
+    match = re.fullmatch(r"Complete (?:the )?(.+? Diary)(?: at [A-Za-z]+)?", text, re.I)
+    if not match:
+        return None
+    rows = [row for title, row in signals.items() if title.casefold() == match[1].casefold()]
+    if not rows or any(row != rows[0] for row in rows):
+        return None
+    return {k: v for k, v in rows[0].items() if k != "title"}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     ap.add_argument("--out", type=Path, default=REPO / "build" / "diary_tasks.json")
+    ap.add_argument("--ids", type=Path, default=REPO / "build" / "ids.json")
     args = ap.parse_args()
 
     root = args.source / "src/main/java/com/questhelper/helpers/achievementdiaries"
@@ -93,12 +130,13 @@ def main() -> int:
         tasks.sort(key=lambda t: (t["varplayer"], t["bit"]))
         tiers[path.stem] = tasks
 
-    out = {"source": "quest-helper (BSD 2-Clause)", "tiers": tiers}
+    out = {"source": "quest-helper (BSD 2-Clause)", "tiers": tiers, "completions": completion_signals(args.source, json.loads(args.ids.read_text(encoding="utf-8")))}
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(out, indent=1), encoding="utf-8")
 
     total = sum(len(v) for v in tiers.values())
     named = total - unnamed
+    print(f"whole-diary names {len(out['completions']):5}")
     print(f"diary tiers      {len(tiers):5}")
     print(f"task bits        {total:5}")
     print(f"  with a title   {named:5}")

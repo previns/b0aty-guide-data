@@ -59,8 +59,14 @@ def test_unproven_goals_stay_manual_without_later_visit_fallback():
     # Four, not five: the author resolved Prince Ali Rescue (f769b86e2b) to the
     # Key print on 2026-09-08. Its varplayer cannot separate the middle of that
     # quest, so it is an item goal; see curated/overrides.yaml for the evidence.
+    #
+    # Seven since 2026-10-07: three "until ..." steps of Recipe for Disaster
+    # subquests (Dwarf, Evil Dave, Lumbridge) were linked to their helpers once
+    # the subquest folders were matched. Nothing proves where each stops, so
+    # they stay manual rather than guessing a stage.
     assert {s["id"] for s in STEPS.values() if s.get("questStopUnresolved")} == {
-        "d19c49ef79", "2958f3ab85", "2d909c6747", "78e673faa3"}
+        "d19c49ef79", "2958f3ab85", "2d909c6747", "78e673faa3",
+        "a1c10cb5fd", "3e6fad26d1", "f5668b9684"}
 
 
 @pytest.mark.parametrize("condition", [

@@ -16,6 +16,7 @@ no longer matches a step is a loud warning, because it means the wiki text moved
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -23,6 +24,11 @@ from collections import Counter
 from pathlib import Path
 
 import yaml
+
+try:
+    from .build_diary_tasks import whole_diary
+except ImportError:
+    from build_diary_tasks import whole_diary
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
@@ -181,6 +187,197 @@ def _every_instruction(helper: dict):
         stack.extend(node.get("whenIn") or ())
 
 
+# How the guide words a journey. "Take the boat to Rimmington", "Charter to
+# Catherby", "Take Minecart to Kingstown". The place is what follows, and it is
+# capitalised because it is a place.
+RE_VEHICLE = re.compile(
+    r"\b(?:boat|ship|sail|charter|canoe|minecart|mine cart|carpet"
+    r"|glider|balloon|quetzal|spirit tree|fairy ring|mushtree|obelisk)\b",
+    re.I)
+
+RE_TRAVELS = re.compile(
+    r"\b(?:to|back to)\s+([A-Z][A-Za-z'\- ()0-9]{2,160})")
+
+
+# An island is not only reachable by boat. "Home Teleport to Lunar Isle"
+# and "Teleport to Ape Atoll" arrive without one, and answering them with a
+# dock sends the player to the wrong side of the world. Only consulted where
+# the step named no vehicle at all: "Take boat to Entrana with teleport
+# runes" still means the boat, because it says so.
+RE_TELEPORT = re.compile(r"\btele(?:port|s)\b", re.I)
+
+
+def load_transports(path: Path) -> dict:
+    """Skretzo's transport table, or nothing. Optional."""
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+# The word the guide uses -> the transport files that word can mean. Without
+# this, "Take boat to Keldagrim" found the Keldagrim *minecart*, because the
+# label matched and nothing checked that a minecart is not a boat.
+VEHICLE_KINDS = {
+    "boat": ("boats", "ships"),
+    "ship": ("boats", "ships"),
+    "sail": ("boats", "ships"),
+    "charter": ("charter_ships",),
+    "canoe": ("canoes",),
+    "minecart": ("minecarts",),
+    "mine cart": ("minecarts",),
+    "carpet": ("magic_carpets",),
+    "glider": ("gnome_gliders",),
+    "balloon": ("hot_air_balloons",),
+    "quetzal": ("quetzals",),
+    "spirit tree": ("spirit_trees",),
+    "fairy ring": ("fairy_rings",),
+    "mushtree": ("magic_mushtrees",),
+    "obelisk": ("wilderness_obelisks",),
+}
+
+
+def travel_for(text: str, transports: dict, entities: dict, aliases: dict | None = None,
+               crossings: dict | None = None) -> dict | None:
+    """The vehicle a travelling step means, or None.
+
+    Matched on the **name** of the route, never on distance. Skretzo groups its
+    rows under headers naming the endpoints -- "Ardougne, Brimhaven,
+    Rimmington" -- so a step naming Rimmington finds that route exactly. Trying
+    it the other way round, by finding a transport whose destination lands near
+    the place's own coordinate, was measured and refused: a town's coordinate is
+    its centre and the dock is not, so the radius needed to reach a dock made 22
+    of 29 matches ambiguous.
+
+    Ship-group directions use coordinates only after the name match; tied or
+    conflicting destinations remain unresolved. Charter headers instead name
+    the origin port, whose unique dock identifies the incoming routes.
+
+    A route also has to be the kind of thing the step said to take. The guide
+    says boat, minecart or carpet, and those are different files.
+    """
+    routes = transports.get("routes") or []
+    text = strip_links(text or "")
+    said = RE_VEHICLE.search(text)
+    if said:
+        allowed = VEHICLE_KINDS.get(said.group(0).lower())
+        if not allowed:
+            return None
+        # Only the journey after the vehicle matters, not an earlier
+        # "Head west to".
+        journey = text[said.end():]
+    else:
+        # "Head to Entrana" names no vehicle, but there is no walking to
+        # Entrana. Which places those are is curated, because it is a fact
+        # about the map and not about the sentence: decided from the text, or
+        # from route-endpoint membership, this would answer "Head to Catherby"
+        # with a boat. The kind is settled once the place is known, below.
+        if not crossings or RE_TELEPORT.search(text):
+            return None
+        allowed = None
+        journey = text
+    found = RE_TRAVELS.search(journey.replace("->", "to "))
+    if not found:
+        return None
+    place = re.split(r"\s+(?:and|to|by|then|for)\b", found.group(1))[0].strip().rstrip(".,")
+    place = re.sub(r"\s*\((?:option\s+)?(?:[A-Z]|\d+)\)\s*$", "", place, flags=re.I)
+    place = (aliases or {}).get(place, place)
+    # Wiki-authored redirects are exact evidence for guide misspellings.
+    entity = entities.get(place) or {}
+    place = entity.get('wikiPage') or place
+    key = squash(place)
+    if not key:
+        return None
+
+    # A step with no vehicle only travels if this place cannot be walked to.
+    if allowed is None:
+        kind = (crossings or {}).get(place)
+        if not kind:
+            return None
+        allowed = (kind,)
+
+    # Network transports store boarding objects and arrival tiles separately.
+    # Matching only routes silently dropped every Kourend minecart journey.
+    # Join the named arrival to its own boarding signature; never mix networks
+    # merely because both use the word "minecart" (Keldagrim is unrelated).
+    arrivals = [r for r in transports.get('arrivals', [])
+                if r.get('kind') in allowed and squash(r.get('label', '')) == key]
+    if arrivals and allowed == ('minecarts',):
+        answers = {(r['kind'], tuple(r['destination'])) for r in arrivals}
+        if len(answers) != 1:
+            return None
+        kind, destination = next(iter(answers))
+        hubs = [r for r in transports.get('hubs', []) if r.get('kind') == kind]
+        signatures = {(r['id'], r['action']) for r in hubs
+                      if squash(r.get('label', '')) == key}
+        if len(signatures) != 1:
+            return None
+        departures = []
+        for hub in hubs:
+            if ((hub['id'], hub['action']) in signatures
+                    and squash(hub.get('label', '')) != key):
+                departure = {k: hub[k] for k in ('origin', 'id', 'action')}
+                if departure not in departures:
+                    departures.append(departure)
+        if not departures:
+            return None
+        return {'place': place, 'kind': kind, 'departures': departures,
+                'destination': list(destination)}
+
+    named = [r for r in routes
+             if r.get("kind") in allowed
+             and any(squash(part) == key for part in (r.get("label") or "").split(","))]
+    if not named:
+        return None
+
+    # Charter headers name the DEPARTURE port, unlike ship route headers.
+    # Identify that port's dock, then take incoming edges to it.
+    if allowed == ("charter_ships",):
+        docks = {tuple(r['origin']) for r in named}
+        if len(docks) != 1:
+            return None
+        going = list(next(iter(docks)))
+        named = [r for r in routes if r.get('kind') == 'charter_ships'
+                 and r['destination'] == going]
+        if not named:
+            return None
+    else:
+        going = None
+
+    points = entity.get("points") or (entities.get(place) or {}).get("points") or []
+    if not points and going is None:
+        # The route is named but nothing says which end of it is meant. Two
+        # answers and no way to choose is not an answer.
+        return None
+
+    if going is None:
+        answers = set()
+        for px, py, pp in points:
+            score = lambda r: (r['destination'][2] != pp,
+                               abs(r['destination'][0] - px) + abs(r['destination'][1] - py))
+            best_score = min(map(score, named))
+            answers.update(tuple(r['destination']) for r in named if score(r) == best_score)
+        if len(answers) != 1:
+            return None
+        going = list(next(iter(answers)))
+
+    # Several docks can sail to the same place, and which one the player wants
+    # is wherever they are standing. Ship them all and let the plugin outline
+    # the nearest, rather than pick one here and be wrong everywhere else.
+    departures = []
+    for route in named:
+        if route["destination"] == going:
+            departure = {k: route[k] for k in ('origin', 'id', 'action')}
+            if departure not in departures:
+                departures.append(departure)
+
+    return {
+        "place": place,
+        "kind": named[0]["kind"],
+        "departures": departures,
+        "destination": going,
+    }
+
+
 def load_item_spawns(path: Path) -> dict:
     """Item name -> the places it lies on the ground. Optional.
 
@@ -249,7 +446,7 @@ RE_FETCHING = re.compile(
 # The same verbs anywhere in the sentence, and the words that say the step is
 # the quest rather than a trip that happens to gather something for one.
 RE_FETCHING_ANYWHERE = re.compile(
-    r"\b(?:collect|withdraw|loot|grab|keep\s+the)\b", re.I)
+    r"(?:\b(?:collect|withdraw|loot|grab|keep\s+the)\b|^\s*(?:When|During)\b[^,]*,\s*take\b)", re.I)
 RE_DOING = re.compile(r"\b(start|continue|complete|finish)\b", re.I)
 
 
@@ -319,6 +516,26 @@ def is_preparation(text: str, quests: int) -> bool:
     # step does not also say it is doing the quest -- "Kill Elvarg and take the
     # head to complete Dragon Slayer" is the quest, whatever else it collects.
     return bool(RE_FETCHING_ANYWHERE.search(text)) and not RE_DOING.search(text)
+
+
+def attach_quest_side_tasks(doc: dict) -> int:
+    """Explicit 'During the quest' reminders accompany the preceding quest.
+
+    Event-specific 'when/after' wording needs a source-verified stage override;
+    merely finding that wording does not prove when the event occurs.
+    """
+    count = 0
+    for section in doc['sections']:
+        anchor = None
+        for step in section['steps']:
+            merged = step['merged']
+            text = strip_links(step['raw'])
+            if anchor and re.match(r'^\s*During the quest\s*,', text, re.I):
+                merged['questSideTaskOf'] = anchor['id']
+                count += 1
+            elif merged.get('questStep') and re.match(r'^\s*(?:Start|Continue|Complete)\b', text, re.I):
+                anchor = step
+    return count
 
 
 def is_doing_the_quest(text: str, quest: str) -> bool:
@@ -484,6 +701,72 @@ RE_TRAVEL = re.compile(r"^\s*(?:head|travel|go|return|walk|run|make your way|tak
 RE_SECOND_INSTRUCTION = re.compile(r"&|,|\band\b|\bthen\b|\btalk\b|\bkill\b|\bbuy\b|\bcollect\b|\btake\b|\buse\b|\bpickpocket\b|\bsearch\b|\benter\b|\bclimb\b|\bstart\b|\bcomplete\b|\bmine\b|\bcut\b|\bfish\b", re.I)
 
 
+def acquisition_blocker(raw: str, merged: dict) -> str | None:
+    """Possession proves a simple pickup, not an extra operation or unknown total."""
+    text = strip_links(raw)
+    if merged.get("questStep") or merged.get("advice"):
+        return "quest/advice has its own completion rule"
+    if re.search(r"\b(?:inventory|inventories|all|noted|until|if|unless|total|hop|hopping|some|roughly|approximately)\b", text, re.I):
+        # An inventory-slot note describes capacity, not an unknown amount.
+        without_slots = re.sub(r"\(\d+\s+inventory\s+(?:slots?|spots?|spaces?)\)", "", text, flags=re.I)
+        if re.search(r"\b(?:inventory|inventories|all|noted|until|if|unless|total|hop|hopping|some|roughly|approximately)\b", without_slots, re.I):
+            return "conditional, repeated, noted, or unspecified quantity"
+    if re.search(r"\b(?:drop|yoinking|hand in)\b", text, re.I):
+        return "additional interaction beyond acquisition"
+    # Item lists may have conjunctions; these verbs mean work beyond possession.
+    prose = re.sub(r"\([^()]*\)|\[[^\[\]]*\]", "", text)
+    if re.search(r"(?:^|[.&;]|\b(?:and|then|to)\s+)\s*(?:make|cook|equip|wear|wield|deposit|bank|give|use|read|eat|drink|fill|refill|sell|bury|plant|light)\b", prose, re.I):
+        return "additional interaction after or before acquisition"
+    if re.search(r"\b(?:collect|take|buy|purchase|pick up|loot|get)\b", prose, re.I) and len(re.findall(r"\b(?:collect|take|buy|purchase|pick up|loot|get)\b", prose, re.I)) > 1:
+        return "multiple acquisition clauses"
+    ids = set()
+    for item in merged.get("items", []):
+        members = set(item.get("ids", []))
+        if ids & members:
+            return "overlapping item requirements"
+        ids.update(members)
+    return None
+
+
+def arrival_point(raw: str, merged: dict) -> list[int] | None:
+    """Pure travel only, using the fully resolved arrival rather than a boarding NPC."""
+    if any(merged.get(key) for key in ("questStep", "completion", "advice")):
+        return None
+    cleaned = strip_links(raw).strip()
+    travel = RE_TRAVEL.match(cleaned)
+    teleport = re.fullmatch(r"(?:home\s*)?teleport\s+to\s+(.+?)[.!]?", cleaned, re.I)
+    place = merged.get("destination")
+    if teleport:
+        # Exact resolved destination only. Extra actions, conditions and diary tags
+        # cannot match its name and therefore cannot turn into an arrival tick.
+        if not place or normalise(teleport[1]) != normalise(place.get("name", "")):
+            return None
+    elif not travel or RE_SECOND_INSTRUCTION.search(cleaned[travel.end():]):
+        return None
+    if re.search(r"\b(?:continue|until|after|before|if|unless)\b|;", cleaned, re.I):
+        return None
+    journey = merged.get("travel") or {}
+    if journey.get("destination"):
+        point = journey["destination"]
+    elif place is not None:
+        points = place.get("points") or []
+        unique = {tuple(p) for p in points}
+        if place.get("ambiguous") or len(unique) != 1:
+            return None
+        point = points[0]
+    else:
+        target = merged.get("target") or {}
+        points = target.get("points") or []
+        if (target.get("confidence") not in ("linked", "wiki-exact", "wiki-redirect", "manual")
+                or target.get("kind") not in ("place", "object") or len(points) != 1):
+            return None
+        point = points[0]
+    return list(point) if len(point) == 3 and all(type(v) is int for v in point) else None
+
+
+# A step whose verb takes the quest itself as its object.
+RE_NAMES_THE_QUEST = re.compile(r"^[^A-Za-z]*(?:complete|finish|continue|start)[^A-Za-z]", re.I)
+
 RE_HOME_TELEPORT = re.compile(r"^\s*home\s*teleport\b", re.I)
 
 
@@ -565,6 +848,55 @@ def check_places(aliases: dict, locations: dict, entities: dict) -> list[str]:
             and entity.get("points"))
         if not resolves:
             problems.append(f"{spelling!r} -> {target!r}: does not resolve to a place")
+    return problems
+
+
+def check_crossings(crossings: dict, transports: dict, entities: dict,
+                    aliases: dict | None = None) -> list[str]:
+    """Every crossing must name a real route, and must actually resolve.
+
+    Declaring the wrong kind is the failure this exists to catch, and it is
+    silent: "Fossil Island" is a label under boats as well as ships, but the
+    boats rows are the rowboats already on the island. Picking boats resolved
+    cleanly, produced a departure the player could only reach by first being
+    where they were trying to go, and nothing complained.
+
+    So the check is end to end -- resolve the sentence the guide would write
+    and insist on a boarding point -- plus a warning wherever a second kind
+    also claims the place, because that is where the wrong answer comes from
+    and a human should have looked.
+    """
+    problems = []
+    routes = transports.get("routes") or []
+    for place, kind in sorted(crossings.items()):
+        offered = set()
+        for route in routes:
+            parts = [part.strip() for part in (route.get("label") or "").split(",")]
+            if place in parts:
+                offered.add(route.get("kind"))
+        if not offered:
+            problems.append(f"{place!r}: not an endpoint of any route -- check the spelling")
+            continue
+        if kind not in offered:
+            problems.append(f"{place!r}: no {kind} route, only {sorted(offered)}")
+            continue
+        # Direction comes from the place's own coordinate, so a place the guide
+        # does not yet mention has none and cannot resolve. That is dormant,
+        # not wrong: it starts working the day a step names it. Say so out
+        # loud, because dormant also means nobody has checked it against a map.
+        resolved = entities.get((aliases or {}).get(place, place)) or entities.get(place) or {}
+        going = travel_for(f"Head to {place}", transports, entities, aliases, crossings)
+        if not going and not resolved.get("points"):
+            problems.append(f"NOTE {place!r}: dormant -- no step names it yet, so "
+                            f"the {kind} route is unverified against the map")
+        elif not going:
+            problems.append(f"{place!r}: names a {kind} route but does not resolve")
+        elif not going.get("departures"):
+            problems.append(f"{place!r}: resolves with no boarding point")
+        elif len(offered) > 1:
+            others = sorted(offered - {kind})
+            problems.append(f"NOTE {place!r}: {others} also claims this place; "
+                            f"{kind} boards at {going['departures'][0]['origin']}")
     return problems
 
 
@@ -1064,6 +1396,56 @@ def lend_targets_forward(doc: dict) -> int:
     return borrowed
 
 
+# A Quest Helper instruction telling the player to do something with an item:
+# "Search the coffin to put the skull back", "Give the Bar magnet to Ava". The
+# verb can sit anywhere in the sentence, which the text-keyed table from
+# build_inventory_actions does not look for -- it reads a leading verb only.
+RE_USES_AN_ITEM = re.compile(
+    r"[^A-Za-z](use|put|give|show|hand|place|insert|offer|feed|pour|sprinkle|add|plant)"
+    r"[ ]+(?:the|your|a|an|both|all|[0-9]+x?)?[ ]*([A-Za-z' ]{3,40}?)"
+    r"(?=[ ]+(?:on|in|into|to|back|onto|over|at|with|inside|under)[^A-Za-z]|[.,!]|$)",
+    re.I)
+NOT_AN_ITEM = {"it", "them", "this", "that", "one", "these", "those", "him", "her",
+               "everything", "all", "both"}
+
+
+def own_item_operands(text: str, items: list) -> list[int]:
+    """The step's own required items that its sentence says to use.
+
+    Resolved against the instruction's own item requirements -- the two or
+    three things Quest Helper lists for that step, with exact ids -- and not
+    against every item in the game, so "the skull" can only ever be the Ghost's
+    skull the coffin step requires. A noun that fits two of them is left
+    unresolved rather than choosing.
+    """
+    candidates = [item for item in items or () if item.get("ids") and item.get("name")]
+    ids: set[int] = set()
+    for found in RE_USES_AN_ITEM.finditer(" " + text):
+        noun = squash(found.group(2))
+        if not noun or noun in NOT_AN_ITEM:
+            continue
+        named = [item for item in candidates
+                 if squash(item["name"]) == noun or squash(item["name"]).endswith(noun)]
+        if len(named) == 1:
+            ids.update(named[0]["ids"])
+    return sorted(ids)
+
+
+def attach_inventory_interactions(value, actions):
+    if isinstance(value, dict):
+        text = value.get("text")
+        ids = actions.get(text) if isinstance(text, str) else None
+        if not ids and isinstance(text, str) and value.get("items"):
+            ids = own_item_operands(text, value["items"]) or None
+        if ids:
+            value["inventoryHighlightIds"] = ids
+        for child in list(value.values()):
+            attach_inventory_interactions(child, actions)
+    elif isinstance(value, list):
+        for child in value:
+            attach_inventory_interactions(child, actions)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--annotated", type=Path, default=REPO / "build" / "annotated.json")
@@ -1078,6 +1460,8 @@ def main() -> int:
     ap.add_argument("--shops", type=Path, default=REPO / "build" / "shops.json")
     ap.add_argument("--spawns", type=Path,
                     default=REPO / "build" / "item_spawns.json")
+    ap.add_argument("--transports", type=Path,
+                    default=REPO / "build" / "transports.json")
     ap.add_argument("--images", type=Path, default=REPO / "build" / "images.json")
     ap.add_argument("--out", type=Path, default=REPO / "build" / "merged.json")
     ap.add_argument("--check-aliases", action="store_true", help="validate aliases and exit")
@@ -1089,6 +1473,8 @@ def main() -> int:
                     help="verify curated/diary_aliases.yaml and stop")
     ap.add_argument("--check-entity-aliases", action="store_true",
                     help="validate curated entity aliases and exit")
+    ap.add_argument("--check-crossings", action="store_true",
+                    help="verify curated/crossings.yaml and stop")
     ap.add_argument("--check-places", action="store_true",
                     help="validate curated place aliases and exit")
     ap.add_argument("--check-skills", action="store_true",
@@ -1134,9 +1520,11 @@ def main() -> int:
         return 0
 
     quest_objects = load_quest_objects(args.quest_objects)
+    diary_signals = json.loads((REPO / "build" / "diary_tasks.json").read_text(encoding="utf-8")).get("completions", {})
     quest_steps, quest_step_aliases, diary_task_steps = load_quest_steps(args.quest_steps)
     shop_sellers = load_shop_sellers(args.shops)
     item_spawns = load_item_spawns(args.spawns)
+    transports = load_transports(args.transports)
     used_diary_tasks: set[str] = set()
     # Longest first, so "Fairytale II - Cure a Queen" wins over "Fairytale".
     # The alias table as written -> real, for matching prose as well as tags.
@@ -1178,6 +1566,8 @@ def main() -> int:
 
     place_aliases: dict[str, str] = (
         load_yaml(args.curated / "places.yaml").get("aliases") or {})
+    transport_aliases = load_yaml(args.curated / "transport_aliases.yaml").get("aliases") or {}
+    crossings = load_yaml(args.curated / "crossings.yaml").get("crossings") or {}
 
     locations = load_locations(args.curated / "locations.generated.yaml")
     banks = {
@@ -1192,6 +1582,15 @@ def main() -> int:
     }
 
     doc = json.loads(args.annotated.read_text(encoding="utf-8"))
+    action_path = args.annotated.parent / "inventory_actions.json"
+    if not action_path.exists():
+        raise ValueError("Missing inventory_actions.json: run build_inventory_actions first")
+    action_doc = json.loads(action_path.read_text(encoding="utf-8"))
+    if action_doc.get("sourceHash") != hashlib.sha256(args.annotated.read_bytes()).hexdigest():
+        raise ValueError("Stale inventory_actions.json: rerun build_inventory_actions")
+    if action_doc.get("questSourceHash") != hashlib.sha256(args.quest_steps.read_bytes()).hexdigest():
+        raise ValueError("Stale quest inventory actions: rerun build_inventory_actions")
+    item_actions = action_doc["actions"]
 
     problems = check_places(place_aliases, locations, entities)
     if problems:
@@ -1201,6 +1600,21 @@ def main() -> int:
         return 1
     if args.check_places:
         print(f"{len(place_aliases)} place aliases, all resolving")
+        return 0
+
+    reported = check_crossings(crossings, transports, entities, transport_aliases)
+    problems = [p for p in reported if not p.startswith("NOTE ")]
+    if problems:
+        print("curated/crossings.yaml is invalid:", file=sys.stderr)
+        for problem in problems:
+            print(f"  {problem}", file=sys.stderr)
+        return 1
+    if args.check_crossings:
+        dormant = sum(1 for note in reported if "dormant" in note)
+        print(f"{len(crossings)} crossings, {len(crossings) - dormant} resolving to a "
+              f"boarding point, {dormant} dormant")
+        for note in reported:
+            print(f"  {note}")
         return 0
 
     problems = check_entity_aliases(entity_aliases, entities)
@@ -1409,28 +1823,6 @@ def main() -> int:
                 merged["depositsAll"] = True
                 stats["deposits everything"] += 1
 
-            # --- arriving is the whole step -----------------------------------
-            # "Travel to Port Piscarilius via Veos" is finished by being there.
-            # "Head to the basement & Talk to Sedridor" is not -- arriving is
-            # half of it, and ticking on arrival would skip the talk. So this
-            # needs the step to carry no second instruction at all, which takes
-            # it from 265 candidates down to the couple of dozen where standing
-            # in the right place really is the whole job.
-            cleaned = strip_links(step["raw"])
-            travel = RE_TRAVEL.match(cleaned)
-            if travel and not RE_SECOND_INSTRUCTION.search(cleaned[travel.end():]):
-                where = None
-                place = merged.get("destination")
-                if place and not place.get("ambiguous") and len(place.get("points") or []) == 1:
-                    where = place["points"][0]
-                else:
-                    aim = merged.get("target") or {}
-                    if len(aim.get("points") or []) == 1:
-                        where = aim["points"][0]
-                if where and len(where) >= 3:
-                    merged["arrivesAt"] = where
-                    stats["done on arrival"] += 1
-
             # --- provable completion ------------------------------------------
             # Only ever a signal the game itself sets. The plugin ticks on it;
             # everything else stays a manual checkbox.
@@ -1454,9 +1846,14 @@ def main() -> int:
                 completion["bit"] = diary_row["bit"]
                 stats["diary completion bit"] += 1
 
+            whole = whole_diary(strip_links(step["raw"]), diary_signals)
+            if whole and not diary_row:
+                completion.update(whole)
+                stats["whole diary completion"] += 1
+
             if completion:
                 parts = []
-                if "bit" in completion:
+                if "bit" in completion or "varbit" in completion:
                     parts.append("diary")
                 if "skill" in completion:
                     parts.append("skill")
@@ -1571,6 +1968,13 @@ def main() -> int:
                 # and must stay manual.
                 if ((RE_ACQUIRES.match(strip_links(step["raw"]))
                         or ann.get("buys") or ann.get("collects"))
+                        and not is_advice(strip_links(step["raw"]))
+                        # Identifying the goods does not establish how many
+                        # fit in an inventory, or prove several trips happened.
+                        and not re.search(r"\binventor(?:y|ies)\s+(?:of|with)\b", step["raw"], re.I)
+                        # 'All Water Runes' identifies an item, not a numeric
+                        # stopping quantity. One rune cannot prove 'all'.
+                        and not re.search(r"\bAll\s+\w+\s+Runes?\b", step["raw"], re.I)
                         and all(i["ids"] for i in items)):
                     merged["acquires"] = True
                     stats["acquired when held"] += 1
@@ -1642,6 +2046,23 @@ def main() -> int:
                 if lying:
                     merged["spawns"] = lying[:MAX_SPAWN_ITEMS]
                     stats["lies on the ground"] += 1
+
+            # --- how the route gets there -------------------------------------
+            # "Take the boat to Rimmington" never says Captain Barnaby, so the
+            # plugin walked the player to a dock and went quiet. 98 of the
+            # guide's 140 travelling steps pointed at nothing.
+            #
+            # Only where the step names a vehicle, or names a place that
+            # cannot be walked to. "Head to Catherby" is a walk, and answering
+            # it with a boat would be a different instruction; "Head to
+            # Entrana" is not a walk, and answering it with the coordinate of
+            # an island was leaving the plugin pointed across open water.
+            if RE_VEHICLE.search(step["raw"]) or crossings:
+                going = travel_for(step["raw"], transports, entities,
+                                   transport_aliases, crossings)
+                if going:
+                    merged["travel"] = going
+                    stats["a vehicle to catch"] += 1
 
             # --- destination --------------------------------------------------
             place = ann.get("destination") or (
@@ -1852,6 +2273,25 @@ def main() -> int:
                     if doing and not diary_only and not is_preparation(said, tagged):
                         merged["questStep"] = True
                         stats["step is the quest being done"] += 1
+                        # "Complete Restless Ghost" names the quest and nothing
+                        # else, so a target resolved from it came out of the
+                        # quest's own title: the NPC called Restless ghost, an
+                        # NPC called Children out of Children of the Sun, an
+                        # item called Shadow out of Shadow of the Storm, an item
+                        # called Meat out of Meat and Greet. A target with ids
+                        # outranks Quest Helper, so the step stayed pinned to it
+                        # for the whole quest -- the ghost highlighted while the
+                        # quest wanted the skull on the coffin.
+                        #
+                        # Only where the verb's object is the quest. "Talk to
+                        # Romeo [Romeo & Juliet]" also has a target inside the
+                        # quest's name, and Romeo is exactly who to talk to.
+                        target = merged.get("target") or {}
+                        if (RE_NAMES_THE_QUEST.match(said) and target.get("ids")
+                                and squash(target.get("name"))
+                                and squash(target.get("name")) in squash(quest_named)):
+                            merged.pop("target", None)
+                            stats["target was the quest's own title"] += 1
                     elif doing:
                         stats["step is preparing for a quest, not doing it"] += 1
 
@@ -1895,6 +2335,23 @@ def main() -> int:
                 if ann.get(key):
                     merged[key] = ann[key]
 
+            if ann.get("collects"):
+                merged["collects"] = True
+            if merged.get("acquires") and acquisition_blocker(step["raw"], merged):
+                merged.pop("acquires", None)
+                if merged.get("completion"):
+                    merged["completionManual"] = True
+                stats["acquired when held"] -= 1
+                stats["acquisition kept manual"] += 1
+
+            where = arrival_point(step["raw"], merged)
+            if where is not None:
+                merged["arrivesAt"] = where
+                stats["done on arrival"] += 1
+
+            if step["id"] in item_actions:
+                merged["inventoryAction"] = item_actions[step["id"]]
+
             # --- overrides win ------------------------------------------------
             override = overrides.get(step["id"])
             if override:
@@ -1902,6 +2359,17 @@ def main() -> int:
                 merged.update(override)
                 stats["override applied"] += 1
 
+            if ann.get("buys") and "items" not in (overrides.get(step["id"]) or {}):
+                alternatives = quest_steps.get(merged.get("questHelper"), {}).get("itemAlternatives", {})
+                # A quest accepting a substitute does not mean the route asked
+                # to buy it (e.g. empty waterskins or a poisoned spear). Require
+                # the author's parenthetical to name QH's exact substitute too.
+                notes = {n.strip().casefold() for n in re.findall(r"\(([^()]+)\)", step["raw"])}
+                alternatives = {k: v["ids"] for k, v in alternatives.items()
+                                if any(n.strip().casefold() in notes for n in v["notes"])}
+                for item in merged.get("items", []):
+                    item["ids"] = sorted({other for primary in item.get("ids", [])
+                                          for other in alternatives.get(str(primary), [primary])})
             step["merged"] = merged
             step.pop("annotation", None)
 
@@ -1955,6 +2423,8 @@ def main() -> int:
     print(f"quest item milestones {milestones['items']:3}")
     print(f"unresolved item stops {len(milestones['unresolved']):3}")
 
+    print(f"explicit quest side tasks {attach_quest_side_tasks(doc):3}")
+
     # Overrides again, last. The file says "merged last, always wins" and until
     # now that was only true of the fields settled inside the step loop: the
     # three quest passes and the boundary pass all run after it, so a hand-set
@@ -1988,6 +2458,13 @@ def main() -> int:
                     if key not in quest_steps:
                         raise ValueError(f"Unknown {field} {key!r} on {step['id']}")
                     doc["questHelpers"][key] = quest_steps[key]
+    # Substitute metadata is a build-time join, not a runtime requirement.
+    doc["questHelpers"] = {key: {k: v for k, v in helper.items() if k != "itemAlternatives"}
+                           for key, helper in doc["questHelpers"].items()}
+    # Inventory interaction metadata is separate from NPC/object map icons and
+    # from carried requirements. Read from the earlier, exact-resolution stage.
+    attach_inventory_interactions(doc["questHelpers"], action_doc.get("questActions", {}))
+    attach_inventory_interactions(doc["diaryTasks"], action_doc.get("questActions", {}))
     unresolved_goals = [{"id": s["id"], "quest": s["merged"].get("questHelper"), "text": s["raw"]}
                         for section in doc["sections"] for s in section["steps"]
                         if s["merged"].get("questStopUnresolved")]

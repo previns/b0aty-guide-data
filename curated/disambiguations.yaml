@@ -32,3 +32,13 @@ pages:
   # to the Blast Furnace one, a different object in a different city, and
   # "Waterpump" is itself a disambiguation across seven of them.
   "Pump": "Waterpump (Falador)"
+
+  # Bank 27, "4x Onions" in a withdraw list, and Bank 6, "Buy 6 Onions from the
+  # Food Store". The wiki's plural page is the farming sack -- SACK_ONION_1..10,
+  # ids 5440-5458 -- so the guide asked for four onions and the plugin outlined
+  # a sack nobody carries. The singular page is the vegetable, ONION = 1957.
+  #
+  # Planting is the exception and is not covered here: "Plant Onions" wants
+  # onion seeds, and that is settled per step in overrides.yaml, as this file's
+  # own rule about context-dependent names requires.
+  "Onions": "Onion"
