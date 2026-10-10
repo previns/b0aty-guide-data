@@ -1,8 +1,8 @@
 {
  "schemaVersion": 1,
  "sourcePage": "Guide:B0aty HCIM Guide V3",
- "sourceRevid": 15329305,
- "sourceRevisionAt": "2026-09-03T05:05:57Z",
+ "sourceRevid": 15347007,
+ "sourceRevisionAt": "2026-09-16T18:59:08Z",
  "episodes": [
   {
    "ordinal": 1,
@@ -444,6 +444,14 @@
    "title": "Episode 24 - The First Real Challenge",
    "videoIds": [
     "S-akWpucMa0"
+   ],
+   "sectionIds": []
+  },
+  {
+   "ordinal": 25,
+   "title": "Episode 25 - The Most Dangerous Encounter Yet",
+   "videoIds": [
+    "cDcF_cRTCRg"
    ],
    "sectionIds": []
   }
@@ -6941,6 +6949,11 @@
         3546,
         5154,
         0
+       ],
+       [
+        3308,
+        12443,
+        0
        ]
       ],
       "wikiPage": "Bank Deposit Box",
@@ -9270,6 +9283,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -12787,9 +12805,7 @@
        26262,
        26263,
        35949,
-       35950,
-       49595,
-       49596
+       35950
       ],
       "points": [
        [
@@ -12805,11 +12821,6 @@
        [
         3274,
         6124,
-        0
-       ],
-       [
-        2339,
-        3111,
         0
        ]
       ],
@@ -15158,9 +15169,7 @@
        26262,
        26263,
        35949,
-       35950,
-       49595,
-       49596
+       35950
       ],
       "points": [
        [
@@ -15176,11 +15185,6 @@
        [
         3274,
         6124,
-        0
-       ],
-       [
-        2339,
-        3111,
         0
        ]
       ],
@@ -15812,9 +15816,7 @@
        26262,
        26263,
        35949,
-       35950,
-       49595,
-       49596
+       35950
       ],
       "points": [
        [
@@ -15830,11 +15832,6 @@
        [
         3274,
         6124,
-        0
-       ],
-       [
-        2339,
-        3111,
         0
        ]
       ],
@@ -24641,6 +24638,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -28853,6 +28855,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -32152,6 +32159,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -32533,6 +32545,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -32992,6 +33009,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -37000,6 +37022,7 @@
       "ids": [
        9736,
        26181,
+       37728,
        39458,
        39490,
        39391,
@@ -37024,7 +37047,9 @@
        7183,
        7184,
        12102,
-       50563
+       50563,
+       31631,
+       54049
       ],
       "points": [
        [
@@ -37370,7 +37395,7 @@
         0
        ]
       ],
-      "wikiPage": "Fairy rings",
+      "wikiPage": "Fairy ring",
       "confidence": "wiki-redirect",
       "pointSource": "wiki",
       "scattered": true
@@ -38468,8 +38493,8 @@
       "ids": [],
       "points": [
        [
-        3108,
-        3358,
+        3114,
+        3331,
         0
        ]
       ],
@@ -38479,8 +38504,8 @@
       "scattered": false
      },
      "arrivesAt": [
-      3108,
-      3358,
+      3114,
+      3331,
       0
      ],
      "destination": {
@@ -41164,6 +41189,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -41259,6 +41289,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -41670,6 +41705,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -44822,6 +44862,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -46200,6 +46245,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -49462,6 +49512,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -52680,7 +52735,9 @@
       },
       {
        "name": "Elvargs Head",
-       "ids": []
+       "ids": [
+        11279
+       ]
       },
       {
        "name": "Fishing Rod",
@@ -52735,6 +52792,7 @@
       }
      ],
      "withdraw": true,
+     "acquires": true,
      "inventorySlots": 13
     },
     {
@@ -54164,6 +54222,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -55431,6 +55494,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -55766,6 +55834,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -57682,6 +57755,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -58143,6 +58221,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -63952,8 +64035,8 @@
       "name": "Rimmington Boat",
       "points": [
        [
-        2956,
-        3232,
+        2947,
+        3263,
         1
        ]
       ],
@@ -64154,6 +64237,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -71532,6 +71620,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -77057,7 +77150,7 @@
         0
        ]
       ],
-      "wikiPage": "Fairy rings",
+      "wikiPage": "Fairy ring",
       "confidence": "wiki-redirect",
       "pointSource": "wiki",
       "scattered": true
@@ -77213,6 +77306,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -77541,6 +77639,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -77629,6 +77732,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -78954,6 +79062,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -84072,6 +84185,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -84413,6 +84531,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -94457,6 +94580,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -94985,8 +95113,8 @@
        9083
       ],
       "points": [],
-      "wikiPage": "Seal of passage",
-      "confidence": "wiki-redirect",
+      "wikiPage": "Seal of Passage",
+      "confidence": "wiki-exact",
       "scattered": false
      }
     },
@@ -97781,6 +97909,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -98392,6 +98525,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -99309,10 +99447,25 @@
      "text": "Mine a Mithril Deposit [Morytania Hard Diary]",
      "target": {
       "name": "Mithril Deposit",
+      "names": [
+       "Mithril Deposit"
+      ],
       "kind": "object",
-      "ids": [],
-      "points": [],
-      "confidence": "inferred",
+      "ids": [
+       11373,
+       11372,
+       36207
+      ],
+      "points": [
+       [
+        3057,
+        3944,
+        0
+       ]
+      ],
+      "wikiPage": "Mithril rocks",
+      "confidence": "wiki-redirect",
+      "pointSource": "quest-helper",
       "scattered": false
      },
      "completion": {
@@ -637930,6 +638083,8 @@
   "Upon creating your account, DO NOT choose a username with the words or phrases ‘Iron’ ‘HC’ ‘Fe’, 'GIM', 'GIMP'. This is the most important step of the guide.",
   "Use all Lamps on Herblore after quest is complete unless specified",
   "A lot of the time the guide will assume you have combat gear on you. Sometimes it is specified, sometimes it is not. I would always have a weapon/ammunition on you to kill monsters. Magic solves almost every fight except for [[Black Knight Titan]]",
+  "The guide now has a plugin available to walk you through the guide like a questhelper. There may be some bugs as I only playtested it up to bank 30.",
+  "https://runelite.net/plugin-hub/show/b0aty-hcim-guide-v3",
   "'''Macroquesting:''' Macroquesting is the process of completing multiple quests simultaneously, progressing your account in an \"optimal\" way, ensuring that the maximum number of quests are being done during any given visit to an area. It's a crucial part of efficient gameplay, for use when making alternate (possibly Ironman) accounts. For a given style of gameplay, it's theoretically possible to \"solve\" the exact chain of quest steps and item gathering grinds, however there is currently insufficient data in a suitable format to build such a solver.",
   "OPTIONAL: I made some tile markers for an efficient 25x4 Tithe Farm method here: https://pastebin.com/SjiqWaEJ (Copy and right click on world map orb -> import)",
   "Die to Hunllef"
@@ -637941,6 +638096,6 @@
   "ae34baad99": "8c44826480",
   "ba60f4f4fe": "c0297c1e56"
  },
- "contentHash": "75ae976870c7df0a",
- "generatedAt": "2026-09-09T02:08:06+00:00"
+ "contentHash": "3a80979d72b3ebef",
+ "generatedAt": "2026-10-10T11:16:02+00:00"
 }
