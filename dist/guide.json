@@ -1,8 +1,8 @@
 {
  "schemaVersion": 1,
  "sourcePage": "Guide:B0aty HCIM Guide V3",
- "sourceRevid": 15329305,
- "sourceRevisionAt": "2026-09-03T05:05:57Z",
+ "sourceRevid": 15374323,
+ "sourceRevisionAt": "2026-10-17T01:30:51Z",
  "episodes": [
   {
    "ordinal": 1,
@@ -444,6 +444,22 @@
    "title": "Episode 24 - The First Real Challenge",
    "videoIds": [
     "S-akWpucMa0"
+   ],
+   "sectionIds": []
+  },
+  {
+   "ordinal": 25,
+   "title": "Episode 25 - The Most Dangerous Encounter Yet",
+   "videoIds": [
+    "cDcF_cRTCRg"
+   ],
+   "sectionIds": []
+  },
+  {
+   "ordinal": 26,
+   "title": "Episode 26 - The Scariest Place on a Hardcore",
+   "videoIds": [
+    "COXw78DgAcc"
    ],
    "sectionIds": []
   }
@@ -1981,7 +1997,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -7461,6 +7477,11 @@
         3546,
         5154,
         0
+       ],
+       [
+        3308,
+        12443,
+        0
        ]
       ],
       "wikiPage": "Bank Deposit Box",
@@ -9844,6 +9865,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -13415,9 +13441,7 @@
        26262,
        26263,
        35949,
-       35950,
-       49595,
-       49596
+       35950
       ],
       "points": [
        [
@@ -13433,11 +13457,6 @@
        [
         3274,
         6124,
-        0
-       ],
-       [
-        2339,
-        3111,
         0
        ]
       ],
@@ -15887,9 +15906,7 @@
        26262,
        26263,
        35949,
-       35950,
-       49595,
-       49596
+       35950
       ],
       "points": [
        [
@@ -15905,11 +15922,6 @@
        [
         3274,
         6124,
-        0
-       ],
-       [
-        2339,
-        3111,
         0
        ]
       ],
@@ -16368,6 +16380,24 @@
        },
        {
         "origin": [
+         1943,
+         2757,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3001,
+         3032,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
          1496,
          3403,
          0
@@ -16422,6 +16452,15 @@
        },
        {
         "origin": [
+         1871,
+         3309,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
          3038,
          3192,
          0
@@ -16449,8 +16488,8 @@
        },
        {
         "origin": [
-         3001,
-         3032,
+         2805,
+         2502,
          0
         ],
         "id": 1330,
@@ -16460,6 +16499,24 @@
         "origin": [
          1514,
          2971,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3064,
+         2999,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3189,
+         2369,
          0
         ],
         "id": 1330,
@@ -16690,9 +16747,7 @@
        26262,
        26263,
        35949,
-       35950,
-       49595,
-       49596
+       35950
       ],
       "points": [
        [
@@ -16708,11 +16763,6 @@
        [
         3274,
         6124,
-        0
-       ],
-       [
-        2339,
-        3111,
         0
        ]
       ],
@@ -17976,7 +18026,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -18367,7 +18417,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -19108,7 +19158,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -20716,6 +20766,24 @@
        },
        {
         "origin": [
+         1943,
+         2757,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3001,
+         3032,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
          1496,
          3403,
          0
@@ -20770,6 +20838,15 @@
        },
        {
         "origin": [
+         1871,
+         3309,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
          3038,
          3192,
          0
@@ -20797,8 +20874,8 @@
        },
        {
         "origin": [
-         3001,
-         3032,
+         2805,
+         2502,
          0
         ],
         "id": 1330,
@@ -20808,6 +20885,24 @@
         "origin": [
          1514,
          2971,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3064,
+         2999,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3189,
+         2369,
          0
         ],
         "id": 1330,
@@ -26768,6 +26863,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -30323,7 +30423,7 @@
          0
         ],
         "id": 1165,
-        "action": "Travel-boat Monk of Entrana"
+        "action": "Take-boat Monk of Entrana"
        }
       ],
       "destination": [
@@ -31235,6 +31335,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -34607,6 +34712,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -35001,6 +35111,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -35295,7 +35410,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -35654,6 +35769,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -39798,6 +39918,7 @@
       "ids": [
        9736,
        26181,
+       37728,
        39458,
        39490,
        39391,
@@ -39822,7 +39943,9 @@
        7183,
        7184,
        12102,
-       50563
+       50563,
+       31631,
+       54049
       ],
       "points": [
        [
@@ -40174,7 +40297,7 @@
         0
        ]
       ],
-      "wikiPage": "Fairy rings",
+      "wikiPage": "Fairy ring",
       "confidence": "wiki-redirect",
       "pointSource": "wiki",
       "scattered": true
@@ -41331,8 +41454,8 @@
       "ids": [],
       "points": [
        [
-        3108,
-        3358,
+        3114,
+        3331,
         0
        ]
       ],
@@ -44129,6 +44252,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -44229,6 +44357,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -44647,6 +44780,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -47824,6 +47962,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -49320,6 +49463,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -50488,54 +50636,22 @@
      ]
     },
     {
-     "id": "ef83d11fde",
-     "ordinal": 12,
-     "depth": 1,
-     "kind": "step",
-     "text": "Use Star on Experiment Entrance (Don't enter)",
-     "target": {
-      "name": "Experiment Entrance",
-      "names": [
-       "Experiment Entrance"
-      ],
-      "kind": "place",
-      "ids": [],
-      "points": [
-       [
-        3575,
-        3526,
-        0
-       ]
-      ],
-      "wikiPage": "Experiment cave",
-      "confidence": "wiki-redirect",
-      "pointSource": "wiki",
-      "scattered": false
-     },
-     "items": [
-      {
-       "name": "Star",
-       "ids": []
-      }
-     ]
-    },
-    {
      "id": "c27ba1c0cc",
-     "ordinal": 13,
+     "ordinal": 12,
      "depth": 1,
      "kind": "step",
      "text": "Head to the wrecked ship and dye the toy ship to match the wrecked ship (If you get bad rng here you may need a bad combination of dyes)"
     },
     {
      "id": "444d998c06",
-     "ordinal": 14,
+     "ordinal": 13,
      "depth": 1,
      "kind": "step",
      "text": "Return the toy ship to the son called Old Man in return for a key"
     },
     {
      "id": "d9b2d8b22b",
-     "ordinal": 15,
+     "ordinal": 14,
      "depth": 1,
      "kind": "step",
      "text": "Use the key on the chest for the 1st map piece [Ghost's Ahoy]",
@@ -50553,7 +50669,7 @@
     },
     {
      "id": "87d661d692",
-     "ordinal": 16,
+     "ordinal": 15,
      "depth": 1,
      "kind": "step",
      "text": "Cross the planks north for the 2nd map piece [Ghost's Ahoy]",
@@ -50571,7 +50687,7 @@
     },
     {
      "id": "b060901fca",
-     "ordinal": 17,
+     "ordinal": 16,
      "depth": 1,
      "kind": "step",
      "text": "Kill the lobster south for the 3rd map piece [Ghost's Ahoy]",
@@ -50603,7 +50719,7 @@
     },
     {
      "id": "d73a790e9a",
-     "ordinal": 18,
+     "ordinal": 17,
      "depth": 1,
      "kind": "step",
      "text": "Return to the farm and buy 2 undead chickens for 20 ecto tokens [Animal Magnetism]",
@@ -50627,7 +50743,7 @@
     },
     {
      "id": "ce5f98f9e4",
-     "ordinal": 19,
+     "ordinal": 18,
      "depth": 1,
      "kind": "step",
      "text": "Bank at Port Phasmatys and deposit all",
@@ -50669,11 +50785,11 @@
    ],
    "steps": [
     {
-     "id": "b7e7c700c9",
+     "id": "e820b6b857",
      "ordinal": 0,
      "depth": 1,
      "kind": "step",
-     "text": "Withdraw: Oak Longbow, All Ectotokens, Sapphire Amulet, Treasure Map, Spade, Coins, Ghostspeak Amulet, Bucket of Slime, Decapitated Head, Pickled Brain, Needle, 5x Thread, 3 Bronze Wires, Steel Bar & Cannonball Mould + 5 Food(22 Inventory Slots)",
+     "text": "Withdraw: Oak Longbow, All Ectotokens, Sapphire Amulet, Treasure Map, Spade, Coins, Ghostspeak Amulet, Bucket of Slime, Decapitated Head, Pickled Brain, Needle, 5x Thread, 3 Bronze Wires, Steel Bar & Cannonball Mould + 5 Food, (23 Inventory Slots)",
      "items": [
       {
        "name": "Oak Longbow",
@@ -50813,7 +50929,7 @@
       }
      ],
      "withdraw": true,
-     "inventorySlots": 22,
+     "inventorySlots": 23,
      "spawns": [
       {
        "name": "Pickled Brain",
@@ -50850,8 +50966,16 @@
      ]
     },
     {
-     "id": "2c57fd81ef",
+     "id": "48b0975bbd",
      "ordinal": 1,
+     "depth": 1,
+     "kind": "step",
+     "text": "Make sure you bring the star amulet from the previous bank as well.",
+     "advice": true
+    },
+    {
+     "id": "2c57fd81ef",
+     "ordinal": 2,
      "depth": 1,
      "kind": "step",
      "text": "Make cannonballs on the Furnance [Morytania Medium Diary]",
@@ -50871,7 +50995,7 @@
     },
     {
      "id": "0420166e40",
-     "ordinal": 2,
+     "ordinal": 3,
      "depth": 1,
      "kind": "step",
      "text": "Use Decapitated Head on the Pickled Brain [Creature of Fenkenstrain]",
@@ -50921,7 +51045,7 @@
     },
     {
      "id": "bc187a51d1",
-     "ordinal": 3,
+     "ordinal": 4,
      "depth": 1,
      "kind": "step",
      "text": "Head to Dragontooth Island [Morytania Medum Diary]",
@@ -50974,7 +51098,7 @@
     },
     {
      "id": "265b354f76",
-     "ordinal": 4,
+     "ordinal": 5,
      "depth": 1,
      "kind": "step",
      "text": "Dig for the Book of Haricanto [Ghost's Ahoy]",
@@ -50992,7 +51116,7 @@
     },
     {
      "id": "3108159234",
-     "ordinal": 5,
+     "ordinal": 6,
      "depth": 1,
      "kind": "step",
      "text": "Return to Port Phasmatys",
@@ -51038,7 +51162,7 @@
     },
     {
      "id": "84b88caee0",
-     "ordinal": 6,
+     "ordinal": 7,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Ak-Haranu (1) [Ghost's Ahoy]",
@@ -51082,7 +51206,7 @@
     },
     {
      "id": "2704720ecb",
-     "ordinal": 7,
+     "ordinal": 8,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Robin Beat him 4 times in Runedraw [Ghost's Ahoy]",
@@ -51121,7 +51245,7 @@
     },
     {
      "id": "94c52bd067",
-     "ordinal": 8,
+     "ordinal": 9,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Ak-Haranu for Translation Manual [Ghost's Ahoy]",
@@ -51160,7 +51284,7 @@
     },
     {
      "id": "25d3272726",
-     "ordinal": 9,
+     "ordinal": 10,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Ghost innkeeper (4,1) [Ghost's Ahoy]",
@@ -51205,7 +51329,7 @@
     },
     {
      "id": "07c9b6868c",
-     "ordinal": 10,
+     "ordinal": 11,
      "depth": 1,
      "kind": "step",
      "text": "Use Bucket of Slime on the Bedsheet",
@@ -51243,7 +51367,7 @@
     },
     {
      "id": "755b0537f4",
-     "ordinal": 11,
+     "ordinal": 12,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Gravingas (1) [Ghost's Ahoy]",
@@ -51288,14 +51412,14 @@
     },
     {
      "id": "11d409af93",
-     "ordinal": 12,
+     "ordinal": 13,
      "depth": 1,
      "kind": "step",
      "text": "When getting the signatures, find 2 ghosts near each other and if they ask for Ectotokens or deny you, return the other and repeat until 10 signatures"
     },
     {
      "id": "db72315353",
-     "ordinal": 13,
+     "ordinal": 14,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Droalak -> Melina -> Droalak [Making History]",
@@ -51335,7 +51459,7 @@
     },
     {
      "id": "874cd6b5f1",
-     "ordinal": 14,
+     "ordinal": 15,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Necrovarus Take the key he drops & open the door upstairs for his robes",
@@ -51362,22 +51486,29 @@
      }
     },
     {
-     "id": "4ed0ab6edd",
-     "ordinal": 15,
+     "id": "dde7744376",
+     "ordinal": 16,
      "depth": 1,
      "kind": "step",
-     "text": "Head to the Experiment Lair and continue Creature of Fenkenstrain until you get the Conductor Mould",
+     "text": "Head to the Experiment Lair Use Star on Experiment Entrance and continue Creature of Fenkenstrain until you get the Conductor Mould",
      "target": {
-      "name": "Experiment Lair",
-      "kind": "nav",
+      "name": "Experiment Entrance",
+      "names": [
+       "Experiment Entrance"
+      ],
+      "kind": "place",
       "ids": [],
-      "points": [],
-      "confidence": "inferred",
+      "points": [
+       [
+        3575,
+        3526,
+        0
+       ]
+      ],
+      "wikiPage": "Experiment cave",
+      "confidence": "wiki-redirect",
+      "pointSource": "wiki",
       "scattered": false
-     },
-     "destination": {
-      "name": "Experiment Lair",
-      "points": []
      },
      "questHelper": "creatureoffenkenstrain",
      "questStep": true,
@@ -51394,7 +51525,7 @@
     },
     {
      "id": "6b47913c6e",
-     "ordinal": 16,
+     "ordinal": 17,
      "depth": 1,
      "kind": "step",
      "text": "Head West",
@@ -51423,7 +51554,7 @@
     },
     {
      "id": "292378a108",
-     "ordinal": 17,
+     "ordinal": 18,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Old Crone (1) [Ghost's Ahoy]",
@@ -51468,7 +51599,7 @@
     },
     {
      "id": "a8163f58c2",
-     "ordinal": 18,
+     "ordinal": 19,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Necrovarus (1) [Ghost's Ahoy]",
@@ -51512,7 +51643,7 @@
     },
     {
      "id": "d8cc590903",
-     "ordinal": 19,
+     "ordinal": 20,
      "depth": 1,
      "kind": "step",
      "text": "Talk to Velorina to complete Ghost's Ahoy",
@@ -52709,6 +52840,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -56121,7 +56257,9 @@
       },
       {
        "name": "Elvargs Head",
-       "ids": []
+       "ids": [
+        11279
+       ]
       },
       {
        "name": "Fishing Rod",
@@ -56176,6 +56314,7 @@
       }
      ],
      "withdraw": true,
+     "acquires": true,
      "inventorySlots": 13
     },
     {
@@ -57610,6 +57749,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -58899,6 +59043,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -59249,6 +59398,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -61244,6 +61398,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -61716,6 +61875,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -64907,7 +65071,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -65420,7 +65584,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -65728,7 +65892,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -66282,7 +66446,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -66654,7 +66818,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -68566,8 +68730,8 @@
       "name": "Rimmington Boat",
       "points": [
        [
-        2956,
-        3232,
+        2947,
+        3263,
         1
        ]
       ],
@@ -68768,6 +68932,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -76559,6 +76728,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -79219,7 +79393,7 @@
          0
         ],
         "id": 1165,
-        "action": "Travel-boat Monk of Entrana"
+        "action": "Take-boat Monk of Entrana"
        }
       ],
       "destination": [
@@ -79765,7 +79939,7 @@
          0
         ],
         "id": 1165,
-        "action": "Travel-boat Monk of Entrana"
+        "action": "Take-boat Monk of Entrana"
        }
       ],
       "destination": [
@@ -82548,7 +82722,7 @@
         0
        ]
       ],
-      "wikiPage": "Fairy rings",
+      "wikiPage": "Fairy ring",
       "confidence": "wiki-redirect",
       "pointSource": "wiki",
       "scattered": true
@@ -82710,6 +82884,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -83043,6 +83222,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -83137,6 +83321,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -84557,6 +84746,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -87356,6 +87550,24 @@
        },
        {
         "origin": [
+         1943,
+         2757,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3001,
+         3032,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
          1496,
          3403,
          0
@@ -87410,6 +87622,15 @@
        },
        {
         "origin": [
+         1871,
+         3309,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
          3038,
          3192,
          0
@@ -87437,8 +87658,8 @@
        },
        {
         "origin": [
-         3001,
-         3032,
+         2805,
+         2502,
          0
         ],
         "id": 1330,
@@ -87448,6 +87669,24 @@
         "origin": [
          1514,
          2971,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3064,
+         2999,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3189,
+         2369,
          0
         ],
         "id": 1330,
@@ -88228,7 +88467,7 @@
          0
         ],
         "id": 1165,
-        "action": "Travel-boat Monk of Entrana"
+        "action": "Take-boat Monk of Entrana"
        }
       ],
       "destination": [
@@ -89712,6 +89951,24 @@
        },
        {
         "origin": [
+         1943,
+         2757,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3001,
+         3032,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
          1496,
          3403,
          0
@@ -89766,6 +90023,15 @@
        },
        {
         "origin": [
+         1871,
+         3309,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
          3038,
          3192,
          0
@@ -89784,8 +90050,8 @@
        },
        {
         "origin": [
-         3001,
-         3032,
+         2805,
+         2502,
          0
         ],
         "id": 1330,
@@ -89795,6 +90061,24 @@
         "origin": [
          1514,
          2971,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3064,
+         2999,
+         0
+        ],
+        "id": 1330,
+        "action": "Charter Trader Crewmember"
+       },
+       {
+        "origin": [
+         3189,
+         2369,
          0
         ],
         "id": 1330,
@@ -90304,6 +90588,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -90655,6 +90944,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -93076,7 +93370,7 @@
          0
         ],
         "id": 1165,
-        "action": "Travel-boat Monk of Entrana"
+        "action": "Take-boat Monk of Entrana"
        }
       ],
       "destination": [
@@ -96831,7 +97125,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -101214,6 +101508,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -101777,8 +102076,8 @@
        9083
       ],
       "points": [],
-      "wikiPage": "Seal of passage",
-      "confidence": "wiki-redirect",
+      "wikiPage": "Seal of Passage",
+      "confidence": "wiki-exact",
       "scattered": false
      },
      "inventoryAction": {
@@ -104715,6 +105014,11 @@
         3000,
         3360,
         0
+       ],
+       [
+        2966,
+        3395,
+        0
        ]
       ],
       "wikiPage": "Falador",
@@ -105274,6 +105578,11 @@
        [
         3000,
         3360,
+        0
+       ],
+       [
+        2966,
+        3395,
         0
        ]
       ],
@@ -106203,10 +106512,25 @@
      "text": "Mine a Mithril Deposit [Morytania Hard Diary]",
      "target": {
       "name": "Mithril Deposit",
+      "names": [
+       "Mithril Deposit"
+      ],
       "kind": "object",
-      "ids": [],
-      "points": [],
-      "confidence": "inferred",
+      "ids": [
+       11373,
+       11372,
+       36207
+      ],
+      "points": [
+       [
+        3057,
+        3944,
+        0
+       ]
+      ],
+      "wikiPage": "Mithril rocks",
+      "confidence": "wiki-redirect",
+      "pointSource": "quest-helper",
       "scattered": false
      },
      "completion": {
@@ -107230,7 +107554,7 @@
        {
         "origin": [
          1670,
-         3832,
+         3833,
          0
         ],
         "id": 28835,
@@ -727575,6 +727899,8 @@
   "Upon creating your account, DO NOT choose a username with the words or phrases ‘Iron’ ‘HC’ ‘Fe’, 'GIM', 'GIMP'. This is the most important step of the guide.",
   "Use all Lamps on Herblore after quest is complete unless specified",
   "A lot of the time the guide will assume you have combat gear on you. Sometimes it is specified, sometimes it is not. I would always have a weapon/ammunition on you to kill monsters. Magic solves almost every fight except for [[Black Knight Titan]]",
+  "The guide now has a plugin available to walk you through the guide like a questhelper. There may be some bugs as I only playtested it up to bank 30.",
+  "https://runelite.net/plugin-hub/show/b0aty-hcim-guide-v3",
   "'''Macroquesting:''' Macroquesting is the process of completing multiple quests simultaneously, progressing your account in an \"optimal\" way, ensuring that the maximum number of quests are being done during any given visit to an area. It's a crucial part of efficient gameplay, for use when making alternate (possibly Ironman) accounts. For a given style of gameplay, it's theoretically possible to \"solve\" the exact chain of quest steps and item gathering grinds, however there is currently insufficient data in a suitable format to build such a solver.",
   "OPTIONAL: I made some tile markers for an efficient 25x4 Tithe Farm method here: https://pastebin.com/SjiqWaEJ (Copy and right click on world map orb -> import)",
   "Die to Hunllef"
@@ -727584,8 +727910,10 @@
   "77a66c09be": "76eef5a684",
   "a66ca113a0": "9e5768b5d5",
   "ae34baad99": "8c44826480",
-  "ba60f4f4fe": "c0297c1e56"
+  "ba60f4f4fe": "c0297c1e56",
+  "b7e7c700c9": "e820b6b857",
+  "4ed0ab6edd": "dde7744376"
  },
- "contentHash": "a042db160cca6438",
- "generatedAt": "2026-10-10T19:41:55+00:00"
+ "contentHash": "43db8b7055940059",
+ "generatedAt": "2026-10-18T23:56:51+00:00"
 }
