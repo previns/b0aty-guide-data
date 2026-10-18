@@ -18,8 +18,7 @@ sys.path.insert(0, str(ROOT / "pipeline"))
 from merge_curated import travel_for  # noqa: E402
 
 GUIDE = json.loads(
-    (ROOT.parent / "b0aty-guide-plugin" / "src" / "main" / "resources" / "com"
-     / "b0atyguide" / "guide.json").read_text(encoding="utf-8"))
+    (ROOT / "dist" / "guide.json").read_text(encoding="utf-8"))
 TRANSPORTS = json.loads((ROOT / "build/transports.json").read_text(encoding="utf-8"))
 ENTITIES = json.loads((ROOT / "build/entities.json").read_text(encoding="utf-8"))
 

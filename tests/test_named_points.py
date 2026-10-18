@@ -53,8 +53,7 @@ def test_the_inline_form_wins_when_both_are_present():
 def test_tomas_lawry_ships_his_coordinate():
     """End to end, in the file the plugin loads."""
     guide = json.loads(
-        (ROOT.parent / "b0aty-guide-plugin" / "src" / "main" / "resources" / "com"
-         / "b0atyguide" / "guide.json").read_text(encoding="utf-8"))
+        (ROOT / "dist" / "guide.json").read_text(encoding="utf-8"))
 
     def walk(node):
         yield node

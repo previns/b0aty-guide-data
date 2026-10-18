@@ -98,7 +98,7 @@ steps:
     questStopValue: 70
   # CreatureOfFenkenstrain: use brush on fireplace yields conductor mould.
   # QH calls this same item "Conductor Mold", ItemID.FENK_LIGHTNING_MOULD = 4200.
-  4ed0ab6edd:
+  dde7744376:
     questStopItems:
       - {name: Conductor Mold, count: 1, ids: [4200]}
   # TaleOfTheRighteous: 5 -> first return to Phileas, 6 -> first Shiro talk,

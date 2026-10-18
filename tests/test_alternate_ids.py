@@ -39,9 +39,7 @@ def test_the_grand_tree_ships_both_roots():
     import io, json
     from pathlib import Path
     guide = json.loads(
-        (Path(__file__).resolve().parent.parent.parent / "b0aty-guide-plugin"
-         / "src" / "main" / "resources" / "com" / "b0atyguide" / "guide.json"
-         ).read_text(encoding="utf-8"))
+        (Path(__file__).resolve().parents[1] / "dist" / "guide.json").read_text(encoding="utf-8"))
 
     def walk(node):
         yield node

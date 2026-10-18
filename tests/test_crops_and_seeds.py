@@ -16,8 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 GUIDE = json.loads(
-    (ROOT.parent / "b0aty-guide-plugin" / "src" / "main" / "resources" / "com"
-     / "b0atyguide" / "guide.json").read_text(encoding="utf-8"))
+    (ROOT / "dist" / "guide.json").read_text(encoding="utf-8"))
 
 ONION, CABBAGE = 1957, 1965
 ONION_SEED, CABBAGE_SEED, STRAWBERRY_SEED = 5319, 5324, 5323

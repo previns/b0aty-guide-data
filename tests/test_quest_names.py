@@ -22,8 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
 
 GUIDE = json.loads(
-    (ROOT.parent / "b0aty-guide-plugin" / "src" / "main" / "resources" / "com"
-     / "b0atyguide" / "guide.json").read_text(encoding="utf-8"))
+    (ROOT / "dist" / "guide.json").read_text(encoding="utf-8"))
 QUESTS = json.loads(
     (ROOT / "build" / "quest_steps.json").read_text(encoding="utf-8"))["quests"]
 

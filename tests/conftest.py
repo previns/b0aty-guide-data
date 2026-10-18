@@ -51,5 +51,25 @@ def pytest_collection_modifyitems(config, items):
             source = inspect.getsource(function)
         except (OSError, TypeError):
             continue
-        if any(marker in source for marker in MARKERS):
+        if any(marker in source for marker in MARKERS) or any(
+                name + "(" in source for name in _readers(item.module)):
             item.add_marker(skip)
+
+
+def _readers(module):
+    """Module-level helpers that read the vendored source on a test's behalf.
+
+    test_combination_lock reaches it through ``source(quest, name)``, so the
+    test body itself names neither QH nor the path.
+    """
+    names = []
+    for name, value in vars(module).items():
+        if (inspect.isfunction(value) and not name.startswith("test")
+                and value.__module__ == module.__name__):
+            try:
+                body = inspect.getsource(value)
+            except (OSError, TypeError):
+                continue
+            if any(marker in body for marker in MARKERS):
+                names.append(name)
+    return names
