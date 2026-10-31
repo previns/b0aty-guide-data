@@ -1,8 +1,8 @@
 {
  "schemaVersion": 1,
  "sourcePage": "Guide:B0aty HCIM Guide V3",
- "sourceRevid": 15374323,
- "sourceRevisionAt": "2026-10-17T01:30:51Z",
+ "sourceRevid": 15378939,
+ "sourceRevisionAt": "2026-10-21T23:45:07Z",
  "episodes": [
   {
    "ordinal": 1,
@@ -74756,7 +74756,8 @@
       "kind": "npc",
       "ids": [
        15626,
-       15627
+       15627,
+       15625
       ],
       "points": [
        [
@@ -79739,7 +79740,8 @@
       "kind": "npc",
       "ids": [
        15626,
-       15627
+       15627,
+       15625
       ],
       "points": [
        [
@@ -84017,11 +84019,11 @@
    ],
    "steps": [
     {
-     "id": "69031aa313",
+     "id": "faf00cb77e",
      "ordinal": 0,
      "depth": 1,
      "kind": "step",
-     "text": "Withdraw: Teleport Runes, Antipoisons, Monk Robes, Holy Symbol, Prayer Potion (2), Damaged Book, Ball of Wool, Ardy Cloak 1, Mithril Seeds, Axe, Big Fishing Net, Gold Bar, Strange Fruits(Optional) (11 Inventory Slots)+Food",
+     "text": "Withdraw: Teleport Runes, Antipoisons, Monk Robes, Holy Symbol, Prayer Potion (2), Damaged Book, Ball of Wool, Ardy Cloak 1, Mithril Seeds, Axe, Tinderbox, Big Fishing Net, Gold Bar, Strange Fruits(Optional) (11 Inventory Slots)+Food",
      "items": [
       {
        "name": "Teleport Runes",
@@ -84121,6 +84123,12 @@
         28196
        ],
        "collection": "AXES"
+      },
+      {
+       "name": "Tinderbox",
+       "ids": [
+        590
+       ]
       },
       {
        "name": "Big Fishing Net",
@@ -727912,8 +727920,9 @@
   "ae34baad99": "8c44826480",
   "ba60f4f4fe": "c0297c1e56",
   "b7e7c700c9": "e820b6b857",
-  "4ed0ab6edd": "dde7744376"
+  "4ed0ab6edd": "dde7744376",
+  "69031aa313": "faf00cb77e"
  },
- "contentHash": "43db8b7055940059",
- "generatedAt": "2026-10-18T23:56:51+00:00"
+ "contentHash": "032b26dd4ea1560c",
+ "generatedAt": "2026-10-31T11:00:41+00:00"
 }
